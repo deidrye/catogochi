@@ -2,14 +2,23 @@ import { LoginData, RegisterData, userSchema } from '../lib/zod/schemas';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
-// Для Android эмулятора используем 10.0.2.2
-// Для iOS симулятора используем localhost
-// Для физического устройства используем IP компьютера
-const API_URL = __DEV__
-  ? Platform.OS === 'android'
-    ? 'http://10.0.2.2:3000/api'
-    : 'http://localhost:3000/api'
-  : 'http://localhost:3000/api';
+// IP адрес компьютера Windows в локальной сети
+const WINDOWS_IP = '192.168.1.41';
+
+const getApiUrl = () => {
+  if (__DEV__) {
+    if (Platform.OS === 'android') {
+      // Для Android (как эмулятор, так и реальное устройство через Expo Go)
+      return `http://${WINDOWS_IP}:3000/api`;
+    }
+    // Для iOS
+    return 'http://localhost:3000/api';
+  }
+  // Для production
+  return 'http://localhost:3000/api';
+};
+
+const API_URL = getApiUrl();
 
 const handleResponse = async (response: Response, isJson = true) => {
   if (!response.ok) {
