@@ -1,6 +1,11 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3000/api';
+// Для Android эмулятора используем 10.0.2.2 вместо localhost
+// Для iOS симулятора используем localhost
+// Для физического устройства используем IP компьютера
+const API_URL = __DEV__
+  ? 'http://172.18.42.82:3000/api' // IP вашего компьютера в локальной сети
+  : 'http://localhost:3000/api';
 
 export const api = axios.create({
   baseURL: API_URL,

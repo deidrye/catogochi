@@ -22,7 +22,7 @@ export const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Добро пожаловать, {user?.name}!</Text>
+      <Text style={styles.title}>Добро пожаловать, {user?.user?.name}!</Text>
       <TouchableOpacity style={styles.button} onPress={handleLogout}>
         <Text style={styles.buttonText}>Выйти</Text>
       </TouchableOpacity>
