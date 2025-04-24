@@ -73,6 +73,26 @@ class AuthService {
   static async logOut() {
     return true;
   }
+
+  static async refresh(user) {
+    if (!user) {
+      throw new Error('Пользователь не авторизован');
+    }
+
+    // Получаем актуальные данные пользователя
+    const { data: currentUser, error: findError } = await supabase
+      .from('users')
+      .select('id, name, email')
+      .eq('id', user.id)
+      .single();
+
+    if (findError || !currentUser) {
+      throw new Error('Пользователь не найден');
+    }
+
+    const tokens = generateTokens({ user: currentUser });
+    return { user: currentUser, ...tokens };
+  }
 }
 
 module.exports = AuthService;
