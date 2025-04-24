@@ -7,9 +7,13 @@ const API_URL = __DEV__
   ? 'http://172.18.42.82:3000/api' // IP вашего компьютера в локальной сети
   : 'http://localhost:3000/api';
 
-export const api = axios.create({
+const api = axios.create({
   baseURL: API_URL,
   withCredentials: true,
+  headers: {
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+  },
 });
 
 export interface LoginData {
