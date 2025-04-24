@@ -4,6 +4,9 @@ import { useAppDispatch, useAppSelector } from '../../app/store';
 import { logout } from '../../features/auth/model/thunks';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../app/types/navigation';
+import CatStatsWidget from '@/widgets/CatStats/ui/CatStats';
+import CatActionsWidget from '@/widgets/CatAction/ui/CatAction';
+import CatToysPanel from '@/widgets/ToysPanel/ToysPanel';
 
 type MainScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Main'>;
 
@@ -21,12 +24,17 @@ export const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Добро пожаловать, {user?.user?.name}!</Text>
-      <TouchableOpacity style={styles.button} onPress={handleLogout}>
-        <Text style={styles.buttonText}>Выйти</Text>
-      </TouchableOpacity>
-    </View>
+    <>
+      <View style={styles.container}>
+        <Text style={styles.title}>Добро пожаловать, {user?.user?.name}!</Text>
+        <TouchableOpacity style={styles.button} onPress={handleLogout}>
+          <Text style={styles.buttonText}>Выйти</Text>
+        </TouchableOpacity>
+      </View>
+      <CatStatsWidget />
+      <CatActionsWidget />
+      <CatToysPanel />
+    </>
   );
 };
 
@@ -43,7 +51,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   button: {
-    backgroundColor: '#FF3B30',
+    backgroundColor: 'white',
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 8,
