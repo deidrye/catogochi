@@ -59,6 +59,23 @@ class AuthController {
       res.status(500).json({ error: 'Ошибка сервера' });
     }
   }
+
+  static async checkAuth(req, res) {
+    try {
+      const { user } = res.locals;
+      const {
+        user: updatedUser,
+        accessToken,
+        refreshToken,
+      } = await authService.refresh(user);
+      res
+        .cookie('refreshToken', refreshToken, cookieConfig.refresh)
+        .json({ user: updatedUser, accessToken });
+    } catch (error) {
+      console.log('Ошибка при проверке авторизации:', error);
+      res.status(401).json({ error: 'Не авторизован' });
+    }
+  }
 }
 
 module.exports = AuthController;

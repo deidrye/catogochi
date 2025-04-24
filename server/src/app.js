@@ -17,11 +17,13 @@ app.use(cors);
 app.use(express.static('public'));
 app.use(morgan('dev'));
 
+
 app.use('/api/cats', catRouter);
 app.use('/api/toys', toyRouter);
 app.use('/api/events', eventRouter);
 app.use('/api/users', userRouter);
 app.use('/api/tokens', tokensRouter);
 app.use('/api/auth', authRouter);
+
 
 module.exports = app;

@@ -6,12 +6,14 @@ interface AuthState {
   user: User | null;
   isLoading: boolean;
   error: string | null;
+  isInitialized: boolean;
 }
 
 const initialState: AuthState = {
   user: null,
   isLoading: false,
   error: null,
+  isInitialized: false,
 };
 
 const authSlice = createSlice({
@@ -53,6 +55,11 @@ const authSlice = createSlice({
       })
       .addCase(checkAuth.fulfilled, (state, action) => {
         state.user = action.payload;
+        state.isInitialized = true;
+      })
+      .addCase(checkAuth.rejected, (state) => {
+        state.user = null;
+        state.isInitialized = true;
       });
   },
 });
