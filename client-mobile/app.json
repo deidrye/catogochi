@@ -5,12 +5,17 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
+    "newArchEnabled": true,
     "assetBundlePatterns": ["**/*"],
-    "ios": {
-      "supportsTablet": true
-    },
     "android": {
-      "package": "com.catogochi.app"
+      "debug": {
+        "hostType": "lan"
+      }
+    },
+    "ios": {
+      "debug": {
+        "hostType": "lan"
+      }
     }
   }
 }

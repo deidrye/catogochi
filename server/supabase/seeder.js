@@ -9,13 +9,11 @@ async function clearAll() {
 }
 
 async function seed() {
-  const password = await bcrypt.hash('123', 10);
-
   const { data: users, error: userError } = await supabase
     .from('users')
     .insert([
-      { name: 'Иван Иванов', email: '1@1', hashedPass: password },
-      { name: 'Петр Петров', email: '2@2', hashedPass: password },
+      { name: 'Иван Иванов', email: '1@1', hashedPass: await bcrypt.hash('123', 10) },
+      { name: 'Петр Петров', email: '2@2', hashedPass: await bcrypt.hash('123', 10) },
     ])
     .select();
 
