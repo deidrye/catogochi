@@ -5,7 +5,6 @@ import { logout } from '../../features/auth/model/thunks';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../app/types/navigation';
 
-
 type MainScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Main'>;
 
 interface MainScreenProps {
@@ -21,10 +20,17 @@ export const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
     navigation.navigate('Login');
   };
 
+  const goToGame = () => {
+    navigation.navigate('Game');
+  };
+
   return (
     <>
       <View style={styles.container}>
         <Text style={styles.title}>Добро пожаловать, {user?.user?.name}!</Text>
+        <TouchableOpacity style={styles.button} onPress={goToGame}>
+          <Text style={styles.buttonText}>Играть с котом</Text>
+        </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={handleLogout}>
           <Text style={styles.buttonText}>Выйти</Text>
         </TouchableOpacity>

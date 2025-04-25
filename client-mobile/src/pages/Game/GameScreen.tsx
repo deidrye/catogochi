@@ -1,17 +1,18 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { useAppDispatch, useAppSelector } from '../../app/store';
-import { logout } from '../../features/auth/model/thunks';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../app/types/navigation';
+import { StyleSheet } from 'react-native';
 import CatStatsWidget from '@/widgets/CatStats/ui/CatStats';
 import CatActionsWidget from '@/widgets/CatAction/ui/CatAction';
-import CatToysPanel from '@/widgets/ToysPanel/ToysPanel';
+import CatToysPanel from '@/widgets/ToysPanel/ui/ToysPanel';
+import { RootStackParamList } from '@/app/types/navigation';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-type MainScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Main'>;
+type GameScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Game'>;
 
-export const GameScreen: React.FC = () => {
+interface GameScreenProps {
+  navigation: GameScreenNavigationProp;
+}
 
+export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
   return (
     <>
       <CatStatsWidget />

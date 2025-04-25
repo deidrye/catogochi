@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
 // IP адрес компьютера Windows в локальной сети
-const WINDOWS_IP = '192.168.2.163';
+const WINDOWS_IP = '192.168.3.172';
 
 const getApiUrl = () => {
   if (__DEV__) {
