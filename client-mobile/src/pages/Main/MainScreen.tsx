@@ -20,13 +20,22 @@ export const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
     navigation.navigate('Login');
   };
 
+  const goToGame = () => {
+    navigation.navigate('Game');
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Добро пожаловать, {user?.user?.name}!</Text>
-      <TouchableOpacity style={styles.button} onPress={handleLogout}>
-        <Text style={styles.buttonText}>Выйти</Text>
-      </TouchableOpacity>
-    </View>
+    <>
+      <View style={styles.container}>
+        <Text style={styles.title}>Добро пожаловать, {user?.user?.name}!</Text>
+        <TouchableOpacity style={styles.button} onPress={goToGame}>
+          <Text style={styles.buttonText}>Играть с котом</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={handleLogout}>
+          <Text style={styles.buttonText}>Выйти</Text>
+        </TouchableOpacity>
+      </View>
+    </>
   );
 };
 
@@ -43,7 +52,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   button: {
-    backgroundColor: '#FF3B30',
+    backgroundColor: 'white',
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 8,
