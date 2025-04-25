@@ -66,6 +66,7 @@ export default function CreateCatScreen({ navigation }: CreateCatScreenProps) {
 
   const handleSubmit = async () => {
     try {
+      navigation.navigate('Main');
       setIsLoading(true);
 
       if (!user?.user?.id) {
@@ -95,7 +96,7 @@ export default function CreateCatScreen({ navigation }: CreateCatScreenProps) {
       Alert.alert('Успех', 'Кот успешно создан!', [
         {
           text: 'OK',
-          onPress: () => navigation.navigate('Game'),
+          onPress: () => navigation.navigate('Main'),
         },
       ]);
     } catch (error) {
