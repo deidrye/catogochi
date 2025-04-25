@@ -11,6 +11,7 @@ import { useAppDispatch, useAppSelector } from './src/app/store';
 import { checkAuth } from './src/features/auth/model/thunks';
 import { ActivityIndicator, View } from 'react-native';
 import { GameScreen } from '@/pages/Game/GameScreen';
+import CreateCatScreen from '@/pages/Create/CreateCatScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -42,6 +43,7 @@ function Navigation() {
           <>
             <Stack.Screen name='Main' component={MainScreen} />
             <Stack.Screen name='Game' component={GameScreen} />
+            <Stack.Screen name='CreateCat' component={CreateCatScreen} />
           </>
         ) : (
           <>

@@ -24,12 +24,19 @@ export const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
     navigation.navigate('Game');
   };
 
+  const goToCreateCat = () => {
+    navigation.navigate('CreateCat');
+  };
+
   return (
     <>
       <View style={styles.container}>
         <Text style={styles.title}>Добро пожаловать, {user?.user?.name}!</Text>
         <TouchableOpacity style={styles.button} onPress={goToGame}>
           <Text style={styles.buttonText}>Играть с котом</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={goToCreateCat}>
+          <Text style={styles.buttonText}>Создать кота</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={handleLogout}>
           <Text style={styles.buttonText}>Выйти</Text>
@@ -58,7 +65,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   buttonText: {
-    color: 'white',
+    color: 'black',
     fontSize: 16,
     fontWeight: 'bold',
   },
