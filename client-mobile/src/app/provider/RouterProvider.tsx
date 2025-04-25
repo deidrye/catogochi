@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from '@/app/store';
 import { checkAuth } from '@/features/auth/model/thunks';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import Layout from '@/app/Layout/Layout';
+import CreateCatScreen from '@/pages/Create/CreateCatScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -36,6 +37,7 @@ export default function RouterProvider() {
       >
         {user ? (
           <>
+            <Stack.Screen name='CreateCat' component={CreateCatScreen} />
             <Stack.Screen name='Main' component={Layout} />
           </>
         ) : (

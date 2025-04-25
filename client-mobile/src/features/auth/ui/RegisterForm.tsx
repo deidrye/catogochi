@@ -23,7 +23,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ navigation }) => {
     try {
       const data = registerSchema.parse({ email, password, name });
       await dispatch(register(data)).unwrap();
-      navigation.navigate('Main');
+      navigation.navigate('CreateCat');
     } catch (err: any) {
       setError(err.message || 'Ошибка регистрации');
     }
