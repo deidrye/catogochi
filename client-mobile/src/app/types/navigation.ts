@@ -4,4 +4,5 @@ export type RootStackParamList = {
   Main: undefined;
   Game: undefined;
   Shop: undefined;
+  CreateCat: undefined;
 }; 
