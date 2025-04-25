@@ -1,18 +1,29 @@
 import { LoginData, RegisterData, userSchema } from '../lib/zod/schemas';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
+import { CLIENT_IP } from '@env';
+import { z } from 'zod';
+
+export const envSchema = z.object({
+  CLIENT_IP: z.string().ip(),
+});
+
+export const env = envSchema.parse({ CLIENT_IP });
 
 // IP адрес компьютера Windows в локальной сети
-const WINDOWS_IP = '192.168.3.172';
+const WINDOWS_IP = env.CLIENT_IP;
 
 const getApiUrl = () => {
   if (__DEV__) {
     if (Platform.OS === 'android') {
       // Для Android (как эмулятор, так и реальное устройство через Expo Go)
-      return `http://${WINDOWS_IP}:3000/api`;
+      return `http://${env.CLIENT_IP}:3000/api`;
     }
     // Для iOS
-    return 'http://localhost:3000/api';
+    if (Platform.OS === 'ios') {
+      // Для iOS симулятора и реальных устройств
+      return `http://${env.CLIENT_IP}:3000/api`; // Используем локальный IP
+    }
   }
   // Для production
   return 'http://localhost:3000/api';
