@@ -3,4 +3,5 @@ export type RootStackParamList = {
   Register: undefined;
   Main: undefined;
   Game: undefined;
+  Shop: undefined;
 }; 
