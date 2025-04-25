@@ -32,6 +32,23 @@ const corsOptions = {
       callback(new Error('Not allowed by CORS'));
     }
   },
+01',
+      'http://localhost:19002',
+      'https://localhost:19002'
+    ];
+
+    if (
+      !origin ||
+      allowedOrigins.some((allowed) => {
+        if (typeof allowed === 'string') return origin === allowed;
+        return allowed.test(origin);
+      })
+    ) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
