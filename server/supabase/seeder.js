@@ -6,6 +6,8 @@ async function clearAll() {
   await supabase.from('cats').delete().neq('id', 0);
   await supabase.from('toys').delete().neq('id', 0);
   await supabase.from('users').delete().neq('id', 0);
+  await supabase.from('achievments').delete().neq('id', 0);
+  await supabase.from('user_achievments').delete().neq('id', 0);
 }
 
 async function seed() {
@@ -62,22 +64,61 @@ async function seed() {
     ])
     .select();
 
-  await supabase.from('events').insert([
-    {
-      title: 'Играл с хвостом',
-      description: 'Кот поиграл со своим хвостом и стал счастливее',
-      effect: { hp: 5 },
-      catId: cats[0].id,
-      toyId: toys[0].id,
-    },
-    {
-      title: 'Порвал удочку',
-      description: 'Кот играл слишком активно',
-      effect: { energy: -5 },
-      catId: cats[1].id,
-      toyId: toys[1].id,
-    },
-  ]);
+  await supabase
+    .from('events')
+    .insert([
+      {
+        title: 'Играл с хвостом',
+        description: 'Кот поиграл со своим хвостом и стал счастливее',
+        effect: { hp: 5 },
+        catId: cats[0].id,
+        toyId: toys[0].id,
+      },
+      {
+        title: 'Порвал удочку',
+        description: 'Кот играл слишком активно',
+        effect: { energy: -5 },
+        catId: cats[1].id,
+        toyId: toys[1].id,
+      },
+    ])
+    .select();
+
+  await supabase
+    .from('achievments')
+    .insert([
+      {
+        name: 'Новичок',
+        description: 'Зарегистрировался в приложении',
+        reward: 10,
+      },
+      {
+        name: 'Любитель котиков',
+        description: 'Добавил первого кота',
+        reward: 20,
+      },
+      {
+        name: 'Игроман',
+        description: 'Поиграл с котом 10 раз',
+        reward: 30,
+      },
+      {
+        name: 'Эксперт',
+        description: 'Достиг 5 уровня с котом',
+        reward: 50,
+      },
+    ])
+    .select();
+
+  await supabase
+    .from('userAchievments')
+    .insert([
+      {
+        userId: 39,
+        achievementId: 6,
+      },
+    ])
+    .select();
 }
 
 async function main() {
