@@ -25,7 +25,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ navigation }) => {
       console.log('Данные для входа валидны:', data);
       const result = await dispatch(login(data)).unwrap();
       console.log('Успешный вход, результат:', result);
-      navigation.navigate('Main');
+      navigation.navigate('CreateCat');
     } catch (err: any) {
       console.error('Ошибка при входе:', {
         message: err.message,
