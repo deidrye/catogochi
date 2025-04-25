@@ -35,6 +35,7 @@ export default function MainTabs() {
     <View style={styles.container}>
       {/* Табы */}
       <Tab.Navigator
+      initialRouteName='Game'
         screenOptions={{
           tabBarStyle: styles.tabBar,
           tabBarLabelStyle: styles.tabLabel,
