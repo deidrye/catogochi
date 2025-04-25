@@ -45,13 +45,13 @@ const CatToysPanel: React.FC = () => {
           color="white"
           onPress={handleBall}
         />
-        {/* <ToyButton
+        <ToyButton
           title="Мышка"
-          imageSource={}
-          color="#007bff"
+          imageSource={'https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcRyoWktTL7tysGu88vF_Uife4PXOMsHt7Ma6EtdDUGZnoNOlwkYroUpHLJqFttxZ7kdiRMe_ghMSvgPkETbNiewdyIPiZq9dlwCbvQat_3LMb9RRoyngSZE'}
+          color="#white"
           onPress={handleMouse}
         />
-        <ToyButton
+        {/* <ToyButton
           title="Перо"
           imageSource={}
           color="#dc3545"
@@ -62,7 +62,7 @@ const CatToysPanel: React.FC = () => {
           imageSource={}
           color="#6f42c1"
           onPress={handleLaser}
-        /> */}
+        />  */}
       </View>
     </View>
   );

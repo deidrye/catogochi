@@ -22,7 +22,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({ title, iconName, color, onP
     accessibilityLabel={`Кнопка ${title}`}
   >
     <View style={styles.buttonContent}>
-      <Icon name={iconName} size={18} color="#fff" style={styles.icon} />
+      <Icon name={iconName} size={18} color='#fff' style={styles.icon} />
       <Text style={styles.buttonText}>{title}</Text>
     </View>
   </Pressable>
@@ -41,29 +41,14 @@ const CatActionsWidget: React.FC = () => {
       <Text style={styles.title}>Действия с котом</Text>
       <View style={styles.buttonGrid}>
         <ActionButton
-          title="Покормить"
-          iconName="restaurant"
-          color="#28a745"
+          title='Покормить'
+          iconName='restaurant'
+          color='#28a745'
           onPress={handleFeed}
         />
-        <ActionButton
-          title="Поиграть"
-          iconName="toys"
-          color="#007bff"
-          onPress={handlePlay}
-        />
-        <ActionButton
-          title="Приласкать"
-          iconName="favorite"
-          color="#dc3545"
-          onPress={handlePet}
-        />
-        <ActionButton
-          title="Уложить спать"
-          iconName="bed"
-          color="#6f42c1"
-          onPress={handleSleep}
-        />
+        <ActionButton title='Поиграть' iconName='toys' color='#007bff' onPress={handlePlay} />
+        <ActionButton title='Приласкать' iconName='favorite' color='#dc3545' onPress={handlePet} />
+        <ActionButton title='Уложить спать' iconName='bed' color='#6f42c1' onPress={handleSleep} />
       </View>
     </View>
   );

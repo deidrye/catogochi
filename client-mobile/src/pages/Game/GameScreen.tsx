@@ -4,31 +4,19 @@ import { useAppDispatch, useAppSelector } from '../../app/store';
 import { logout } from '../../features/auth/model/thunks';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../app/types/navigation';
-
+import CatStatsWidget from '@/widgets/CatStats/ui/CatStats';
+import CatActionsWidget from '@/widgets/CatAction/ui/CatAction';
+import CatToysPanel from '@/widgets/ToysPanel/ToysPanel';
 
 type MainScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Main'>;
 
-interface MainScreenProps {
-  navigation: MainScreenNavigationProp;
-}
-
-export const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
-  const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => state.auth.user);
-
-  const handleLogout = async () => {
-    await dispatch(logout());
-    navigation.navigate('Login');
-  };
+export const GameScreen: React.FC = () => {
 
   return (
     <>
-      <View style={styles.container}>
-        <Text style={styles.title}>Добро пожаловать, {user?.user?.name}!</Text>
-        <TouchableOpacity style={styles.button} onPress={handleLogout}>
-          <Text style={styles.buttonText}>Выйти</Text>
-        </TouchableOpacity>
-      </View>
+      <CatStatsWidget />
+      <CatActionsWidget />
+      <CatToysPanel />
     </>
   );
 };
