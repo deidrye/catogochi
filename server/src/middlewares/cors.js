@@ -1,15 +1,37 @@
 const cors = require('cors');
+require('dotenv').config();
 
 const corsOptions = {
-  origin: [
-    'http://localhost:19006',
-    'http://192.168.2.163:19006',
-    'exp://192.168.2.163:19000',
-    /\.exp\.direct$/,
-    /\.exp\.expo\.io$/,
-    'http://localhost:3000',
-    'http://192.168.2.163:3000',
-  ],
+  origin: (origin, callback) => {
+    // Разрешаем все запросы в разработке
+    if (process.env.NODE_ENV !== 'production') {
+      return callback(null, true);
+    }
+
+    // Белый список для production
+    const allowedOrigins = [
+      'http://localhost:19006',
+      `http://${process.env.SERVER_IP}:19006`,
+      `exp://${process.env.SERVER_IP}:19000`,
+      /\.exp\.direct$/,
+      /\.exp\.expo\.io$/,
+      'http://localhost:3000',
+      `http://${process.env.SERVER_IP}:3000`,
+      `http://localhost:8080`, // Для веб-версии
+    ];
+
+    if (
+      !origin ||
+      allowedOrigins.some((allowed) => {
+        if (typeof allowed === 'string') return origin === allowed;
+        return allowed.test(origin);
+      })
+    ) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
