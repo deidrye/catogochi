@@ -17,11 +17,6 @@ const API_URL = __DEV__
 
 const api = axios.create({
   baseURL: API_URL,
-  withCredentials: true,
-  headers: {
-    Accept: 'application/json',
-    'Content-Type': 'application/json',
-  },
 });
 
 export interface LoginData {
