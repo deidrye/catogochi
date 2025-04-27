@@ -5,10 +5,10 @@ async function clearAll() {
   await supabase.from('events').delete().neq('id', 0);
   await supabase.from('catPresets').delete().neq('id', 0);
   await supabase.from('cats').delete().neq('id', 0);
-  await supabase.from('toys').delete().neq('id', 0);
   await supabase.from('users').delete().neq('id', 0);
-  await supabase.from('achievments').delete().neq('id', 0);
-  await supabase.from('user_achievments').delete().neq('id', 0);
+  await supabase.from('toys').delete().neq('id', 0);
+  await supabase.from('achievements').delete().neq('id', 0);
+  await supabase.from('userAchievements').delete().neq('id', 0);
 }
 
 async function seed() {
@@ -142,25 +142,25 @@ async function seed() {
     .insert([
       {
         name: 'Мурзик',
-        userId: users[0].id,
+        userId: users[users.length - 2].id,
         angry: 3,
         hp: 100,
         energy: 80,
         affection: 70,
         boldness: 50,
         level: 2,
-        catPresetId: catPresets[0].id,
+        catPresetId: catPresets[catPresets.length - 2].id,
       },
       {
         name: 'Барсик',
-        userId: users[1].id,
+        userId: users[users.length - 1].id,
         angry: 2,
         hp: 90,
         energy: 60,
         affection: 85,
         boldness: 40,
         level: 1,
-        catPresetId: catPresets[1].id,
+        catPresetId: catPresets[catPresets.length - 1].id,
       },
     ])
     .select();
@@ -176,15 +176,15 @@ async function seed() {
         title: 'Играл с хвостом',
         description: 'Кот поиграл со своим хвостом и стал счастливее',
         effect: { hp: 5 },
-        catId: cats[0].id,
-        toyId: toys[0].id,
+        catId: cats[cats.length - 2].id,
+        toyId: toys[toys.length - 2].id,
       },
       {
         title: 'Порвал удочку',
         description: 'Кот играл слишком активно',
         effect: { energy: -5 },
-        catId: cats[1].id,
-        toyId: toys[1].id,
+        catId: cats[cats.length - 1].id,
+        toyId: toys[toys.length - 1].id,
       },
     ])
     .select();
