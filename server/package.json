@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "db": "node supabase/seeder.js clear && node supabase/seeder.js seed",
+    "db": "node supabase/resetIds.js && node supabase/seeder.js clear && node supabase/seeder.js seed",
     "dev": "nodemon src/server.js"
   },
   "keywords": [],
