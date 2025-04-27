@@ -23,10 +23,9 @@ class CatController {
 
   static async create(req, res) {
     try {
-      // Добавляем валидацию
-      if (!req.body.name || !req.body.color || !req.body.breed) {
+      if (!req.body.name || !req.body.image) {
         return res.status(400).json({
-          message: 'Необходимо указать имя, цвет и породу кота',
+          message: 'Необходимо указать имя и изображение кота',
         });
       }
 
@@ -42,10 +41,11 @@ class CatController {
       const catData = {
         ...req.body,
         ...defaultCat,
-        userId: req.locals.user?.id, // Предполагаем, что user добавляется middleware аутентификации
+        userId: res.locals.user?.id,
       };
 
       const cat = await CatService.create(catData);
+
       res.status(201).json(cat);
     } catch (error) {
       console.error('Create cat error:', error);
