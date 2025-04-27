@@ -45,6 +45,25 @@ class ToyController {
       res.status(400).json({ message: 'Ошибка удаления', error: e.message });
     }
   }
+
+  // ----------Вся логика связанная с событиями игрушек------------
+
+  static async buyToy(req, res) {
+    try {
+      const { catId, toyId } = req.body;
+
+      if (!catId || !toyId) {
+        return res.status(400).json({ message: 'catId и toyId обязательны.' });
+      }
+
+      const event = await ToyService.buyToy(catId, toyId);
+
+      return res.status(201).json({ message: 'Игрушка успешно куплена!', event });
+    } catch (error) {
+      console.error(error.message);
+      return res.status(500).json({ message: error.message || 'Ошибка сервера.' });
+    }
+  }
 }
 
 module.exports = ToyController;

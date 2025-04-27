@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, Text, ScrollView, View } from 'react-native';
 import CatStatsWidget from '@/widgets/CatStats/ui/CatStats';
 import CatActionsWidget from '@/widgets/CatAction/ui/CatAction';
 import CatToysPanel from '@/widgets/ToysPanel/ui/ToysPanel';
@@ -18,14 +18,17 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity style={styles.button} onPress={goToShop}>
-        <Text style={styles.buttonText}>Перейти в магазин</Text>
-      </TouchableOpacity>
-      <CatStatsWidget />
-      <CatActionsWidget />
-      <CatToysPanel />
-    </View>
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.cat}>
+        Здесь будет котик
+      </View>
+        <TouchableOpacity style={styles.button} onPress={goToShop}>
+          <Text style={styles.buttonText}>Перейти в магазин</Text>
+        </TouchableOpacity>
+        <CatStatsWidget />
+        <CatActionsWidget />
+        <CatToysPanel />
+    </ScrollView>
   );
 };
 
@@ -34,6 +37,12 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     justifyContent: 'space-between',
+  },
+  cat: {
+    width: 200,
+    height: 300,
+    backgroundColor: 'black',
+    color: 'white',
   },
   button: {
     backgroundColor: '#FF8C00',

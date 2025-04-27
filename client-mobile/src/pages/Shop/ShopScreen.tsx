@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { RootStackParamList } from '@/app/types/navigation';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -16,6 +16,8 @@ import NewspaperIcon from '@/assets/toys/newspaper.svg';
 import OctopusIcon from '@/assets/toys/octopus.svg';
 import RexIcon from '@/assets/toys/rex.svg';
 import PostIcon from '@/assets/toys/scratching-post.svg';
+import { useAppDispatch, useAppSelector } from '@/app/store';
+import { buyToy, fetchShopToys } from '@/entities/toy/model/toyThunks';
 
 type ShopScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Shop'>;
 
@@ -38,32 +40,45 @@ const iconMap: Record<string, React.FC<any>> = {
   'scratching-post.svg': PostIcon,
 };
 
-
-// Вместо моковых данных потом получим данные из БД 
-const toys = [
-  { id: 1, name: 'Мячик', price: 35, effect: { hp: -10 }, img: 'ball.svg' },
-  { id: 2, name: 'Елка', price: 15, effect: { energy: 10 }, img: 'christmas-tree.svg' },
-  { id: 3, name: 'Клубок', price: 35, effect: { hp: -10 }, img: 'clew.svg' },
-  { id: 4, name: 'Перо', price: 30, effect: { energy: -10 }, img: 'feather.svg' },
-  { id: 5, name: 'Удочка', price: 15, effect: { energy: 10 }, img: 'fish-rod.svg' },
-  { id: 6, name: 'Рыбка', price: 20, effect: { affection: 10 }, img: 'fish.svg' },
-  { id: 7, name: 'Лазер', price: 25, effect: { boldness: 10 }, img: 'laser-pen.svg' },
-  { id: 8, name: 'Мышка', price: 10, effect: { hp: 5 }, img: 'mouse.svg' },
-  { id: 9, name: 'Газета', price: 15, effect: { energy: 10 }, img: 'newspaper.svg' },
-  { id: 10, name: 'Осьминог', price: 20, effect: { affection: 10 }, img: 'octopus.svg' },
-  { id: 11, name: 'Динозавр', price: 25, effect: { boldness: 10 }, img: 'rex.svg' },
-  { id: 12, name: 'Когтеточка', price: 30, effect: { energy: -10 }, img: 'scratching-post.svg' },
-];
-
 export const ShopScreen: React.FC<ShopScreenProps> = () => {
-  const renderToy = ({ item }: { item: (typeof toys)[number] }) => {
+  const dispatch = useAppDispatch();
+  const ownedToys = useAppSelector((state) => state.toy.ownedToys);
+
+  useEffect(() => {
+    dispatch(fetchShopToys());
+  }, [dispatch]);
+
+  const shopToys = useAppSelector((state) => state.toy.shopToys);
+
+  const handleBuyToy = async (toyId: number) => {
+    try {
+      const catId = 1; // Пример, замените на актуальное значение
+      if (isNaN(toyId) || isNaN(catId)) {
+        throw new Error('Некорректный toyId или catId при покупке игрушки');
+      }
+      console.log('Покупка игрушки:', { catId, toyId });
+      
+      const toyEvent = await dispatch(buyToy({ catId, toyId })).unwrap();
+      console.log('Ответ после покупки игрушки:', toyEvent); // Логирование ответа
+      alert('Игрушка успешно куплена!');
+    } catch (error) {
+      console.error('Ошибка при покупке игрушки:', error);
+      alert('Ошибка при покупке игрушки');
+    }
+  };
+
+  useEffect(() => {
+    console.log('Состояние ownedToys после покупки:', ownedToys);
+  }, [ownedToys]); // Срабатывает, когда состояние ownedToys обновляется
+
+  const renderToy = ({ item }: { item: (typeof shopToys)[number] }) => {
     const IconComponent = iconMap[item.img];
     return (
       <View style={styles.card}>
         <IconComponent width={100} height={100} />
         <Text style={styles.name}>{item.name}</Text>
         <Text style={styles.price}>{item.price} монет</Text>
-        <TouchableOpacity style={styles.buyButton}>
+        <TouchableOpacity style={styles.buyButton} onPress={() => handleBuyToy(item.id)}>
           <Text style={styles.buyText}>Купить</Text>
         </TouchableOpacity>
       </View>
@@ -74,7 +89,7 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Магазин игрушек</Text>
       <FlatList
-        data={toys}
+        data={shopToys}
         renderItem={renderToy}
         keyExtractor={(item) => item.id.toString()}
         numColumns={2}
