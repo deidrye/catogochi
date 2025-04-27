@@ -1,10 +1,9 @@
+// GameScreen.tsx
 import React from 'react';
 import { StyleSheet, TouchableOpacity, Text, ScrollView, View } from 'react-native';
-import CatStatsWidget from '@/widgets/CatStats/ui/CatStats';
-import CatActionsWidget from '@/widgets/CatAction/ui/CatAction';
-import CatToysPanel from '@/widgets/ToysPanel/ui/ToysPanel';
 import { RootStackParamList } from '@/app/types/navigation';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import ToysPanelWidget from '@/widgets/ToysPanel/ui/ToysPanel';
 
 type GameScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Game'>;
 
@@ -22,12 +21,10 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
       <View style={styles.cat}>
         Здесь будет котик
       </View>
-        <TouchableOpacity style={styles.button} onPress={goToShop}>
-          <Text style={styles.buttonText}>Перейти в магазин</Text>
-        </TouchableOpacity>
-        <CatStatsWidget />
-        <CatActionsWidget />
-        <CatToysPanel />
+      <TouchableOpacity style={styles.button} onPress={goToShop}>
+        <Text style={styles.buttonText}>Перейти в магазин</Text>
+      </TouchableOpacity>
+      <ToysPanelWidget />
     </ScrollView>
   );
 };

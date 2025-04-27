@@ -128,7 +128,8 @@ class ToyService {
       throw new Error('Не удалось создать событие.');
     }
 
-    return event;
+    // Возвращаем информацию о событии и игрушке
+    return { event, toy }; // Добавляем toy к возвращаемому объекту
   }
 }
 

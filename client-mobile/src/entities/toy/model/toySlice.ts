@@ -95,16 +95,13 @@ export const toySlice = createSlice({
     builder.addCase(buyToy.fulfilled, (state, action) => {
       state.isLoading = false;
 
-      // Проверяем, есть ли уже игрушка с таким `toyId` в `ownedToys`
       const existingToyIndex = state.ownedToys.findIndex(
-        (toy) => toy.toyId === action.payload.toyId,
+        (toy) => toy.toy.id === action.payload.toy.id,
       );
 
       if (existingToyIndex >= 0) {
-        // Если игрушка уже есть, заменяем её
         state.ownedToys[existingToyIndex] = action.payload;
       } else {
-        // Если нет, добавляем новый объект
         state.ownedToys.push(action.payload);
       }
     });

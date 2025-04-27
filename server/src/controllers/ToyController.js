@@ -56,9 +56,9 @@ class ToyController {
         return res.status(400).json({ message: 'catId и toyId обязательны.' });
       }
 
-      const event = await ToyService.buyToy(catId, toyId);
+      const { event, toy } = await ToyService.buyToy(catId, toyId);
 
-      return res.status(201).json({ message: 'Игрушка успешно куплена!', event });
+      return res.status(201).json({event, toy });
     } catch (error) {
       console.error(error.message);
       return res.status(500).json({ message: error.message || 'Ошибка сервера.' });

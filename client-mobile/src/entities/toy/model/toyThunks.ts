@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import toyService from '../api/toyService';
-import { ToyCreateType, ToyEventCreateType } from './toyType';
+import { ToyCreateType, ToyEventCreateType, ToyEventWithToy } from './toyType';
 
 export const fetchShopToys = createAsyncThunk('toy/fetchShopToys', () => {
   return toyService.getAll();
@@ -27,6 +27,9 @@ export const updateToyInShop = createAsyncThunk(
   },
 );
 
-export const buyToy = createAsyncThunk('toy/buyToy',  async ({ toyId, catId }: { toyId: number; catId: number }) => {
-  return toyService.buyToy(toyId, catId);
-});
+export const buyToy = createAsyncThunk<ToyEventWithToy, { toyId: number; catId: number }>(
+  'toy/buyToy',
+  async ({ toyId, catId }) => {
+    return toyService.buyToy(toyId, catId); // Возвращаем уже типизированный объект
+  }
+);

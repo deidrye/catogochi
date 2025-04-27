@@ -60,10 +60,8 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
       
       const toyEvent = await dispatch(buyToy({ catId, toyId })).unwrap();
       console.log('Ответ после покупки игрушки:', toyEvent); // Логирование ответа
-      alert('Игрушка успешно куплена!');
     } catch (error) {
       console.error('Ошибка при покупке игрушки:', error);
-      alert('Ошибка при покупке игрушки');
     }
   };
 

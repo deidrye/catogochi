@@ -1,129 +1,105 @@
+// CatToysWidget.tsx
 import React from 'react';
-import { View, Text, Pressable, StyleSheet, Image } from 'react-native';
+import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { useAppSelector } from '@/app/store';
 
-// Тип для пропсов кнопки игрушки
-type ToyButtonProps = {
-  title: string;
-  imageSource: any; // Тип для require()
-  color: string;
-  onPress: () => void;
+// SVG импорты
+import BallIcon from '@/assets/toys/ball.svg';
+import TreeIcon from '@/assets/toys/christmas-tree.svg';
+import ClewIcon from '@/assets/toys/clew.svg';
+import FeatherIcon from '@/assets/toys/feather.svg';
+import RodIcon from '@/assets/toys/fish-rod.svg';
+import FishIcon from '@/assets/toys/fish.svg';
+import LaserIcon from '@/assets/toys/laser-pen.svg';
+import MouseIcon from '@/assets/toys/mouse.svg';
+import NewspaperIcon from '@/assets/toys/newspaper.svg';
+import OctopusIcon from '@/assets/toys/octopus.svg';
+import RexIcon from '@/assets/toys/rex.svg';
+import PostIcon from '@/assets/toys/scratching-post.svg';
+
+const iconMap: Record<string, React.FC<any>> = {
+  'ball.svg': BallIcon,
+  'christmas-tree.svg': TreeIcon,
+  'clew.svg': ClewIcon,
+  'feather.svg': FeatherIcon,
+  'fish-rod.svg': RodIcon,
+  'fish.svg': FishIcon,
+  'laser-pen.svg': LaserIcon,
+  'mouse.svg': MouseIcon,
+  'newspaper.svg': NewspaperIcon,
+  'octopus.svg': OctopusIcon,
+  'rex.svg': RexIcon,
+  'scratching-post.svg': PostIcon,
 };
 
-// Компонент кнопки игрушки
-const ToyButton: React.FC<ToyButtonProps> = ({ title, imageSource, color, onPress }) => (
-  <Pressable
-    style={({ pressed }) => [
-      styles.button,
-      { backgroundColor: color },
-      pressed ? styles.buttonPressed : {},
-    ]}
-    onPress={onPress}
-    accessibilityLabel={`Игрушка ${title}`}
-  >
-    <View style={styles.buttonContent}>
-      <Image source={imageSource} style={styles.image} />
-      <Text style={styles.buttonText}>{title}</Text>
-    </View>
-  </Pressable>
-);
+const ToysPanelWidget: React.FC = () => {
+  // Получаем список игрушек из стора
+  const ownedToys = useAppSelector((state) => state.toy.ownedToys);
 
-// Основной компонент панели
-const CatToysPanel: React.FC = () => {
-  // Заглушки для обработчиков событий
-  const handleBall = () => console.log('Мячик');
-  const handleMouse = () => console.log('Мышка');
-  const handleFeather = () => console.log('Перо');
-  const handleLaser = () => console.log('Лазер');
+  const renderToy = ({ item }: { item: any }) => {
+    const IconComponent = iconMap[item.toy.img]; // Обновляем доступ к img через toy
+    return (
+      <View style={styles.toyItem}>
+        <IconComponent width={80} height={80} />
+        <Text style={styles.toyTitle}>{item.toy.name}</Text> {/* Обновляем name через toy */}
+      </View>
+    );
+  };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Игрушки кота</Text>
-      <View style={styles.buttonContainer}>
-        <ToyButton
-          title="Мячик"
-          imageSource={'https://catalog.detmir.st/media/YNyUvI1Udud2xLJeZneP13DdLUoUXXL1CJ_NExV7JKk=?preset=site_product_gallery_r1500'}
-          color="white"
-          onPress={handleBall}
+    <View style={styles.toysContainer}>
+      <Text style={styles.sectionTitle}>Мои игрушки</Text>
+      {ownedToys.length > 0 ? (
+        <FlatList
+          data={ownedToys}
+          renderItem={renderToy}
+          keyExtractor={(item) => item.toy.id.toString()} // Используем toy.id как ключ
+          horizontal
+          showsHorizontalScrollIndicator={false}
         />
-        <ToyButton
-          title="Мышка"
-          imageSource={'https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcRyoWktTL7tysGu88vF_Uife4PXOMsHt7Ma6EtdDUGZnoNOlwkYroUpHLJqFttxZ7kdiRMe_ghMSvgPkETbNiewdyIPiZq9dlwCbvQat_3LMb9RRoyngSZE'}
-          color="#white"
-          onPress={handleMouse}
-        />
-        {/* <ToyButton
-          title="Перо"
-          imageSource={}
-          color="#dc3545"
-          onPress={handleFeather}
-        />
-        <ToyButton
-          title="Лазер"
-          imageSource={}
-          color="#6f42c1"
-          onPress={handleLaser}
-        />  */}
-      </View>
+      ) : (
+        <Text style={styles.emptyText}>У вас нет игрушек</Text>
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
-    padding: 12,
-    borderRadius: 10,
-    width: '80%',
-    marginTop: 15,
-    alignItems: 'center',
+  toysContainer: {
+    marginTop: 30,
+    padding: 10,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 12,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  toyItem: {
+    backgroundColor: '#fff',
+    padding: 10,
+    borderRadius: 8,
+    marginRight: 20,
+    width: 120, // Ширина карточки
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 3,
-    elevation: 3,
-  },
-  title: {
-    fontSize: 16,
-    color: '#fff',
-    fontWeight: '700',
-    marginBottom: 8,
-  },
-  buttonContainer: {
-    width: '100%',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3, // Для Android тень
     alignItems: 'center',
   },
-  button: {
-    width: 80,
-    height: 80,
-    borderRadius: 8,
-    marginBottom: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.5,
-    elevation: 2,
+  toyTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginTop: 8,
   },
-  buttonPressed: {
-    transform: [{ scale: 0.95 }],
-  },
-  buttonContent: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  image: {
-    width: 40,
-    height: 40,
-    marginBottom: 4,
-  },
-  buttonText: {
-    fontSize: 12,
-    color: '#fff',
-    fontWeight: '600',
+  emptyText: {
     textAlign: 'center',
+    color: '#999',
+    fontSize: 14,
   },
 });
 
-export default CatToysPanel;
+export default ToysPanelWidget;

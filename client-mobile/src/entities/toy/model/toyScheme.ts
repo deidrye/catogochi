@@ -33,6 +33,12 @@ export const ToyEventSchema = z.object({
   toyId: z.number(),
 });
 
+
 export const ToyEventCreateSchema = ToyEventSchema.omit({
   id: true,
+});
+
+export const ToyEventWithToySchema = z.object({
+  event: ToyEventSchema,
+  toy: toySchema,
 });
