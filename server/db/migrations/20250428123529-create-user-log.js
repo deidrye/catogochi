@@ -3,32 +3,37 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Achievements', {
+    await queryInterface.createTable('UserLogs', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      name: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      description: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      reward: {
+      userId: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        references: { model: 'Users', key: 'id' },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
       },
       type: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
       },
-      countCondition: {
+      eventId: {
         type: Sequelize.INTEGER,
         allowNull: true,
+        references: { model: 'Events', key: 'id' },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+      },
+      toyId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: { model: 'Toys', key: 'id' },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
       },
       createdAt: {
         allowNull: false,
@@ -41,6 +46,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Achievements');
+    await queryInterface.dropTable('UserLogs');
   },
 };

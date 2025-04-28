@@ -17,6 +17,8 @@ module.exports = (sequelize, DataTypes) => {
       name: DataTypes.STRING,
       description: DataTypes.STRING,
       reward: DataTypes.INTEGER,
+      type: DataTypes.STRING,
+      countCondition: DataTypes.INTEGER,
     },
     {
       sequelize,

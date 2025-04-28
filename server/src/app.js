@@ -11,6 +11,7 @@ const userRouter = require('./routes/userRouter');
 const tokensRouter = require('./routes/tokensRouter');
 const authRouter = require('./routes/authRouter');
 const achievementRouter = require('./routes/achievementRouter');
+const userLogRouter = require('./routes/userLogRouter');
 
 // Middleware setup
 app.use(morgan('dev')); // Первым (для логов)
@@ -28,5 +29,6 @@ app.use('/api/toys', toyRouter);
 app.use('/api/events', eventRouter);
 app.use('/api/users', userRouter);
 app.use('/api/achievements', achievementRouter);
+app.use('/api/logs', userLogRouter);
 
 module.exports = app;
