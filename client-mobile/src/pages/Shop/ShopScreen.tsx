@@ -1,9 +1,11 @@
-import React from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { RootStackParamList } from '@/app/types/navigation';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useAppDispatch, useAppSelector } from '@/app/store';
+import { buyToy, fetchOwnedToys, fetchShopToys } from '@/entities/toy/model/toyThunks';
 
-// SVG импорты
+// SVG импорты (предполагается, что они такие же, как в ToysPanelWidget)
 import BallIcon from '@/assets/toys/ball.svg';
 import TreeIcon from '@/assets/toys/christmas-tree.svg';
 import ClewIcon from '@/assets/toys/clew.svg';
@@ -16,12 +18,6 @@ import NewspaperIcon from '@/assets/toys/newspaper.svg';
 import OctopusIcon from '@/assets/toys/octopus.svg';
 import RexIcon from '@/assets/toys/rex.svg';
 import PostIcon from '@/assets/toys/scratching-post.svg';
-
-type ShopScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Shop'>;
-
-interface ShopScreenProps {
-  navigation: ShopScreenNavigationProp;
-}
 
 const iconMap: Record<string, React.FC<any>> = {
   'ball.svg': BallIcon,
@@ -38,43 +34,114 @@ const iconMap: Record<string, React.FC<any>> = {
   'scratching-post.svg': PostIcon,
 };
 
+type ShopScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Shop'>;
 
-// Вместо моковых данных потом получим данные из БД 
-const toys = [
-  { id: 1, name: 'Мячик', price: 35, effect: { hp: -10 }, img: 'ball.svg' },
-  { id: 2, name: 'Елка', price: 15, effect: { energy: 10 }, img: 'christmas-tree.svg' },
-  { id: 3, name: 'Клубок', price: 35, effect: { hp: -10 }, img: 'clew.svg' },
-  { id: 4, name: 'Перо', price: 30, effect: { energy: -10 }, img: 'feather.svg' },
-  { id: 5, name: 'Удочка', price: 15, effect: { energy: 10 }, img: 'fish-rod.svg' },
-  { id: 6, name: 'Рыбка', price: 20, effect: { affection: 10 }, img: 'fish.svg' },
-  { id: 7, name: 'Лазер', price: 25, effect: { boldness: 10 }, img: 'laser-pen.svg' },
-  { id: 8, name: 'Мышка', price: 10, effect: { hp: 5 }, img: 'mouse.svg' },
-  { id: 9, name: 'Газета', price: 15, effect: { energy: 10 }, img: 'newspaper.svg' },
-  { id: 10, name: 'Осьминог', price: 20, effect: { affection: 10 }, img: 'octopus.svg' },
-  { id: 11, name: 'Динозавр', price: 25, effect: { boldness: 10 }, img: 'rex.svg' },
-  { id: 12, name: 'Когтеточка', price: 30, effect: { energy: -10 }, img: 'scratching-post.svg' },
-];
+interface ShopScreenProps {
+  navigation: ShopScreenNavigationProp;
+}
 
 export const ShopScreen: React.FC<ShopScreenProps> = () => {
-  const renderToy = ({ item }: { item: (typeof toys)[number] }) => {
+  const dispatch = useAppDispatch();
+  const ownedToys = useAppSelector((state) => state.toy.ownedToys);
+  const shopToys = useAppSelector((state) => state.toy.shopToys);
+  const isLoading = useAppSelector((state) => state.toy.isLoading);
+  const catId = 1; // Замените на актуальное значение
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [optimisticToys, setOptimisticToys] = useState<number[]>([]); // Локальное состояние для оптимистичных toyId
+  const [isBuying, setIsBuying] = useState<Record<number, boolean>>({}); // Состояние для блокировки кнопок
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setInitialLoading(true);
+        await Promise.all([
+          dispatch(fetchOwnedToys(catId)).unwrap(),
+          dispatch(fetchShopToys(catId)).unwrap(),
+        ]);
+      } catch (error) {
+        console.error('Ошибка при загрузке данных:', error);
+      } finally {
+        setInitialLoading(false);
+      }
+    };
+    loadData();
+  }, [dispatch, catId]);
+
+  const handleBuyToy = async (toyId: number) => {
+    if (isNaN(toyId) || isNaN(catId)) {
+      console.error('Некорректный toyId или catId:', { toyId, catId });
+      return;
+    }
+
+    // Оптимистично обновляем UI
+    setOptimisticToys((prev) => [...prev, toyId]);
+    setIsBuying((prev) => ({ ...prev, [toyId]: true }));
+
+    try {
+      console.log('Покупка игрушки:', { catId, toyId });
+      const toyEvent = await dispatch(buyToy({ catId, toyId })).unwrap();
+      console.log('Ответ после покупки игрушки:', toyEvent);
+
+      // Обновляем ownedToys по ответу сервера
+      await dispatch(fetchOwnedToys(catId)).unwrap();
+    } catch (error) {
+      console.error('Ошибка при покупке игрушки:', error);
+      // Откатываем оптимистичное обновление при ошибке
+      setOptimisticToys((prev) => prev.filter((id) => id !== toyId));
+    } finally {
+      // Снимаем блокировку кнопки
+      setIsBuying((prev) => ({ ...prev, [toyId]: false }));
+    }
+  };
+
+  useEffect(() => {
+    console.log('Состояние ownedToys:', ownedToys);
+  }, [ownedToys]);
+
+  const isToyBought = (toyId: number) => {
+    // Проверяем как ownedToys, так и оптимистичные toyId
+    return (
+      ownedToys.some((item) => item.toyId === toyId) ||
+      optimisticToys.includes(toyId)
+    );
+  };
+
+  const renderToy = ({ item }: { item: (typeof shopToys)[number] }) => {
     const IconComponent = iconMap[item.img];
+    const bought = isToyBought(item.id);
+    const buying = isBuying[item.id] || false;
+
     return (
       <View style={styles.card}>
         <IconComponent width={100} height={100} />
         <Text style={styles.name}>{item.name}</Text>
         <Text style={styles.price}>{item.price} монет</Text>
-        <TouchableOpacity style={styles.buyButton}>
-          <Text style={styles.buyText}>Купить</Text>
+        <TouchableOpacity
+          style={[styles.buyButton, bought && styles.disabledButton]}
+          onPress={() => !bought && !buying && handleBuyToy(item.id)}
+          disabled={bought || buying}
+        >
+          <Text style={styles.buyText}>
+            {buying ? 'Покупка...' : bought ? 'Уже куплено' : 'Купить'}
+          </Text>
         </TouchableOpacity>
       </View>
     );
   };
 
+  if (initialLoading || isLoading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#FF8C00" />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Магазин игрушек</Text>
       <FlatList
-        data={toys}
+        data={shopToys}
         renderItem={renderToy}
         keyExtractor={(item) => item.id.toString()}
         numColumns={2}
@@ -88,14 +155,12 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 60,
-    paddingHorizontal: 16,
-    backgroundColor: '#F5F5F5',
+    padding: 20,
   },
   title: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 16,
+    marginBottom: 20,
     textAlign: 'center',
   },
   list: {
@@ -103,35 +168,42 @@ const styles = StyleSheet.create({
   },
   row: {
     justifyContent: 'space-between',
-    marginBottom: 20,
   },
   card: {
     backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 16,
-    alignItems: 'center',
+    borderRadius: 12,
+    padding: 10,
+    marginBottom: 10,
     width: '48%',
-    elevation: 2,
-    objectFit: 'contain',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   name: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginVertical: 8,
+    marginVertical: 5,
   },
   price: {
     fontSize: 14,
-    color: '#888',
+    color: '#666',
+    marginBottom: 10,
   },
   buyButton: {
-    marginTop: 10,
     backgroundColor: '#FF8C00',
-    paddingVertical: 6,
+    paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 12,
   },
+  disabledButton: {
+    backgroundColor: '#ccc',
+  },
   buyText: {
     color: '#fff',
+    fontSize: 14,
     fontWeight: 'bold',
   },
 });

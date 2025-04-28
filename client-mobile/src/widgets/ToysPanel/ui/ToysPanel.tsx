@@ -1,129 +1,191 @@
-import React from 'react';
-import { View, Text, Pressable, StyleSheet, Image } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
+import Toast from 'react-native-toast-message';
+import Animated, { FadeInUp } from 'react-native-reanimated';
+import { useAppDispatch, useAppSelector } from '@/app/store';
+import { fetchOwnedToys } from '@/entities/toy/model/toyThunks';
 
-// Тип для пропсов кнопки игрушки
-type ToyButtonProps = {
-  title: string;
-  imageSource: any; // Тип для require()
-  color: string;
-  onPress: () => void;
+// SVG импорты
+import BallIcon from '@/assets/toys/ball.svg';
+import TreeIcon from '@/assets/toys/christmas-tree.svg';
+import ClewIcon from '@/assets/toys/clew.svg';
+import FeatherIcon from '@/assets/toys/feather.svg';
+import RodIcon from '@/assets/toys/fish-rod.svg';
+import FishIcon from '@/assets/toys/fish.svg';
+import LaserIcon from '@/assets/toys/laser-pen.svg';
+import MouseIcon from '@/assets/toys/mouse.svg';
+import NewspaperIcon from '@/assets/toys/newspaper.svg';
+import OctopusIcon from '@/assets/toys/octopus.svg';
+import RexIcon from '@/assets/toys/rex.svg';
+import PostIcon from '@/assets/toys/scratching-post.svg';
+import { OwnedToyType } from '@/entities/toy/model/toyType';
+
+const iconMap: Record<string, React.FC<any>> = {
+  'ball.svg': BallIcon,
+  'christmas-tree.svg': TreeIcon,
+  'clew.svg': ClewIcon,
+  'feather.svg': FeatherIcon,
+  'fish-rod.svg': RodIcon,
+  'fish.svg': FishIcon,
+  'laser-pen.svg': LaserIcon,
+  'mouse.svg': MouseIcon,
+  'newspaper.svg': NewspaperIcon,
+  'octopus.svg': OctopusIcon,
+  'rex.svg': RexIcon,
+  'scratching-post.svg': PostIcon,
 };
 
-// Компонент кнопки игрушки
-const ToyButton: React.FC<ToyButtonProps> = ({ title, imageSource, color, onPress }) => (
-  <Pressable
-    style={({ pressed }) => [
-      styles.button,
-      { backgroundColor: color },
-      pressed ? styles.buttonPressed : {},
-    ]}
-    onPress={onPress}
-    accessibilityLabel={`Игрушка ${title}`}
-  >
-    <View style={styles.buttonContent}>
-      <Image source={imageSource} style={styles.image} />
-      <Text style={styles.buttonText}>{title}</Text>
-    </View>
-  </Pressable>
-);
+// Кастомный анимированный тост
+const AnimatedToast = ({ text }: { text: string }) => {
+  return (
+    <Animated.View
+      entering={FadeInUp.duration(500)}
+      style={styles.toastContainer}
+    >
+      <Text style={styles.toastText}>{text}</Text>
+    </Animated.View>
+  );
+};
 
-// Основной компонент панели
-const CatToysPanel: React.FC = () => {
-  // Заглушки для обработчиков событий
-  const handleBall = () => console.log('Мячик');
-  const handleMouse = () => console.log('Мышка');
-  const handleFeather = () => console.log('Перо');
-  const handleLaser = () => console.log('Лазер');
+const ToysPanelWidget: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const ownedToys = useAppSelector((state) => state.toy.ownedToys);
+  const isLoading = useAppSelector((state) => state.toy.isLoading);
+  const catId = 1; // Пока захардкожено
+
+  useEffect(() => {
+    dispatch(fetchOwnedToys(catId));
+  }, [dispatch, catId]);
+
+  const handleToyPress = (event: OwnedToyType) => {
+    const description = event.description || 'Описание отсутствует';
+    Toast.show({
+      type: 'success',
+      text1: description,
+      position: 'top',
+      visibilityTime: 4000,
+      autoHide: true,
+      topOffset: 60,
+    });
+  };
+
+  const renderToy = ({ item }: { item: typeof ownedToys[number] }) => {
+    const IconComponent = iconMap[item.toys.img];
+    return (
+      <View style={styles.toyItem}>
+        <TouchableOpacity
+          style={styles.toyContent}
+          onPress={() => handleToyPress(item)}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          {IconComponent ? <IconComponent width={50} height={50} /> : <View style={styles.placeholderIcon} />}
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  if (isLoading) {
+    return (
+      <View style={styles.toysContainer}>
+        <Text style={styles.sectionTitle}>Мои игрушки</Text>
+        <ActivityIndicator size="large" color="#FF8C00" />
+      </View>
+    );
+  }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Игрушки кота</Text>
-      <View style={styles.buttonContainer}>
-        <ToyButton
-          title="Мячик"
-          imageSource={'https://catalog.detmir.st/media/YNyUvI1Udud2xLJeZneP13DdLUoUXXL1CJ_NExV7JKk=?preset=site_product_gallery_r1500'}
-          color="white"
-          onPress={handleBall}
+    <View style={styles.toysContainer}>
+      <Text style={styles.sectionTitle}>Мои игрушки</Text>
+      {ownedToys.length > 0 ? (
+        <FlatList
+          data={ownedToys}
+          renderItem={renderToy}
+          keyExtractor={(item) => item.id.toString()}
+          showsVerticalScrollIndicator={false}
+          style={styles.flatList}
+          nestedScrollEnabled
         />
-        <ToyButton
-          title="Мышка"
-          imageSource={'https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcRyoWktTL7tysGu88vF_Uife4PXOMsHt7Ma6EtdDUGZnoNOlwkYroUpHLJqFttxZ7kdiRMe_ghMSvgPkETbNiewdyIPiZq9dlwCbvQat_3LMb9RRoyngSZE'}
-          color="#white"
-          onPress={handleMouse}
-        />
-        {/* <ToyButton
-          title="Перо"
-          imageSource={}
-          color="#dc3545"
-          onPress={handleFeather}
-        />
-        <ToyButton
-          title="Лазер"
-          imageSource={}
-          color="#6f42c1"
-          onPress={handleLaser}
-        />  */}
-      </View>
+      ) : (
+        <Text style={styles.emptyText}>У вас нет игрушек</Text>
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
-    padding: 12,
-    borderRadius: 10,
-    width: '80%',
-    marginTop: 15,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 3,
-    elevation: 3,
+  toysContainer: {
+    marginTop: 20,
+    padding: 8,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 12,
+    maxHeight: 280,
+    width: 100,
+    alignSelf: 'center',
   },
-  title: {
+  sectionTitle: {
     fontSize: 16,
-    color: '#fff',
-    fontWeight: '700',
+    fontWeight: 'bold',
     marginBottom: 8,
+    textAlign: 'center',
   },
-  buttonContainer: {
-    width: '100%',
+  flatList: {
+    flexGrow: 0,
+  },
+  toyItem: {
+    flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
-  },
-  button: {
-    width: 80,
-    height: 80,
+    backgroundColor: '#fff',
+    padding: 8,
     borderRadius: 8,
     marginBottom: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.5,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  buttonPressed: {
-    transform: [{ scale: 0.95 }],
-  },
-  buttonContent: {
-    flexDirection: 'column',
+  toyContent: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    padding: 4,
   },
-  image: {
-    width: 40,
-    height: 40,
-    marginBottom: 4,
+  placeholderIcon: {
+    width: 50,
+    height: 50,
+    backgroundColor: '#ddd',
+    borderRadius: 8,
   },
-  buttonText: {
-    fontSize: 12,
+  deleteButton: {
+    backgroundColor: '#FF4444',
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 6,
+  },
+  deleteText: {
     color: '#fff',
-    fontWeight: '600',
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  emptyText: {
+    textAlign: 'center',
+    color: '#999',
+    fontSize: 12,
+  },
+  toastContainer: {
+    backgroundColor: '#FF8C00',
+    padding: 16,
+    borderRadius: 12,
+    marginHorizontal: 20,
+    marginTop: 20,
+  },
+  toastText: {
+    color: 'black',
+    fontSize: 14,
+    fontWeight: 'bold',
+    lineHeight: 20,
     textAlign: 'center',
   },
 });
 
-export default CatToysPanel;
+export default ToysPanelWidget;
