@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
 import { RootStackParamList } from '@/app/types/navigation';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAppDispatch, useAppSelector } from '@/app/store';
@@ -78,9 +85,9 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
     setIsBuying((prev) => ({ ...prev, [toyId]: true }));
 
     try {
-      console.log('Покупка игрушки:', { catId, toyId });
+      // console.log('Покупка игрушки:', { catId, toyId });
       const toyEvent = await dispatch(buyToy({ catId, toyId })).unwrap();
-      console.log('Ответ после покупки игрушки:', toyEvent);
+      // console.log('Ответ после покупки игрушки:', toyEvent);
 
       // Обновляем ownedToys по ответу сервера
       await dispatch(fetchOwnedToys(catId)).unwrap();
@@ -94,16 +101,9 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
     }
   };
 
-  useEffect(() => {
-    console.log('Состояние ownedToys:', ownedToys);
-  }, [ownedToys]);
-
   const isToyBought = (toyId: number) => {
     // Проверяем как ownedToys, так и оптимистичные toyId
-    return (
-      ownedToys.some((item) => item.toyId === toyId) ||
-      optimisticToys.includes(toyId)
-    );
+    return ownedToys.some((item) => item.toyId === toyId) || optimisticToys.includes(toyId);
   };
 
   const renderToy = ({ item }: { item: (typeof shopToys)[number] }) => {
@@ -132,7 +132,7 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
   if (initialLoading || isLoading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="large" color="#FF8C00" />
+        <ActivityIndicator size='large' color='#FF8C00' />
       </View>
     );
   }

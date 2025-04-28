@@ -5,11 +5,11 @@ import { CLIENT_IP } from '@env';
 // Определяем базовый URL
 const baseUrl = Platform.select({
   web: 'http://localhost:3000', // Браузер (Expo Web)
-  android: 'http://10.0.2.2:3000', // Эмулятор Android
+  android: `http://${CLIENT_IP}:3000`, // Эмулятор Android
   default: `http://${CLIENT_IP}:3000`, // Реальное устройство
 });
 
-console.log('[Axios] Base URL:', baseUrl); // Логируем базовый URL
+// console.log('[Axios] Base URL:', baseUrl); // Логируем базовый URL
 
 const axiosInstance = axios.create({
   baseURL: `${baseUrl}/api`,
@@ -22,18 +22,18 @@ const axiosInstance = axios.create({
 
 // Логирование каждого запроса
 axiosInstance.interceptors.request.use((config) => {
-  console.log(`[Axios Request] ${config.method?.toUpperCase()} ${config.url}`, config.data || '');
+  // console.log(`[Axios Request] ${config.method?.toUpperCase()} ${config.url}`, config.data || '');
   return config;
 });
 
 // Логирование каждого ответа
 axiosInstance.interceptors.response.use(
   (response) => {
-    console.log(`[Axios Response] ${response.status} ${response.config.url}`, response.data);
+    // console.log(`[Axios Response] ${response.status} ${response.config.url}`, response.data);
     return response;
   },
   (error) => {
-    console.log('[Axios Error]', error.message, error.config?.url || '');
+    console.error('[Axios Error]', error.message, error.config?.url || '');
     return Promise.reject(error);
   },
 );
