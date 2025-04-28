@@ -115,7 +115,7 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
       <View style={styles.card}>
         <IconComponent width={100} height={100} />
         <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.price}>{item.price} монет</Text>
+        <Text style={styles.price}>{item.price} рыбок</Text>
         <TouchableOpacity
           style={[styles.buyButton, bought && styles.disabledButton]}
           onPress={() => !bought && !buying && handleBuyToy(item.id)}
