@@ -12,6 +12,7 @@ import Toast from 'react-native-toast-message';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import { useAppDispatch, useAppSelector } from '@/app/store';
 import { fetchOwnedToys } from '@/entities/toy/model/toyThunks';
+import { fetchCat, updateCat } from '@/entities/cat/model/thunks';
 
 // SVG импорты
 import BallIcon from '@/assets/toys/ball.svg';
@@ -27,6 +28,8 @@ import OctopusIcon from '@/assets/toys/octopus.svg';
 import RexIcon from '@/assets/toys/rex.svg';
 import PostIcon from '@/assets/toys/scratching-post.svg';
 import { OwnedToyType } from '@/entities/toy/model/toyType';
+import { CatT } from '@/entities/cat/model/types';
+import { toySchema } from '@/entities/toy/model/toyScheme';
 
 const iconMap: Record<string, React.FC<any>> = {
   'ball.svg': BallIcon,
@@ -52,21 +55,44 @@ const AnimatedToast = ({ text }: { text: string }) => {
   );
 };
 
-const ToysPanelWidget: React.FC = () => {
+const ToysPanelWidget: React.FC<{ cat: CatT | null }> = ({ cat }) => {
   const dispatch = useAppDispatch();
   const ownedToys = useAppSelector((state) => state.toy.ownedToys);
   const isLoading = useAppSelector((state) => state.toy.isLoading);
-  const catId = 1; // Пока захардкожено
+  const catId = cat?.id;
 
   useEffect(() => {
-    dispatch(fetchOwnedToys(catId));
+    if (catId) {
+      dispatch(fetchOwnedToys(catId));
+    }
   }, [dispatch, catId]);
 
   const handleToyPress = (event: OwnedToyType) => {
-    const description = event.description || 'Описание отсутствует';
+    if (!cat || !catId) {
+      return;
+    }
+
+    const effect = event.Toy.effect as Record<keyof typeof cat, number>;
+    const updatedStats = Object.entries(effect).reduce((acc, [key, value]) => {
+      if (typeof cat[key as keyof typeof cat] === 'number') {
+        return {
+          ...acc,
+          [key]: Math.max(0, Math.min(100, (cat[key as keyof typeof cat] as number) + value)),
+        };
+      }
+      return acc;
+    }, {});
+
+    const updatedCat = {
+      ...cat,
+      ...updatedStats,
+    };
+
+    dispatch(updateCat(updatedCat));
+
     Toast.show({
       type: 'success',
-      text1: description,
+      text1: event.description || 'Описание отсутствует',
       position: 'top',
       visibilityTime: 4000,
       autoHide: true,
@@ -106,14 +132,14 @@ const ToysPanelWidget: React.FC = () => {
     <View style={styles.toysContainer}>
       <Text style={styles.sectionTitle}>Мои игрушки</Text>
       {ownedToys.length > 0 ? (
-          <FlatList
-            data={ownedToys}
-            renderItem={renderToy}
-            keyExtractor={(item) => item.id.toString()}
-            showsVerticalScrollIndicator={false}
-            style={styles.flatList}
-            nestedScrollEnabled
-          />
+        <FlatList
+          data={ownedToys}
+          renderItem={renderToy}
+          keyExtractor={(item) => item.id.toString()}
+          showsVerticalScrollIndicator={false}
+          style={styles.flatList}
+          nestedScrollEnabled
+        />
       ) : (
         <Text style={styles.emptyText}>У вас нет игрушек</Text>
       )}

@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { createCat, fetchCat, fetchPresets, updateCat } from './thunks';
-import { CatSliceT, CatPresetT } from './types';
+import { CatT, CatSliceT, CatPresetT } from './types';
 
 const initialState: CatSliceT = {
   presets: [],
@@ -25,6 +25,9 @@ const catSlice = createSlice({
     },
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
+    },
+    setCat: (state, action: PayloadAction<CatT | null>) => {
+      state.cat = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -79,5 +82,6 @@ const catSlice = createSlice({
   },
 });
 
-export const { setPresets, setSelectedPresetIndex, setLoading, setError } = catSlice.actions;
+export const { setPresets, setSelectedPresetIndex, setLoading, setError, setCat } =
+  catSlice.actions;
 export default catSlice.reducer;
