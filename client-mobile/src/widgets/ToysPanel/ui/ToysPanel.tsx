@@ -33,6 +33,7 @@ import { toySchema } from '@/entities/toy/model/toyScheme';
 import { AchieveT } from '@/entities/achievements/model/types';
 import { pushUserAchieve } from '@/entities/achievements/model/slice';
 import { setLogsAndGetAchieves } from '@/features/logs-feature/model/checkLog';
+import { setPoints } from '@/entities/user/model/userSlice';
 
 const iconMap: Record<string, React.FC<any>> = {
   'ball.svg': BallIcon,
@@ -110,9 +111,11 @@ const ToysPanelWidget: React.FC<ToysPanelProps> = ({ cat, onPlay }) => {
     });
 
     const setAchieveCallback = (achieve: AchieveT) => void dispatch(pushUserAchieve(achieve));
+    const setPointsCallback = (points: number) => void dispatch(setPoints(points));
     await setLogsAndGetAchieves(
       { userId: user!.user.id, type: 'ToyGame', toyId: event.Toy.id },
       setAchieveCallback,
+      setPointsCallback,
     );
   };
 
