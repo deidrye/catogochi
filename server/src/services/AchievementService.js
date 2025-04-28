@@ -51,7 +51,8 @@ class AchievementService {
       .select('*, achievements(*)')
       .eq('userId', userId);
     if (error) throw error;
-    return data;
+    const mappedList = data.map((achievement) => achievement.achievements);
+    return mappedList;
   }
 
   static async assignAchievementToUser(userId, achievementId) {
