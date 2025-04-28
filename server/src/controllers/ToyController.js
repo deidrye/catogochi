@@ -71,7 +71,7 @@ class ToyController {
       console.error('Error in buyToy controller:', error);
 
       if (error.message === 'Недостаточно рыбок для покупки игрушки') {
-        return res.status(403).json({ message: error.message });
+        return res.status(400).json({ message: error.message });
       }
 
       if (

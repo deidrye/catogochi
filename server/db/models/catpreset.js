@@ -15,7 +15,11 @@ module.exports = (sequelize, DataTypes) => {
   CatPreset.init(
     {
       name: DataTypes.STRING,
-      img: DataTypes.TEXT,
+      imgMain: DataTypes.TEXT,
+      imgSleep: DataTypes.TEXT,
+      imgPlay: DataTypes.TEXT,
+      imgEat: DataTypes.TEXT,
+      imgWeasel: DataTypes.TEXT,
     },
     {
       sequelize,

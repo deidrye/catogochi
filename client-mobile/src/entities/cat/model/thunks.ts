@@ -38,6 +38,9 @@ export const fetchCat = createAsyncThunk('cat/fetchCat', async (_, { dispatch })
   try {
     dispatch(setLoading(true));
     const cat = await CatService.getCat();
+    if (!cat) {
+      throw new Error('Ошибка: Кот не найден');
+    }
     dispatch(setCat(cat));
     return cat;
   } catch (error) {
@@ -52,6 +55,9 @@ export const updateCat = createAsyncThunk('cat/updateCat', async (cat: CatT, { d
   try {
     dispatch(setLoading(true));
     const updatedCat = await CatService.updateCat(cat);
+    if (!updatedCat) {
+      throw new Error('Ошибка: Кот не обновился');
+    }
     dispatch(setCat(updatedCat));
     return updatedCat;
   } catch (error) {
