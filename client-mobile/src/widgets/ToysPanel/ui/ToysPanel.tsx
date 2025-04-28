@@ -1,5 +1,13 @@
 import React, { useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  ActivityIndicator,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
 import Toast from 'react-native-toast-message';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import { useAppDispatch, useAppSelector } from '@/app/store';
@@ -38,10 +46,7 @@ const iconMap: Record<string, React.FC<any>> = {
 // Кастомный анимированный тост
 const AnimatedToast = ({ text }: { text: string }) => {
   return (
-    <Animated.View
-      entering={FadeInUp.duration(500)}
-      style={styles.toastContainer}
-    >
+    <Animated.View entering={FadeInUp.duration(500)} style={styles.toastContainer}>
       <Text style={styles.toastText}>{text}</Text>
     </Animated.View>
   );
@@ -69,8 +74,8 @@ const ToysPanelWidget: React.FC = () => {
     });
   };
 
-  const renderToy = ({ item }: { item: typeof ownedToys[number] }) => {
-    const IconComponent = iconMap[item.toys.img];
+  const renderToy = ({ item }: { item: (typeof ownedToys)[number] }) => {
+    const IconComponent = iconMap[item.Toy.img];
     return (
       <View style={styles.toyItem}>
         <TouchableOpacity
@@ -78,7 +83,11 @@ const ToysPanelWidget: React.FC = () => {
           onPress={() => handleToyPress(item)}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          {IconComponent ? <IconComponent width={50} height={50} /> : <View style={styles.placeholderIcon} />}
+          {IconComponent ? (
+            <IconComponent width={50} height={50} />
+          ) : (
+            <View style={styles.placeholderIcon} />
+          )}
         </TouchableOpacity>
       </View>
     );
@@ -88,7 +97,7 @@ const ToysPanelWidget: React.FC = () => {
     return (
       <View style={styles.toysContainer}>
         <Text style={styles.sectionTitle}>Мои игрушки</Text>
-        <ActivityIndicator size="large" color="#FF8C00" />
+        <ActivityIndicator size='large' color='#FF8C00' />
       </View>
     );
   }
@@ -97,14 +106,14 @@ const ToysPanelWidget: React.FC = () => {
     <View style={styles.toysContainer}>
       <Text style={styles.sectionTitle}>Мои игрушки</Text>
       {ownedToys.length > 0 ? (
-        <FlatList
-          data={ownedToys}
-          renderItem={renderToy}
-          keyExtractor={(item) => item.id.toString()}
-          showsVerticalScrollIndicator={false}
-          style={styles.flatList}
-          nestedScrollEnabled
-        />
+          <FlatList
+            data={ownedToys}
+            renderItem={renderToy}
+            keyExtractor={(item) => item.id.toString()}
+            showsVerticalScrollIndicator={false}
+            style={styles.flatList}
+            nestedScrollEnabled
+          />
       ) : (
         <Text style={styles.emptyText}>У вас нет игрушек</Text>
       )}

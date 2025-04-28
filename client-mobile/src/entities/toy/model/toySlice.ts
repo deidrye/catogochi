@@ -97,7 +97,7 @@ export const toySlice = createSlice({
       state.isLoading = false;
 
       const existingToyIndex = state.ownedToys.findIndex(
-        (item) => item.toys.id === action.payload.id,
+        (item) => item.Toy.id === action.payload.id,
       );
 
       if (existingToyIndex >= 0) {

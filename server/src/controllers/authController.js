@@ -1,5 +1,5 @@
 const cookieConfig = require('../configs/cookieConfig');
-const authService = require('../services/authService');
+const authService = require('../services/AuthService');
 
 class AuthController {
   static async signUp(req, res) {

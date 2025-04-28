@@ -10,7 +10,7 @@ const baseUrl = Platform.select({
   default: `http://${CLIENT_IP}:3000`, // Реальное устройство
 });
 
-console.log('[Axios] Base URL:', baseUrl); // Логируем базовый URL
+// console.log('[Axios] Base URL:', baseUrl); // Логируем базовый URL
 
 const axiosInstance = axios.create({
   baseURL: `${baseUrl}/api`,
@@ -34,11 +34,11 @@ axiosInstance.interceptors.request.use(async (config) => {
 // Логирование каждого ответа
 axiosInstance.interceptors.response.use(
   (response) => {
-    console.log(`[Axios Response] ${response.status} ${response.config.url}`, response.data);
+    // console.log(`[Axios Response] ${response.status} ${response.config.url}`, response.data);
     return response;
   },
   (error) => {
-    console.log('[Axios Error]', error.message, error.config?.url || '');
+    console.error('[Axios Error]', error.message, error.config?.url || '');
     return Promise.reject(error);
   },
 );

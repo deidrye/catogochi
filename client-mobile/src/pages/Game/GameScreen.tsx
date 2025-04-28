@@ -20,13 +20,15 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
 
   return (
     <>
-      <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.cat}>Здесь будет котик</View>
+      {/* <ScrollView contentContainerStyle={styles.container}> */}
+        <View style={styles.cat}>
+          <Text>Здесь будет котик</Text>
+        </View>
         <TouchableOpacity style={styles.button} onPress={goToShop}>
           <Text style={styles.buttonText}>Перейти в магазин</Text>
         </TouchableOpacity>
         <ToysPanelWidget />
-      </ScrollView>
+      {/* </ScrollView> */}
       <Toast
         config={{
           success: (props) => <CustomToast {...props} />,

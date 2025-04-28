@@ -1,33 +1,34 @@
-const supabase = require('./supabaseClient');
+'use strict';
+
 const bcrypt = require('bcrypt');
+const {
+  User,
+  Toy,
+  CatPreset,
+  Cat,
+  Event,
+  Achievement,
+  UserAchievement,
+} = require('../models');
 
-async function clearAll() {
-  await supabase.from('events').delete().neq('id', 0);
-  await supabase.from('catPresets').delete().neq('id', 0);
-  await supabase.from('cats').delete().neq('id', 0);
-  await supabase.from('users').delete().neq('id', 0);
-  await supabase.from('toys').delete().neq('id', 0);
-  await supabase.from('achievements').delete().neq('id', 0);
-  await supabase.from('userAchievements').delete().neq('id', 0);
-}
-
-async function seed() {
-  const { data: users, error: userError } = await supabase
-    .from('users')
-    .insert([
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+  async up(queryInterface, Sequelize) {
+    /**
+     * Add seed commands here.
+     *
+     * Example:
+     * await queryInterface.bulkInsert('People', [{
+     *   name: 'John Doe',
+     *   isBetaMember: false
+     * }], {});
+     */
+    await User.bulkCreate([
       { name: 'Иван Иванов', email: '1@1', hashedPass: await bcrypt.hash('123', 10) },
       { name: 'Петр Петров', email: '2@2', hashedPass: await bcrypt.hash('123', 10) },
-    ])
-    .select();
+    ]);
 
-  if (userError) {
-    console.error('Ошибка при вставке пользователей:', userError);
-    return;
-  }
-
-  const { data: toys, error: toyError } = await supabase
-    .from('toys')
-    .insert([
+    await Toy.bulkCreate([
       {
         id: 1,
         name: 'Мячик',
@@ -112,90 +113,61 @@ async function seed() {
         effect: { energy: -10, angry: -10, hp: +5 },
         img: 'scratching-post.svg',
       },
-    ])
-    .select();
-  if (toyError) {
-    console.error('Ошибка при вставке игрушек:', toyError);
-    return;
-  }
+    ]);
 
-  const { data: catPresets, error: presetError } = await supabase
-    .from('catPresets')
-    .insert([
+    await CatPreset.bulkCreate([
       {
         name: 'Мурзик',
-        img: 'murzik.jpg',
+        img: 'https://img.freepik.com/free-vector/sweet-eyed-kitten-cartoon-character_1308-135596.jpg?t=st=1745839355~exp=1745842955~hmac=e1299feacdbc6a328ac4af40a7ac0fa258e0841709678b7385c94d1ad65037d5&w=740',
       },
       {
         name: 'Барсик',
-        img: 'barsik.jpg',
+        img: 'https://img.freepik.com/premium-vector/black-cat-anime-manga-style-drawing-funny-feline-cartoon-clipart-vector_691560-11531.jpg?w=740',
       },
-    ])
-    .select();
-  if (presetError) {
-    console.error('Ошибка при вставке шаблонов котов:', presetError);
-    return;
-  }
+    ]);
 
-  const { data: cats, error: catError } = await supabase
-    .from('cats')
-    .insert([
+    await Cat.bulkCreate([
       {
         name: 'Мурзик',
-        userId: users[0].id,
+        userId: 1,
         angry: 3,
         hp: 100,
         energy: 80,
         affection: 70,
         boldness: 50,
         level: 2,
-        catPresetId: catPresets[0].id,
+        catPresetId: 1,
       },
       {
         name: 'Барсик',
-        userId: users[1].id,
+        userId: 2,
         angry: 2,
         hp: 90,
         energy: 60,
         affection: 85,
         boldness: 40,
         level: 1,
-        catPresetId: catPresets[1].id,
+        catPresetId: 2,
       },
-    ])
-    .select();
-  if (catError) {
-    console.error('Ошибка при вставке котов:', catError);
-    return;
-  }
-
-  const { error: eventError } = await supabase
-    .from('events')
-    .insert([
+    ]);
+    await Event.bulkCreate([
       {
         title: 'Играл с хвостом',
         description: 'Кот поиграл со своим хвостом и стал счастливее',
         effect: { hp: 5 },
-        catId: cats[0].id,
-        toyId: toys[0].id,
+        catId: null,
+        toyId: null,
       },
       {
-        title: 'Порвал удочку',
-        description: 'Кот играл слишком активно',
+        title: 'Включился пылесос',
+        description: 'Кот слишком активно убегал',
         effect: { energy: -5 },
-        catId: cats[1].id,
-        toyId: toys[1].id,
+        catId: null,
+        toyId: null,
       },
-    ])
-    .select();
-  if (eventError) {
-    console.error('Ошибка при вставке событий:', eventError);
-    return;
-  }
+    ]);
 
-  const { data: achievements, error: achievementsError } = await supabase
-    .from('achievements')
-    .insert([
+    await Achievement.bulkCreate([
       {
         name: 'Новичок',
         description: 'Зарегистрировался в приложении',
@@ -216,41 +188,26 @@ async function seed() {
         description: 'Достиг 5 уровня с котом',
         reward: 50,
       },
-    ])
-    .select();
-  if (achievementsError) {
-    console.error('Ошибка при вставке достижений:', achievementsError);
-    return;
-  }
+    ]);
 
-  const { error: userAchievementsError } = await supabase
-    .from('userAchievements')
-    .insert([
+    await UserAchievement.bulkCreate([
       {
-        userId: users[0].id,
-        achievementId: achievements[0].id,
+        userId: 1,
+        achievementId: 1,
       },
-    ])
-    .select();
-  if (userAchievementsError) {
-    console.error(
-      'Ошибка при вставке пользовательских достижений:',
-      userAchievementsError,
-    );
-  }
-}
+      {
+        userId: 2,
+        achievementId: 2,
+      },
+    ]);
+  },
 
-async function main() {
-  const action = process.argv[2];
-  if (action === 'seed') {
-    await seed();
-    console.log('DB seeded!');
-  } else if (action === 'clear') {
-    await clearAll();
-    console.log('DB cleared!');
-  } else {
-    console.log('Use: node seed.js seed | clear');
-  }
-}
-
-main();
+  async down(queryInterface, Sequelize) {
+    /**
+     * Add commands to revert seed here.
+     *
+     * Example:
+     * await queryInterface.bulkDelete('People', null, {});
+     */
+  },
+};

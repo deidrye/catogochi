@@ -1,76 +1,56 @@
-const supabase = require('../../supabase/supabaseClient');
+const { Cat, CatPreset } = require('../../db/models');
 
 class CatService {
   static async getAll() {
-    const { data, error } = await supabase.from('cats').select(`
-        *,
-        preset:catPresets(*)
-      `);
-    if (error) throw error;
-    return data;
+    const cats = await Cat.findAll({
+      include: {
+        model: CatPreset,
+        as: 'preset',
+      },
+    });
+    return cats;
   }
 
   static async getById(id) {
-    const { data, error } = await supabase
-      .from('cats')
-      .select(
-        `
-        *,
-        preset:catPresets(*)
-      `,
-      )
-      .eq('id', id)
-      .single();
-    if (error) throw error;
-    return data;
+    const cat = await Cat.findByPk(id, {
+      include: {
+        model: CatPreset,
+        as: 'preset',
+      },
+    });
+    return cat;
   }
 
   static async getPresetById(presetId) {
-    const { data, error } = await supabase
-      .from('catPresets')
-      .select('*')
-      .eq('id', presetId)
-      .single();
-    if (error) throw error;
-    return data;
+    const preset = await CatPreset.findByPk(presetId);
+    return preset;
   }
 
   static async getAllPresets() {
-    const { data, error } = await supabase.from('catPresets').select('*');
-    if (error) throw error;
-    return data;
+    const presets = await CatPreset.findAll();
+    return presets;
   }
 
   static async create(cat) {
-    const { data: preset, error: presetError } = await supabase
-      .from('catPresets')
-      .select('*')
-      .eq('id', cat.catPresetId)
-      .single();
-
-    if (presetError || !preset) {
-      throw new Error('Пресет не найден');
+    const preset = await CatPreset.findByPk(cat.catPresetId);
+    if (!preset) {
+      throw new Error('Preset not found');
     }
-
-    const { data, error } = await supabase.from('cats').insert([cat]).select().single();
-    if (error) throw error;
-    return data;
+    const newCat = await Cat.create(cat);
+    return newCat;
   }
 
   static async update(id, fields) {
-    const { data, error } = await supabase
-      .from('cats')
-      .update(fields)
-      .eq('id', id)
-      .select()
-      .single();
-    if (error) throw error;
-    return data;
+    const cat = await Cat.findByPk(id);
+    if (!cat) throw new Error('Cat not found');
+    const updatedCat = await cat.update(fields);
+    return updatedCat;
   }
 
   static async delete(id) {
-    const { error } = await supabase.from('cats').delete().eq('id', id);
-    if (error) throw error;
+    const cat = await Cat.findByPk(id);
+    if (!cat) throw new Error('Cat not found');
+    await cat.destroy();
   }
 }
 
