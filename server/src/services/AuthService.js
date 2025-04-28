@@ -60,7 +60,7 @@ class AuthService {
     }
 
     const currentUser = await User.findByPk(user.id, {
-      attributes: ['id', 'name', 'email'],
+      attributes: ['id', 'name', 'email', 'points'],
     });
     if (!currentUser) {
       throw new Error('User not found');

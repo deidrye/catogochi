@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { CatT } from '@/entities/cat/model/types';
 
 // Тип для пропсов кнопки
 type ActionButtonProps = {
@@ -9,6 +10,11 @@ type ActionButtonProps = {
   color: string;
   onPress: () => void;
 };
+
+interface CatActionsWidgetProps {
+  cat: CatT | null;
+  onAction: (actionType: 'eat' | 'play' | 'weasel' | 'sleep') => void;
+}
 
 // Компонент кнопки действия
 const ActionButton: React.FC<ActionButtonProps> = ({ title, iconName, color, onPress }) => (
@@ -29,12 +35,26 @@ const ActionButton: React.FC<ActionButtonProps> = ({ title, iconName, color, onP
 );
 
 // Основной компонент виджета
-const CatActionsWidget: React.FC = () => {
-  // Заглушки для обработчиков событий
-  const handleFeed = () => console.log('Покормить');
-  const handlePlay = () => console.log('Поиграть');
-  const handlePet = () => console.log('Приласкать');
-  const handleSleep = () => console.log('Уложить спать');
+const CatActionsWidget: React.FC<CatActionsWidgetProps> = ({ cat, onAction }) => {
+  const handleFeed = () => {
+    if (!cat) return;
+    onAction('eat');
+  };
+
+  const handlePlay = () => {
+    if (!cat) return;
+    onAction('play');
+  };
+
+  const handlePet = () => {
+    if (!cat) return;
+    onAction('weasel');
+  };
+
+  const handleSleep = () => {
+    if (!cat) return;
+    onAction('sleep');
+  };
 
   return (
     <View style={styles.container}>

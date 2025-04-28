@@ -29,7 +29,7 @@ export class CatService {
   static async getCat() {
     try {
       const response = await axiosInstance.get(`/cats`);
-      return catSchema.parse(response.data);
+      return response.data;
     } catch (error) {
       console.error(error);
       throw new Error('getCat error');

@@ -67,10 +67,10 @@ class CatController {
         return res.status(401).json({ message: 'Пользователь не авторизован' });
       }
       const cat = await CatService.update(userId, req.body);
-      res.status(200).json(cat);
+      return res.status(200).json(cat);
     } catch (error) {
       console.error(error);
-      res.status(400).json({ message: 'Ошибка обновления кота' });
+      return res.status(400).json({ message: 'Ошибка обновления кота' });
     }
   }
 

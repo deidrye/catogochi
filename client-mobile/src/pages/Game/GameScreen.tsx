@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, SafeAreaView, Dimensions, Text, Image } from 'react-native';
 import { RootStackParamList } from '@/app/types/navigation';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -19,12 +19,49 @@ interface GameScreenProps {
 
 const { width, height } = Dimensions.get('window');
 
+type CatAction = 'eat' | 'play' | 'weasel' | 'sleep' | null;
+
 export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
   const dispatch = useAppDispatch();
   const cat = useAppSelector((state) => state.cat.cat);
+  const [currentAction, setCurrentAction] = useState<CatAction>(null);
+
   useEffect(() => {
     dispatch(fetchCat());
   }, [dispatch]);
+
+  const handlePlay = () => {
+    setCurrentAction('play');
+    setTimeout(() => {
+      setCurrentAction(null);
+    }, 3000);
+  };
+
+  const handleCatAction = (actionType: CatAction) => {
+    if (!actionType) return;
+
+    setCurrentAction(actionType);
+    setTimeout(() => {
+      setCurrentAction(null);
+    }, 3000);
+  };
+
+  const getActionImage = () => {
+    if (!cat?.CatPreset) return cat?.CatPreset?.imgMain || '';
+
+    switch (currentAction) {
+      case 'eat':
+        return cat.CatPreset.imgEat;
+      case 'play':
+        return cat.CatPreset.imgPlay;
+      case 'weasel':
+        return cat.CatPreset.imgWeasel;
+      case 'sleep':
+        return cat.CatPreset.imgSleep;
+      default:
+        return cat.CatPreset.imgMain;
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -33,15 +70,15 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
         <View style={styles.mainContent}>
           {/* Игрушки */}
           <Animated.View entering={FadeInUp.duration(500)} style={styles.toysContainer}>
-            <ToysPanelWidget cat={cat} />
+            <ToysPanelWidget cat={cat} onPlay={handlePlay} />
           </Animated.View>
 
           {/* Котик */}
           <Animated.View entering={FadeInUp.duration(600).delay(100)} style={styles.catContainer}>
             <View style={styles.cat}>
-              {cat?.CatPreset?.img ? (
+              {cat?.CatPreset ? (
                 <Image
-                  source={{ uri: cat.CatPreset.img }}
+                  source={{ uri: getActionImage() }}
                   style={styles.catImage}
                   resizeMode='contain'
                 />
@@ -60,7 +97,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
 
         {/* Действия */}
         <Animated.View entering={FadeInUp.duration(800).delay(300)} style={styles.actionsContainer}>
-          <CatActionsWidget />
+          <CatActionsWidget cat={cat} onAction={handleCatAction} />
         </Animated.View>
       </View>
 

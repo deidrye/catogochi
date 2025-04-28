@@ -13,7 +13,7 @@ export const CatPresetCard: React.FC<CatPresetCardProps> = ({ preset, isSelected
     <TouchableOpacity style={[styles.catCard, isSelected && styles.selectedCard]} onPress={onPress}>
       <Image
         source={{
-          uri: preset.img,
+          uri: preset.imgMain,
         }}
         style={styles.catImage}
       />

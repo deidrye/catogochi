@@ -3,7 +3,11 @@ import { z } from 'zod';
 export const catPresetSchema = z.object({
   id: z.number(),
   name: z.string(),
-  img: z.string(),
+  imgMain: z.string(),
+  imgSleep: z.string(),
+  imgPlay: z.string(),
+  imgEat: z.string(),
+  imgWeasel: z.string(),
 });
 
 export const catSchema = z.object({

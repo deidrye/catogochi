@@ -59,7 +59,7 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
   const shopToys = useAppSelector((state) => state.toy.shopToys);
   const isLoading = useAppSelector((state) => state.toy.isLoading);
 
-  const catId = 1; // замените по необходимости
+  const catId = useAppSelector((state) => state.cat.cat?.id); // замените по необходимости
 
   const [initialLoading, setInitialLoading] = useState(true);
 
@@ -77,8 +77,8 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
       try {
         setInitialLoading(true);
         await Promise.all([
-          dispatch(fetchOwnedToys(catId)).unwrap(),
-          dispatch(fetchShopToys(catId)).unwrap(),
+          dispatch(fetchOwnedToys(catId!)).unwrap(),
+          dispatch(fetchShopToys(catId!)).unwrap(),
           dispatch(fetchUserPoints(user?.user.id!)).unwrap(),
         ]);
       } catch (error) {
@@ -116,7 +116,7 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
   }, [user?.user.points]);
 
   const handleBuyToy = async (toyId: number) => {
-    if (isNaN(toyId) || isNaN(catId)) {
+    if (isNaN(toyId) || isNaN(catId!)) {
       console.error('Некорректный toyId или catId:', { toyId, catId });
       return;
     }
@@ -125,8 +125,8 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
     setIsBuying((prev) => ({ ...prev, [toyId]: true }));
 
     try {
-      await dispatch(buyToy({ catId, toyId })).unwrap();
-      await dispatch(fetchOwnedToys(catId)).unwrap();
+      await dispatch(buyToy({ catId: catId!, toyId })).unwrap();
+      await dispatch(fetchOwnedToys(catId!)).unwrap();
 
       const setAchieveCallback = (achieve: AchieveT) => void dispatch(pushUserAchieve(achieve));
       await setLogsAndGetAchieves(
