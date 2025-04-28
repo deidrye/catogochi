@@ -58,7 +58,12 @@ const AnimatedToast = ({ text }: { text: string }) => {
   );
 };
 
-const ToysPanelWidget: React.FC<{ cat: CatT | null }> = ({ cat }) => {
+interface ToysPanelProps {
+  cat: CatT | null;
+  onPlay: () => void;
+}
+
+const ToysPanelWidget: React.FC<ToysPanelProps> = ({ cat, onPlay }) => {
   const dispatch = useAppDispatch();
   const ownedToys = useAppSelector((state) => state.toy.ownedToys);
   const isLoading = useAppSelector((state) => state.toy.isLoading);
@@ -93,6 +98,7 @@ const ToysPanelWidget: React.FC<{ cat: CatT | null }> = ({ cat }) => {
     };
 
     dispatch(updateCat(updatedCat));
+    onPlay(); // Вызываем колбэк для анимации
 
     Toast.show({
       type: 'success',
@@ -102,6 +108,7 @@ const ToysPanelWidget: React.FC<{ cat: CatT | null }> = ({ cat }) => {
       autoHide: true,
       topOffset: 60,
     });
+
     const setAchieveCallback = (achieve: AchieveT) => void dispatch(pushUserAchieve(achieve));
     await setLogsAndGetAchieves(
       { userId: user!.user.id, type: 'ToyGame', toyId: event.Toy.id },

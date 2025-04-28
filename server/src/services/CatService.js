@@ -16,7 +16,7 @@ class CatService {
       where: { userId: id },
       include: {
         model: CatPreset,
-        attributes: ['id', 'name', 'img'],
+        attributes: ['id', 'name', 'imgMain', 'imgSleep', 'imgPlay', 'imgEat', 'imgWeasel'],
       },
     });
     if (!cat) throw new Error('Cat not found');
@@ -45,7 +45,15 @@ class CatService {
   static async update(id, fields) {
     const cat = await Cat.findOne({ where: { userId: id } });
     if (!cat) throw new Error('Cat not found');
-    const updatedCat = await cat.update(fields);
+    await cat.update(fields);
+    const updatedCat = await Cat.findOne({
+      where: { userId: id },
+      include: {
+        model: CatPreset,
+        attributes: ['id', 'name', 'imgMain', 'imgSleep', 'imgPlay', 'imgEat', 'imgWeasel'],
+      },
+    });
+
     return updatedCat;
   }
 

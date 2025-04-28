@@ -7,9 +7,9 @@ const router = express.Router();
 
 router
   .route('/')
+  .put(verifyAccessToken, CatController.update)
   .get(verifyAccessToken, CatController.getById)
-  .post(verifyAccessToken, CatController.create)
-  .put(verifyAccessToken, CatController.update);
+  .post(verifyAccessToken, CatController.create);
 
 router.get('/presets', verifyAccessToken, async (req, res) => {
   try {
@@ -21,8 +21,6 @@ router.get('/presets', verifyAccessToken, async (req, res) => {
   }
 });
 
-router
-  .route('/:id')
-  .delete(verifyAccessToken, CatController.delete);
+router.route('/:id').delete(verifyAccessToken, CatController.delete);
 
 module.exports = router;

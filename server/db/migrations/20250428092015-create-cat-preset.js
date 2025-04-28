@@ -14,7 +14,23 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      img: {
+      imgMain: {
+        type: Sequelize.TEXT,
+        allowNull: false,
+      },
+      imgSleep: {
+        type: Sequelize.TEXT,
+        allowNull: false,
+      },
+      imgPlay: {
+        type: Sequelize.TEXT,
+        allowNull: false,
+      },
+      imgEat: {
+        type: Sequelize.TEXT,
+        allowNull: false,
+      },
+      imgWeasel: {
         type: Sequelize.TEXT,
         allowNull: false,
       },

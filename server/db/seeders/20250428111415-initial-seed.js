@@ -118,11 +118,26 @@ module.exports = {
     await CatPreset.bulkCreate([
       {
         name: 'Мурзик',
-        img: 'https://img.freepik.com/free-vector/sweet-eyed-kitten-cartoon-character_1308-135596.jpg?t=st=1745839355~exp=1745842955~hmac=e1299feacdbc6a328ac4af40a7ac0fa258e0841709678b7385c94d1ad65037d5&w=740',
+        imgMain:
+          'https://img.freepik.com/free-vector/sweet-eyed-kitten-cartoon-character_1308-135596.jpg?t=st=1745839355~exp=1745842955~hmac=e1299feacdbc6a328ac4af40a7ac0fa258e0841709678b7385c94d1ad65037d5&w=740',
+        imgSleep:
+          'https://yac-wh-sb-prod-s3-media-07001.storage.yandexcloud.net/media/images/image_25.max-2880x1820.format-png_joUIUcI.png',
+        imgPlay:
+          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgKn_4N7PLQHZkRnMhI5bVgWZtYpunp2xK7Q&s',
+        imgEat: 'https://zoo-perm.ru/wp-content/uploads/2022/01/kot-est-myaso.jpg',
+        imgWeasel: 'https://news.itmo.ru/images/news/big/p8680.jpg',
       },
+
       {
         name: 'Барсик',
-        img: 'https://img.freepik.com/premium-vector/black-cat-anime-manga-style-drawing-funny-feline-cartoon-clipart-vector_691560-11531.jpg?w=740',
+        imgMain:
+          'https://img.freepik.com/premium-vector/black-cat-anime-manga-style-drawing-funny-feline-cartoon-clipart-vector_691560-11531.jpg?w=740',
+        imgSleep:
+          'https://yac-wh-sb-prod-s3-media-07001.storage.yandexcloud.net/media/images/image_25.max-2880x1820.format-png_joUIUcI.png',
+        imgPlay:
+          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgKn_4N7PLQHZkRnMhI5bVgWZtYpunp2xK7Q&s',
+        imgEat: 'https://zoo-perm.ru/wp-content/uploads/2022/01/kot-est-myaso.jpg',
+        imgWeasel: 'https://news.itmo.ru/images/news/big/p8680.jpg',
       },
     ]);
 
