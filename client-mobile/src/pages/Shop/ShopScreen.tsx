@@ -27,6 +27,7 @@ import NewspaperIcon from '@/assets/toys/newspaper.svg';
 import OctopusIcon from '@/assets/toys/octopus.svg';
 import RexIcon from '@/assets/toys/rex.svg';
 import PostIcon from '@/assets/toys/scratching-post.svg';
+import { fetchUserPoints } from '@/entities/user/model/userThunks';
 
 const iconMap: Record<string, React.FC<any>> = {
   'ball.svg': BallIcon,
@@ -73,6 +74,7 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
         await Promise.all([
           dispatch(fetchOwnedToys(catId)).unwrap(),
           dispatch(fetchShopToys(catId)).unwrap(),
+          dispatch(fetchUserPoints(user?.user.id!)).unwrap(),
         ]);
       } catch (error) {
         console.error('Ошибка при загрузке данных:', error);
