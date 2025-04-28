@@ -30,6 +30,9 @@ import PostIcon from '@/assets/toys/scratching-post.svg';
 import { OwnedToyType } from '@/entities/toy/model/toyType';
 import { CatT } from '@/entities/cat/model/types';
 import { toySchema } from '@/entities/toy/model/toyScheme';
+import { AchieveT } from '@/entities/achievements/model/types';
+import { pushUserAchieve } from '@/entities/achievements/model/slice';
+import { setLogsAndGetAchieves } from '@/features/logs-feature/model/checkLog';
 
 const iconMap: Record<string, React.FC<any>> = {
   'ball.svg': BallIcon,
@@ -60,6 +63,7 @@ const ToysPanelWidget: React.FC<{ cat: CatT | null }> = ({ cat }) => {
   const ownedToys = useAppSelector((state) => state.toy.ownedToys);
   const isLoading = useAppSelector((state) => state.toy.isLoading);
   const catId = cat?.id;
+  const user = useAppSelector((store) => store.auth.user);
 
   useEffect(() => {
     if (catId) {
@@ -67,7 +71,7 @@ const ToysPanelWidget: React.FC<{ cat: CatT | null }> = ({ cat }) => {
     }
   }, [dispatch, catId]);
 
-  const handleToyPress = (event: OwnedToyType) => {
+  const handleToyPress = async (event: OwnedToyType) => {
     if (!cat || !catId) {
       return;
     }
@@ -98,6 +102,11 @@ const ToysPanelWidget: React.FC<{ cat: CatT | null }> = ({ cat }) => {
       autoHide: true,
       topOffset: 60,
     });
+    const setAchieveCallback = (achieve: AchieveT) => void dispatch(pushUserAchieve(achieve));
+    await setLogsAndGetAchieves(
+      { userId: user!.user.id, type: 'ToyGame', toyId: event.Toy.id },
+      setAchieveCallback,
+    );
   };
 
   const renderToy = ({ item }: { item: (typeof ownedToys)[number] }) => {

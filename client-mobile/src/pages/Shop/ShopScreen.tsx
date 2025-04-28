@@ -25,6 +25,9 @@ import NewspaperIcon from '@/assets/toys/newspaper.svg';
 import OctopusIcon from '@/assets/toys/octopus.svg';
 import RexIcon from '@/assets/toys/rex.svg';
 import PostIcon from '@/assets/toys/scratching-post.svg';
+import { setLogsAndGetAchieves } from '@/features/logs-feature/model/checkLog';
+import { AchieveT } from '@/entities/achievements/model/types';
+import { pushUserAchieve } from '@/entities/achievements/model/slice';
 
 const iconMap: Record<string, React.FC<any>> = {
   'ball.svg': BallIcon,
@@ -56,6 +59,7 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
   const [initialLoading, setInitialLoading] = useState(true);
   const [optimisticToys, setOptimisticToys] = useState<number[]>([]); // Локальное состояние для оптимистичных toyId
   const [isBuying, setIsBuying] = useState<Record<number, boolean>>({}); // Состояние для блокировки кнопок
+  const user = useAppSelector((store) => store.auth.user);
 
   useEffect(() => {
     const loadData = async () => {
@@ -91,6 +95,12 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
 
       // Обновляем ownedToys по ответу сервера
       await dispatch(fetchOwnedToys(catId)).unwrap();
+
+      const setAchieveCallback = (achieve: AchieveT) => void dispatch(pushUserAchieve(achieve));
+      await setLogsAndGetAchieves(
+        { userId: user!.user.id, type: 'BuyToy', toyId },
+        setAchieveCallback,
+      );
     } catch (error) {
       console.error('Ошибка при покупке игрушки:', error);
       // Откатываем оптимистичное обновление при ошибке

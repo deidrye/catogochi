@@ -33,6 +33,7 @@ class AuthService {
     }
 
     const user = await User.findOne({ where: { email } });
+
     if (!user) {
       throw new Error('Invalid email or password');
     }

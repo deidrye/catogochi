@@ -14,6 +14,11 @@ export default function AchievementsScreen() {
     void dispatch(fetchAchieves());
   }, []);
 
+  // useEffect(() => {
+  //   if (userAchievements.length > 0)
+  //     console.log('Вы получили достижение: ', userAchievements[userAchievements.length - 1].name);
+  // }, [userAchievements]);
+
   // Сортируем достижения: полученные сверху
   const sortedAchievements = [...achievements].sort((a, b) => {
     const aCompleted = userAchievements.some((ua) => ua.id === a.id);
