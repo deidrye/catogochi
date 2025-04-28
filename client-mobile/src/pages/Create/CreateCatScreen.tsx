@@ -1,6 +1,14 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  Button,
+  StyleSheet,
+  Alert,
+  ActivityIndicator,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/app/types/navigation';
 import { useAuth } from '@/hooks/useAuth';
@@ -12,79 +20,46 @@ interface CreateCatScreenProps {
   navigation: CreateCatScreenNavigationProp;
 }
 
-type CatBreed =
-  | 'Сиамская'
-  | 'Персидская'
-  | 'Мейн-кун'
-  | 'Британская'
-  | 'Сфинкс'
-  | 'Шотландская вислоухая'
-  | 'Другая'; // Исправлено с 'Другая' на 'Другая'
-
-interface CatState {
-  name: string;
-  color: string;
-  breed: CatBreed;
-}
-
 export default function CreateCatScreen({ navigation }: CreateCatScreenProps) {
   const { user } = useAuth();
-  const [cat, setCat] = useState<CatState>({
-    name: '',
-    color: '',
-    breed: 'Сиамская',
-  });
-
+  const [selectedPreset, setSelectedPreset] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [presets, setPresets] = useState<Array<{ id: number; name: string; img: string }>>([]);
+  const [isLoadingPresets, setIsLoadingPresets] = useState(true);
 
-  const catBreeds: CatBreed[] = [
-    'Сиамская',
-    'Персидская',
-    'Мейн-кун',
-    'Британская',
-    'Сфинкс',
-    'Шотландская вислоухая',
-    'Другая', // Исправлено с 'Другая' на 'Другая'
-  ];
+  useEffect(() => {
+    loadPresets();
+  }, []);
 
-  const breedImages: Record<CatBreed, string> = {
-    Сиамская: '🐱',
-    Персидская: '🐈',
-    'Мейн-кун': '🐯',
-    Британская: '😼',
-    Сфинкс: '👽',
-    'Шотландская вислоухая': '😾',
-    Другая: '😻', // Исправлено с 'Другая' на 'Другая'
-  };
-
-  const handleInputChange = (name: keyof CatState, value: string) => {
-    setCat((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async () => {
+  const loadPresets = async () => {
     try {
-      navigation.navigate('Main');
-      setIsLoading(true);
+      const data = await CatService.getPresets();
+      setPresets(data);
+    } catch (error) {
+      console.error('Error loading presets:', error);
+      Alert.alert('Ошибка', 'Не удалось загрузить пресеты котов');
+    } finally {
+      setIsLoadingPresets(false);
+    }
+  };
 
+  const currentPreset = presets[selectedPreset];
+
+  const handleCreateCat = async () => {
+    try {
       if (!user?.user?.id) {
-        // Проверка наличия пользователя
         throw new Error('Пользователь не авторизован');
       }
 
+      if (!currentPreset) {
+        throw new Error('Пресет не выбран');
+      }
+
+      setIsLoading(true);
+
       const catData = {
-        name: cat.name,
-        color: cat.color,
-        breed: cat.breed,
-        userId: user.user.id,
-        angry: 100,
-        hp: 100,
-        energy: 100,
-        affection: 100,
-        boldness: 100,
-        level: 1,
+        name: currentPreset.name,
+        catPresetId: currentPreset.id,
       };
 
       const createdCat = await CatService.createCat(catData);
@@ -93,12 +68,11 @@ export default function CreateCatScreen({ navigation }: CreateCatScreenProps) {
         throw new Error('Не удалось создать кота');
       }
 
-      Alert.alert('Успех', 'Кот успешно создан!', [
-        {
-          text: 'OK',
-          onPress: () => navigation.navigate('Main'),
-        },
-      ]);
+      // Просто навигация без Alert
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Main' }],
+      });
     } catch (error) {
       console.error('Error creating cat:', error);
       Alert.alert(
@@ -110,57 +84,61 @@ export default function CreateCatScreen({ navigation }: CreateCatScreenProps) {
     }
   };
 
-  const getCatStyle = () => ({
-    fontSize: 100,
-    textAlign: 'center' as const,
-    marginVertical: 20,
-    transform: cat.breed === 'Мейн-кун' ? [{ scale: 1.5 }] : [{ scale: 1 }],
-  });
+  const handleNextPreset = () => {
+    setSelectedPreset((prev) => (prev + 1) % presets.length);
+  };
+
+  if (isLoadingPresets) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size='large' color='#6C63FF' />
+        <Text style={styles.loadingText}>Загружаем котиков...</Text>
+      </View>
+    );
+  }
+
+  if (!currentPreset) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.noPresetsText}>Нет доступных пресетов 😿</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Создание нового кота</Text>
+      <Text style={styles.title}>Выбери своего кота</Text>
 
-      <Text style={getCatStyle()}>{breedImages[cat.breed]}</Text>
-
-      <View style={styles.inputGroup}>
-        <Text style={styles.label}>Имя кота:</Text>
-        <TextInput
-          style={styles.input}
-          value={cat.name}
-          onChangeText={(text) => handleInputChange('name', text)}
-          placeholder='Введите имя кота'
+      <View style={styles.catCard}>
+        {/* <Text style={styles.catImage}>{currentPreset.img}</Text> */}
+        <Image
+          source={{
+            uri: 'https://img.freepik.com/free-vector/sweet-eyed-kitten-cartoon-character_1308-135596.jpg',
+          }}
+          style={{
+            width: 200,
+            height: 200,
+            marginBottom: 10,
+          }}
         />
+        <Text style={styles.catName}>{currentPreset.name}</Text>
       </View>
 
-      <View style={styles.inputGroup}>
-        <Text style={styles.label}>Цвет кота:</Text>
-        <TextInput
-          style={styles.input}
-          value={cat.color}
-          onChangeText={(text) => handleInputChange('color', text)}
-          placeholder='Введите цвет кота'
-        />
-      </View>
+      <TouchableOpacity style={styles.switchButton} onPress={handleNextPreset}>
+        <Text style={styles.switchButtonText}>Другой котик</Text>
+      </TouchableOpacity>
 
-      <View style={styles.inputGroup}>
-        <Text style={styles.label}>Порода кота:</Text>
-        <Picker
-          selectedValue={cat.breed} // Исправлено с cat.breed на cat.breed
-          style={styles.picker}
-          onValueChange={(itemValue: CatBreed) => handleInputChange('breed', itemValue)}
-        >
-          {catBreeds.map((breed, index) => (
-            <Picker.Item key={index} label={breed} value={breed} /> // Исправлено с breed на breed
-          ))}
-        </Picker>
-      </View>
-
-      <Button
-        title={isLoading ? 'Создание...' : 'Создать кота'}
-        onPress={handleSubmit}
-        disabled={isLoading || !cat.name || !cat.color || !cat.breed}
-      />
+      <TouchableOpacity
+        style={[styles.createButton, isLoading && styles.buttonDisabled]}
+        onPress={handleCreateCat}
+        disabled={isLoading}
+      >
+        {isLoading ? (
+          <ActivityIndicator color='#fff' />
+        ) : (
+          <Text style={styles.createButtonText}>Создать кота</Text>
+        )}
+      </TouchableOpacity>
     </View>
   );
 }
@@ -168,32 +146,72 @@ export default function CreateCatScreen({ navigation }: CreateCatScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#fff',
+    padding: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F9F9F9',
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
+    marginBottom: 30,
+    color: '#333',
   },
-  inputGroup: {
-    marginBottom: 20,
+  catCard: {
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    padding: 30,
+    borderRadius: 20,
+    elevation: 4,
+    marginBottom: 30,
   },
-  label: {
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
-    padding: 10,
+  catImage: {
+    fontSize: 120,
     marginBottom: 10,
   },
-  picker: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
+  catName: {
+    fontSize: 26,
+    fontWeight: '600',
+    color: '#555',
+  },
+  switchButton: {
+    backgroundColor: '#6C63FF',
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 25,
+    marginBottom: 20,
+  },
+  switchButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  createButton: {
+    backgroundColor: '#FF6B6B',
+    paddingVertical: 14,
+    paddingHorizontal: 40,
+    borderRadius: 30,
+  },
+  createButtonText: {
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: '700',
+  },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#666',
+  },
+  noPresetsText: {
+    fontSize: 20,
+    color: '#999',
   },
 });
