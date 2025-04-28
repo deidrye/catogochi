@@ -29,7 +29,7 @@ const getApiUrl = () => {
   return 'http://localhost:3000/api';
 };
 
-const API_URL = getApiUrl();
+export const API_URL = getApiUrl();
 
 const handleResponse = async (response: Response, isJson = true) => {
   if (!response.ok) {
