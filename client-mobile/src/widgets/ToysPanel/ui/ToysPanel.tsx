@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
     padding: 8,
     backgroundColor: '#f0f0f0',
     borderRadius: 12,
-    maxHeight: 280,
+    maxHeight: 380,
     width: 100,
     alignSelf: 'center',
   },

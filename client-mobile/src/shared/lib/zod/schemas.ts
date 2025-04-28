@@ -16,6 +16,7 @@ export const userSchema = z.object({
     id: z.number(),
     email: z.string(),
     name: z.string(),
+    points: z.number(), 
   }),
   accessToken: z.string(),
 });
