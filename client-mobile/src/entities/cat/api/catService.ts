@@ -1,86 +1,39 @@
-import { CLIENT_IP } from '@env';
-import { Platform } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-interface CreateCatDto {
-  name: string;
-  catPresetId: number;
-}
-
-interface CatPreset {
-  id: number;
-  name: string;
-  img: string;
-}
+import { catPresetSchema, catSchema } from '../model/schema';
+import { CreateCatT } from '../model/types';
+import axiosInstance from '@/shared/api/axiosInstance';
 
 export class CatService {
-  static async getPresets(): Promise<CatPreset[]> {
+  constructor(private readonly axiosInstance: string) {
+    this.axiosInstance = axiosInstance;
+  }
+  static async getPresets() {
     try {
-      const url = `http://${CLIENT_IP}:3000/api/cats/presets`;
-      console.log('Fetching presets from:', url);
-
-      const token = await AsyncStorage.getItem('accessToken');
-      console.log('Token found:', !!token);
-
-      const options = {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include' as const,
-      };
-      console.log('Request options:', options);
-
-      const response = await fetch(url, options);
-      console.log('Response status:', response.status);
-
-      const responseText = await response.text();
-      console.log('Raw response:', responseText);
-
-      if (!response.ok) {
-        console.error('Error response:', responseText);
-        throw new Error(responseText || 'Ошибка получения пресетов');
-      }
-
-      return JSON.parse(responseText);
+      const response = await axiosInstance.get('/cats/presets');
+      return catPresetSchema.array().parse(response.data);
     } catch (error) {
-      console.error('Error in getPresets:', error);
-      throw error;
+      console.error(error);
+      throw new Error('getAll Achievements error');
     }
   }
 
-  static async createCat(cat: CreateCatDto) {
+  static async createCat(cat: CreateCatT) {
     try {
-      const url = `http://${CLIENT_IP}:3000/api/cats`;
-      console.log('Posting to:', url);
-
-      const token = await AsyncStorage.getItem('accessToken');
-      console.log('Token found:', !!token);
-
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        credentials: 'include',
-        body: JSON.stringify(cat),
-      });
-
-      const responseText = await response.text();
-      console.log('Raw response:', responseText);
-
-      if (!response.ok) {
-        console.error('Error response:', responseText);
-        throw new Error(responseText || 'Ошибка создания кота');
-      }
-
-      return JSON.parse(responseText);
+      const response = await axiosInstance.post('/cats', cat);
+      return catSchema.parse(response.data);
     } catch (error) {
-      console.error('Error in createCat:', error);
-      throw error;
+      console.error(error);
+      throw new Error('createCat error');
+    }
+  }
+
+  static async getCat() {
+    try {
+      const response = await axiosInstance.get('/cats');
+      return catSchema.parse(response.data);
+    } catch (error) {
+      console.error(error);
+      throw new Error('getCat error');
     }
   }
 }
+

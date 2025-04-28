@@ -13,3 +13,4 @@ export const newAchieveSchema = z.object({
   description: z.string(),
   reward: z.number(),
 });
+
