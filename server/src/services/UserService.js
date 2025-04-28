@@ -45,6 +45,12 @@ class UserService {
     if (!user) throw new Error('User not found');
     return user;
   }
+
+  static async getPointsById(id) {
+    const user = await User.findByPk(id, { attributes: ['points'] });
+    if (!user) throw new Error('User not found');
+    return user.get('points'); // Извлекаем только значение 'points'
+  }
 }
 
 module.exports = UserService;

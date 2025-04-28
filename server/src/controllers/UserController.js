@@ -83,6 +83,28 @@ class UserController {
       res.status(500).json({ message: 'Ошибка получения пароля пользователя' });
     }
   }
+
+  static async getUserPoints(req, res) {
+    try {
+      const { id } = req.params;
+
+      // Проверяем, что id действительно является числом
+      if (Number.isNaN(id)) {
+        return res.status(400).json({ message: 'Invalid user ID' });
+      }
+
+      const points = await UserService.getPointsById(Number(id));
+
+      // Если пользователь не найден, возвращаем 404
+      if (points === undefined) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      return res.json(points); // Просто возвращаем само число
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  }
 }
 
 module.exports = UserController;
