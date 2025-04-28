@@ -5,6 +5,8 @@ export const achieveSchema = z.object({
   name: z.string(),
   description: z.string(),
   reward: z.number(),
+  type: z.string().nullable(),
+  countCondition: z.number().nullable(),
   createdAt: z.string(),
 });
 

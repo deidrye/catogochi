@@ -5,12 +5,16 @@ class AchievementService {
     return Achievement.findAll();
   }
 
+  static async getAchievementsByType(type) {
+    return Achievement.findAll({ where: { type } });
+  }
+
   static async getAchievementById(id) {
     return Achievement.findByPk(id);
   }
 
   static async createAchievement(achievement) {
-    return Achievement.create(achievement);
+    return Achievement.findOrCreate(achievement);
   }
 
   static async updateAchievement(id, newValues) {
@@ -35,7 +39,7 @@ class AchievementService {
   }
 
   static async assignAchievementToUser(userId, achievementId) {
-    const created = UserAchievement.create({ userId, achievementId });
+    const created = UserAchievement.findOrCreate({ where: { userId, achievementId } });
     return created;
   }
 
@@ -45,6 +49,25 @@ class AchievementService {
     });
     if (!userAchievement) throw new Error('User achievement not found');
     await userAchievement.destroy();
+  }
+
+  static async getUnassignedAchievementsByType(userId, type) {
+    const unassignedAchievements = await Achievement.findAll({
+      include: [
+        {
+          model: UserAchievement,
+          where: { userId },
+          required: false,
+        },
+      ],
+      where: {
+        type,
+        '$UserAchievements.id$': null,
+      },
+      order: [['countCondition', 'ASC']],
+    });
+
+    return unassignedAchievements;
   }
 }
 

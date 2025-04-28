@@ -58,6 +58,8 @@ export const authApi = {
       const responseData = await handleResponse(response);
       try {
         const userData = userSchema.parse(responseData);
+        console.log(userData);
+
         // Сохраняем токен
         await AsyncStorage.setItem('accessToken', userData.accessToken);
         return userData;

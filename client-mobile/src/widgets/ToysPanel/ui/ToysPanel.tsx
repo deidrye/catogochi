@@ -27,6 +27,9 @@ import OctopusIcon from '@/assets/toys/octopus.svg';
 import RexIcon from '@/assets/toys/rex.svg';
 import PostIcon from '@/assets/toys/scratching-post.svg';
 import { OwnedToyType } from '@/entities/toy/model/toyType';
+import { AchieveT } from '@/entities/achievements/model/types';
+import { pushUserAchieve } from '@/entities/achievements/model/slice';
+import { setLogsAndGetAchieves } from '@/features/logs-feature/model/checkLog';
 
 const iconMap: Record<string, React.FC<any>> = {
   'ball.svg': BallIcon,
@@ -57,12 +60,13 @@ const ToysPanelWidget: React.FC = () => {
   const ownedToys = useAppSelector((state) => state.toy.ownedToys);
   const isLoading = useAppSelector((state) => state.toy.isLoading);
   const catId = 1; // Пока захардкожено
+  const user = useAppSelector((store) => store.auth.user);
 
   useEffect(() => {
     dispatch(fetchOwnedToys(catId));
   }, [dispatch, catId]);
 
-  const handleToyPress = (event: OwnedToyType) => {
+  const handleToyPress = async (event: OwnedToyType) => {
     const description = event.description || 'Описание отсутствует';
     Toast.show({
       type: 'success',
@@ -72,6 +76,11 @@ const ToysPanelWidget: React.FC = () => {
       autoHide: true,
       topOffset: 60,
     });
+    const setAchieveCallback = (achieve: AchieveT) => void dispatch(pushUserAchieve(achieve));
+    await setLogsAndGetAchieves(
+      { userId: user!.user.id, type: 'ToyGame', toyId: event.Toy.id },
+      setAchieveCallback,
+    );
   };
 
   const renderToy = ({ item }: { item: (typeof ownedToys)[number] }) => {
@@ -106,14 +115,14 @@ const ToysPanelWidget: React.FC = () => {
     <View style={styles.toysContainer}>
       <Text style={styles.sectionTitle}>Мои игрушки</Text>
       {ownedToys.length > 0 ? (
-          <FlatList
-            data={ownedToys}
-            renderItem={renderToy}
-            keyExtractor={(item) => item.id.toString()}
-            showsVerticalScrollIndicator={false}
-            style={styles.flatList}
-            nestedScrollEnabled
-          />
+        <FlatList
+          data={ownedToys}
+          renderItem={renderToy}
+          keyExtractor={(item) => item.id.toString()}
+          showsVerticalScrollIndicator={false}
+          style={styles.flatList}
+          nestedScrollEnabled
+        />
       ) : (
         <Text style={styles.emptyText}>У вас нет игрушек</Text>
       )}
