@@ -75,7 +75,7 @@ const ToysPanelWidget: React.FC = () => {
   };
 
   const renderToy = ({ item }: { item: (typeof ownedToys)[number] }) => {
-    const IconComponent = iconMap[item.toys.img];
+    const IconComponent = iconMap[item.Toy.img];
     return (
       <View style={styles.toyItem}>
         <TouchableOpacity

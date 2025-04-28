@@ -1,67 +1,49 @@
-const supabase = require('../../supabase/supabaseClient');
+const { User } = require('../../db/models');
 
 class UserService {
   static async getAll() {
-    const { data, error } = await supabase.from('users').select('id, name, email, points');
-    if (error) throw error;
-    return data;
+    const users = await User.findAll({
+      attributes: ['id', 'name', 'email'],
+    });
+    return users;
   }
 
   static async getById(id) {
-    const { data, error } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', id)
-      .single();
-    if (error) throw error;
-    return data;
+    const user = await User.findByPk(id);
+    return user;
   }
 
   static async createUser(name, email, hashedPass) {
-    const { data, error } = await supabase
-      .from('users')
-      .insert([{ name, email, hashedPass }])
-      .select()
-      .single();
-    if (error) throw error;
-    return data;
+    const newUser = await User.create({ name, email, hashedPass });
+    return newUser;
   }
 
   static async updateUser(id, newValues) {
-    const { data, error } = await supabase
-      .from('users')
-      .update(newValues)
-      .eq('id', id)
-      .select()
-      .single();
-    if (error) throw error;
-    return data;
+    const user = await User.findByPk(id);
+    if (!user) throw new Error('User not found');
+    const updatedUser = await user.update(newValues);
+    return updatedUser;
   }
 
   static async deleteUser(id) {
-    const { error } = await supabase.from('users').delete().eq('id', id);
-    if (error) throw error;
+    const user = await User.findByPk(id);
+    if (!user) throw new Error('User not found');
+    await user.destroy();
   }
 
   static async makeUserAdmin(id) {
-    const { data, error } = await supabase
-      .from('users')
-      .update({ isAdmin: true })
-      .eq('id', id)
-      .select()
-      .single();
-    if (error) throw error;
-    return data;
+    const user = await User.findByPk(id);
+    if (!user) throw new Error('User not found');
+    const updatedUser = await user.update({ isAdmin: true });
+    return updatedUser;
   }
 
   static async takeUserPassword(id) {
-    const { data, error } = await supabase
-      .from('users')
-      .select('hashedPass')
-      .eq('id', id)
-      .single();
-    if (error) throw error;
-    return data;
+    const user = await User.findByPk(id, {
+      attributes: ['hashedPass'],
+    });
+    if (!user) throw new Error('User not found');
+    return user;
   }
 }
 
