@@ -88,7 +88,7 @@ export default function CreateCatScreen({ navigation }: CreateCatScreenProps) {
             style={[styles.catCard, selectedPreset?.id === preset.id && styles.selectedCard]}
             onPress={() => setSelectedPreset(preset)}
           >
-            <Video
+            {/* <Video
               source={{
                 uri: 'https://cdnl.iconscout.com/lottie/premium/thumb/cat-animation-download-in-lottie-json-gif-static-svg-file-formats--pretty-logo-cute-animal-funny-kitten-activity-pack-animations-6614177.mp4',
               }}
@@ -96,13 +96,13 @@ export default function CreateCatScreen({ navigation }: CreateCatScreenProps) {
               muted
               repeat
               resizeMode='cover'
-            />
-            {/* <Image
+            /> */}
+            <Image
               source={{
-                uri: 'https://img.icons8.com/?size=100&id=8VdeCQ3puqEp&format=png&color=000000', // Заменит на актуальные изображения
+                uri: preset.img, // Заменит на актуальные изображения
               }}
               style={{ width: 150, height: 150, marginBottom: 10 }}
-            /> */}
+            />
             {/* <CatSvg /> */}
             <Text style={styles.catName}>{preset.name}</Text>
           </TouchableOpacity>
