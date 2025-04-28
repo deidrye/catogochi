@@ -1,17 +1,11 @@
-export interface CatPreset {
-  id: number;
-  name: string;
-  img: string;
-}
+import { z } from "zod";
+import { catPresetSchema, catSchema, catSliceSchema, createCatSchema } from "./schema";
 
-export interface CatState {
-  presets: CatPreset[];
-  selectedPresetIndex: number;
-  isLoading: boolean;
-  error: string | null;
-}
 
-export interface CreateCatDto {
-  name: string;
-  catPresetId: number;
-}
+
+export type CatPresetT = z.infer<typeof catPresetSchema>;
+export type CatT = z.infer<typeof catSchema>;
+export type CreateCatT = z.infer<typeof createCatSchema>;
+
+export type CatSliceT = z.infer<typeof catSliceSchema>;
+

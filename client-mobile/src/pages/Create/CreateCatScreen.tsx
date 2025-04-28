@@ -1,94 +1,67 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
-  Button,
   StyleSheet,
-  Alert,
   ActivityIndicator,
   TouchableOpacity,
   Image,
+  Alert,
 } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/app/types/navigation';
 import { useAuth } from '@/hooks/useAuth';
-import { CatService } from '@/entities/cat/api/catService';
-
+import { fetchPresets, createCat } from '@/entities/cat/model/thunks';
+import { RootState, AppDispatch } from '@/app/store';
+import { CreateCatT, CatPresetT } from '@/entities/cat/model/types';
+import Video from 'react-native-video';
 type CreateCatScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'CreateCat'>;
-
 interface CreateCatScreenProps {
   navigation: CreateCatScreenNavigationProp;
 }
-
 export default function CreateCatScreen({ navigation }: CreateCatScreenProps) {
+  const dispatch = useDispatch<AppDispatch>();
+  const { presets, isLoading, error, cat } = useSelector((state: RootState) => state.cat);
   const { user } = useAuth();
-  const [selectedPreset, setSelectedPreset] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
-  const [presets, setPresets] = useState<Array<{ id: number; name: string; img: string }>>([]);
-  const [isLoadingPresets, setIsLoadingPresets] = useState(true);
+
+  const [selectedPreset, setSelectedPreset] = useState<CatPresetT | null>(null);
 
   useEffect(() => {
-    loadPresets();
-  }, []);
-
-  const loadPresets = async () => {
-    try {
-      const data = await CatService.getPresets();
-      setPresets(data);
-    } catch (error) {
-      console.error('Error loading presets:', error);
-      Alert.alert('Ошибка', 'Не удалось загрузить пресеты котов');
-    } finally {
-      setIsLoadingPresets(false);
+    if (user?.accessToken) {
+      dispatch(fetchPresets());
+    } else {
+      Alert.alert('Ошибка', 'Требуется авторизация');
+      navigation.navigate('Login');
     }
-  };
-
-  const currentPreset = presets[selectedPreset];
+  }, [dispatch, user?.accessToken]);
 
   const handleCreateCat = async () => {
+    if (!user?.accessToken) {
+      Alert.alert('Ошибка', 'Требуется авторизация');
+      navigation.navigate('Login');
+      return;
+    }
+
+    if (!selectedPreset) {
+      Alert.alert('Ошибка', 'Пожалуйста, выберите котика');
+      return;
+    }
+
     try {
-      if (!user?.user?.id) {
-        throw new Error('Пользователь не авторизован');
-      }
-
-      if (!currentPreset) {
-        throw new Error('Пресет не выбран');
-      }
-
-      setIsLoading(true);
-
-      const catData = {
-        name: currentPreset.name,
-        catPresetId: currentPreset.id,
+      const catData: CreateCatT = {
+        name: 'Test Cat',
+        catPresetId: selectedPreset.id,
+        userId: user.user.id,
       };
-
-      const createdCat = await CatService.createCat(catData);
-
-      if (!createdCat) {
-        throw new Error('Не удалось создать кота');
-      }
-
-      // Просто навигация без Alert
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Main' }],
-      });
+      await dispatch(createCat(catData)).unwrap();
+      navigation.navigate('Main');
     } catch (error) {
-      console.error('Error creating cat:', error);
-      Alert.alert(
-        'Ошибка',
-        error instanceof Error ? error.message : 'Не удалось создать кота. Попробуйте еще раз.',
-      );
-    } finally {
-      setIsLoading(false);
+      Alert.alert('Ошибка', 'Не удалось создать кота');
     }
   };
 
-  const handleNextPreset = () => {
-    setSelectedPreset((prev) => (prev + 1) % presets.length);
-  };
-
-  if (isLoadingPresets) {
+  if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size='large' color='#6C63FF' />
@@ -97,7 +70,7 @@ export default function CreateCatScreen({ navigation }: CreateCatScreenProps) {
     );
   }
 
-  if (!currentPreset) {
+  if (!presets.length) {
     return (
       <View style={styles.container}>
         <Text style={styles.noPresetsText}>Нет доступных пресетов 😿</Text>
@@ -107,26 +80,34 @@ export default function CreateCatScreen({ navigation }: CreateCatScreenProps) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Выбери своего кота</Text>
-
-      <View style={styles.catCard}>
-        {/* <Text style={styles.catImage}>{currentPreset.img}</Text> */}
-        <Image
-          source={{
-            uri: 'https://img.freepik.com/free-vector/sweet-eyed-kitten-cartoon-character_1308-135596.jpg',
-          }}
-          style={{
-            width: 200,
-            height: 200,
-            marginBottom: 10,
-          }}
-        />
-        <Text style={styles.catName}>{currentPreset.name}</Text>
+      <Text style={styles.title}>Выбери кота</Text>
+      <View style={styles.presetList}>
+        {presets.map((preset) => (
+          <TouchableOpacity
+            key={preset.id}
+            style={[styles.catCard, selectedPreset?.id === preset.id && styles.selectedCard]}
+            onPress={() => setSelectedPreset(preset)}
+          >
+            <Video
+              source={{
+                uri: 'https://cdnl.iconscout.com/lottie/premium/thumb/cat-animation-download-in-lottie-json-gif-static-svg-file-formats--pretty-logo-cute-animal-funny-kitten-activity-pack-animations-6614177.mp4',
+              }}
+              style={{ width: 180, height: 180 }}
+              muted
+              repeat
+              resizeMode='cover'
+            />
+            {/* <Image
+              source={{
+                uri: 'https://img.icons8.com/?size=100&id=8VdeCQ3puqEp&format=png&color=000000', // Заменит на актуальные изображения
+              }}
+              style={{ width: 150, height: 150, marginBottom: 10 }}
+            /> */}
+            {/* <CatSvg /> */}
+            <Text style={styles.catName}>{preset.name}</Text>
+          </TouchableOpacity>
+        ))}
       </View>
-
-      <TouchableOpacity style={styles.switchButton} onPress={handleNextPreset}>
-        <Text style={styles.switchButtonText}>Другой котик</Text>
-      </TouchableOpacity>
 
       <TouchableOpacity
         style={[styles.createButton, isLoading && styles.buttonDisabled]}
@@ -157,40 +138,34 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     color: '#333',
   },
+  presetList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+  },
   catCard: {
     alignItems: 'center',
     backgroundColor: '#fff',
-    padding: 30,
+    padding: 20,
     borderRadius: 20,
     elevation: 4,
-    marginBottom: 30,
+    margin: 10,
   },
-  catImage: {
-    fontSize: 120,
-    marginBottom: 10,
+  selectedCard: {
+    borderColor: '#FF6B6B',
+    borderWidth: 2,
   },
   catName: {
-    fontSize: 26,
-    fontWeight: '600',
-    color: '#555',
-  },
-  switchButton: {
-    backgroundColor: '#6C63FF',
-    paddingVertical: 12,
-    paddingHorizontal: 30,
-    borderRadius: 25,
-    marginBottom: 20,
-  },
-  switchButtonText: {
-    color: '#fff',
     fontSize: 18,
     fontWeight: '600',
+    color: '#555',
   },
   createButton: {
     backgroundColor: '#FF6B6B',
     paddingVertical: 14,
     paddingHorizontal: 40,
     borderRadius: 30,
+    marginTop: 30,
   },
   createButtonText: {
     color: '#fff',
