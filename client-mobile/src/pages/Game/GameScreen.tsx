@@ -6,6 +6,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import ToysPanelWidget from '@/widgets/ToysPanel/ui/ToysPanel';
 import Toast from 'react-native-toast-message';
 import { CustomToast } from '@/widgets/CustomToast/ui/CustomToast';
+import CatActionsWidget from '@/widgets/CatAction/ui/CatAction';
+import CatStatsWidget from '@/widgets/CatStats/ui/CatStats';
 
 type GameScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Game'>;
 
@@ -20,15 +22,17 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
 
   return (
     <>
-      {/* <ScrollView contentContainerStyle={styles.container}> */}
-        <View style={styles.cat}>
-          <Text>Здесь будет котик</Text>
-        </View>
-        <TouchableOpacity style={styles.button} onPress={goToShop}>
-          <Text style={styles.buttonText}>Перейти в магазин</Text>
-        </TouchableOpacity>
-        <ToysPanelWidget />
-      {/* </ScrollView> */}
+      <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.cat}>
+        <Text style={styles.catText}>Здесь будет котик</Text>
+      </View>
+      <TouchableOpacity style={styles.button} onPress={goToShop}>
+        <Text style={styles.buttonText}>Перейти в магазин</Text>
+      </TouchableOpacity>
+      <ToysPanelWidget />
+      <CatActionsWidget/>
+      <CatStatsWidget/>
+      </ScrollView>
       <Toast
         config={{
           success: (props) => <CustomToast {...props} />,
@@ -48,6 +52,9 @@ const styles = StyleSheet.create({
     width: 200,
     height: 300,
     backgroundColor: 'black',
+    color: 'white',
+  },
+  catText: {
     color: 'white',
   },
   button: {

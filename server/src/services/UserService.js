@@ -2,7 +2,7 @@ const supabase = require('../../supabase/supabaseClient');
 
 class UserService {
   static async getAll() {
-    const { data, error } = await supabase.from('users').select('id, name, email');
+    const { data, error } = await supabase.from('users').select('id, name, email, points');
     if (error) throw error;
     return data;
   }
