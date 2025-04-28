@@ -28,6 +28,9 @@ import OctopusIcon from '@/assets/toys/octopus.svg';
 import RexIcon from '@/assets/toys/rex.svg';
 import PostIcon from '@/assets/toys/scratching-post.svg';
 import { fetchUserPoints } from '@/entities/user/model/userThunks';
+import { setLogsAndGetAchieves } from '@/features/logs-feature/model/checkLog';
+import { AchieveT } from '@/entities/achievements/model/types';
+import { pushUserAchieve } from '@/entities/achievements/model/slice';
 
 const iconMap: Record<string, React.FC<any>> = {
   'ball.svg': BallIcon,
@@ -55,17 +58,19 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
   const ownedToys = useAppSelector((state) => state.toy.ownedToys);
   const shopToys = useAppSelector((state) => state.toy.shopToys);
   const isLoading = useAppSelector((state) => state.toy.isLoading);
-  const { user } = useAuth();
+
   const catId = 1; // замените по необходимости
 
   const [initialLoading, setInitialLoading] = useState(true);
-  const [optimisticToys, setOptimisticToys] = useState<number[]>([]);
-  const [isBuying, setIsBuying] = useState<Record<number, boolean>>({});
 
   // Анимации
   const balanceOpacity = useState(new Animated.Value(0))[0];
   const balanceTranslateY = useState(new Animated.Value(10))[0];
   const balanceScale = useState(new Animated.Value(1))[0];
+  const [optimisticToys, setOptimisticToys] = useState<number[]>([]); // Локальное состояние для оптимистичных toyId
+  const [isBuying, setIsBuying] = useState<Record<number, boolean>>({}); // Состояние для блокировки кнопок
+  const user = useAppSelector((store) => store.auth.user);
+
 
   useEffect(() => {
     const loadData = async () => {
@@ -122,6 +127,12 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
     try {
       await dispatch(buyToy({ catId, toyId })).unwrap();
       await dispatch(fetchOwnedToys(catId)).unwrap();
+
+      const setAchieveCallback = (achieve: AchieveT) => void dispatch(pushUserAchieve(achieve));
+      await setLogsAndGetAchieves(
+        { userId: user!.user.id, type: 'BuyToy', toyId },
+        setAchieveCallback,
+      );
     } catch (error) {
       console.error('Ошибка при покупке игрушки:', error);
       setOptimisticToys((prev) => prev.filter((id) => id !== toyId));

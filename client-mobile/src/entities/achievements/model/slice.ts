@@ -1,5 +1,5 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { AchieveSliceT } from './types';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { AchieveSliceT, AchieveT } from './types';
 import { fetchAchieves, fetchAchievesOfUser } from './thunks';
 
 const initialState: AchieveSliceT = {
@@ -10,7 +10,11 @@ const initialState: AchieveSliceT = {
 const achieveSlice = createSlice({
   name: 'achievements',
   initialState,
-  reducers: {},
+  reducers: {
+    pushUserAchieve(state, action: PayloadAction<AchieveT>) {
+      state.userAchieves.push(action.payload);
+    },
+  },
   extraReducers(builder) {
     builder.addCase(fetchAchieves.fulfilled, (state, action) => {
       state.list = action.payload;
@@ -28,5 +32,5 @@ const achieveSlice = createSlice({
   },
 });
 
-export const {} = achieveSlice.actions;
+export const { pushUserAchieve } = achieveSlice.actions;
 export default achieveSlice.reducer;
