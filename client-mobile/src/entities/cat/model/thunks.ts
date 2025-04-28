@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { CatService } from '../api/catService';
-import {CreateCatT } from './types';
+import { CatT, CreateCatT } from './types';
 import { setError, setLoading, setPresets } from './slice';
 
 export const fetchPresets = createAsyncThunk('cat/fetchPresets', async (_, { dispatch }) => {
@@ -40,6 +40,19 @@ export const fetchCat = createAsyncThunk('cat/fetchCat', async (_, { dispatch })
     return cat;
   } catch (error) {
     dispatch(setError(error instanceof Error ? error.message : 'Ошибка загрузки кота'));
+    throw error;
+  } finally {
+    dispatch(setLoading(false));
+  }
+});
+
+export const updateCat = createAsyncThunk('cat/updateCat', async (cat: CatT, { dispatch }) => {
+  try {
+    dispatch(setLoading(true));
+    const updatedCat = await CatService.updateCat(cat);
+    return updatedCat;
+  } catch (error) {
+    dispatch(setError(error instanceof Error ? error.message : 'Ошибка обновления кота'));
     throw error;
   } finally {
     dispatch(setLoading(false));

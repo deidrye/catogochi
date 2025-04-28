@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { createCat, fetchCat, fetchPresets } from './thunks';
+import { createCat, fetchCat, fetchPresets, updateCat } from './thunks';
 import { CatSliceT, CatPresetT } from './types';
 
 const initialState: CatSliceT = {
@@ -61,6 +61,18 @@ const catSlice = createSlice({
         state.cat = action.payload;
       })
       .addCase(fetchCat.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(updateCat.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(updateCat.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.cat = action.payload;
+      })
+      .addCase(updateCat.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       });

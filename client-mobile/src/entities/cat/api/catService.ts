@@ -1,5 +1,5 @@
 import { catPresetSchema, catSchema } from '../model/schema';
-import { CreateCatT } from '../model/types';
+import { CatT, CreateCatT } from '../model/types';
 import axiosInstance from '@/shared/api/axiosInstance';
 
 export class CatService {
@@ -35,5 +35,13 @@ export class CatService {
       throw new Error('getCat error');
     }
   }
+  static async updateCat(cat: CatT) {
+    try {
+      const response = await axiosInstance.put(`/cats/${cat.id}`, cat);
+      return catSchema.parse(response.data);
+    } catch (error) {
+      console.error(error);
+      throw new Error('updateCat error');
+    }
+  }
 }
-
