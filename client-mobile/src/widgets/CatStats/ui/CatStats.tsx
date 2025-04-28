@@ -1,15 +1,8 @@
+import { useAppSelector } from '@/app/store';
+import { CatT } from '@/entities/cat/model/types';
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import * as Progress from 'react-native-progress';
-
-const cat = {
-  hp: 100,
-  energy: 80,
-  affection: 70,
-  boldness: 50,
-  level: 2,
-  angry: 3,
-};
 
 type StatProps = {
   label: string;
@@ -25,24 +18,21 @@ const StatRow: React.FC<StatProps> = ({ label, value, color }) => (
       </Text>
       <Text style={styles.statValue}>{value}%</Text>
     </View>
-    <Progress.Bar
-      progress={value / 100}
-      width={null}
-      color={color}
-      style={styles.progressBar}
-    />
+    <Progress.Bar progress={value / 100} width={null} color={color} style={styles.progressBar} />
   </>
 );
 
-const CatStatsWidget: React.FC = () => {
+const CatStatsWidget: React.FC<{ cat: CatT | null }> = ({ cat }) => {
+  if (!cat) return null;
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Статистика состояния кота</Text>
-      <StatRow label="Злость" value={cat.angry} color="#FF6347" />
-      <StatRow label="Здоровье" value={cat.hp} color="#32CD32" />
-      <StatRow label="Энергия" value={cat.energy} color="#FFD700" />
-      <StatRow label="Ласка" value={cat.affection} color="#FF69B4" />
-      <StatRow label="Наглость" value={cat.boldness} color="#3b9eff" />
+      <StatRow label='Злость' value={cat.angry} color='#FF6347' />
+      <StatRow label='Здоровье' value={cat.hp} color='#32CD32' />
+      <StatRow label='Энергия' value={cat.energy} color='#FFD700' />
+      <StatRow label='Ласка' value={cat.affection} color='#FF69B4' />
+      <StatRow label='Наглость' value={cat.boldness} color='#3b9eff' />
     </View>
   );
 };

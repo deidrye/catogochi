@@ -1,5 +1,5 @@
 import { catPresetSchema, catSchema } from '../model/schema';
-import { CreateCatT } from '../model/types';
+import { CatT, CreateCatT } from '../model/types';
 import axiosInstance from '@/shared/api/axiosInstance';
 
 export class CatService {
@@ -18,8 +18,8 @@ export class CatService {
 
   static async createCat(cat: CreateCatT) {
     try {
-      const response = await axiosInstance.post('/cats', cat);
-      return catSchema.parse(response.data);
+      const response = await axiosInstance.post<CatT>('/cats', cat);
+      return response.data;
     } catch (error) {
       console.error(error);
       throw new Error('createCat error');
@@ -28,12 +28,20 @@ export class CatService {
 
   static async getCat() {
     try {
-      const response = await axiosInstance.get('/cats');
+      const response = await axiosInstance.get(`/cats`);
       return catSchema.parse(response.data);
     } catch (error) {
       console.error(error);
       throw new Error('getCat error');
     }
   }
+  static async updateCat(cat: CatT) {
+    try {
+      const response = await axiosInstance.put(`/cats`, cat);
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      throw new Error('updateCat error');
+    }
+  }
 }
-

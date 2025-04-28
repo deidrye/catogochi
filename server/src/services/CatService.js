@@ -5,19 +5,21 @@ class CatService {
     const cats = await Cat.findAll({
       include: {
         model: CatPreset,
-        as: 'preset',
+        attributes: ['id', 'name', 'img'],
       },
     });
     return cats;
   }
 
   static async getById(id) {
-    const cat = await Cat.findByPk(id, {
+    const cat = await Cat.findOne({
+      where: { userId: id },
       include: {
         model: CatPreset,
-        as: 'preset',
+        attributes: ['id', 'name', 'img'],
       },
     });
+    if (!cat) throw new Error('Cat not found');
     return cat;
   }
 
@@ -41,7 +43,7 @@ class CatService {
   }
 
   static async update(id, fields) {
-    const cat = await Cat.findByPk(id);
+    const cat = await Cat.findOne({ where: { userId: id } });
     if (!cat) throw new Error('Cat not found');
     const updatedCat = await cat.update(fields);
     return updatedCat;

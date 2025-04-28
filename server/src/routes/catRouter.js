@@ -5,9 +5,12 @@ const CatService = require('../services/CatService');
 
 const router = express.Router();
 
-router.route('/').get(CatController.getAll).post(verifyAccessToken, CatController.create);
+router
+  .route('/')
+  .get(verifyAccessToken, CatController.getById)
+  .post(verifyAccessToken, CatController.create)
+  .put(verifyAccessToken, CatController.update);
 
-// Роут для пресетов должен быть перед роутом с параметром :id
 router.get('/presets', verifyAccessToken, async (req, res) => {
   try {
     const presets = await CatService.getAllPresets();
@@ -20,8 +23,6 @@ router.get('/presets', verifyAccessToken, async (req, res) => {
 
 router
   .route('/:id')
-  .get(CatController.getById)
-  .put(CatController.update)
-  .delete(CatController.delete);
+  .delete(verifyAccessToken, CatController.delete);
 
 module.exports = router;

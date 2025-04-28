@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { createCat, fetchCat, fetchPresets } from './thunks';
-import { CatSliceT, CatPresetT } from './types';
+import { createCat, fetchCat, fetchPresets, updateCat } from './thunks';
+import { CatT, CatSliceT, CatPresetT } from './types';
 
 const initialState: CatSliceT = {
   presets: [],
@@ -25,6 +25,9 @@ const catSlice = createSlice({
     },
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
+    },
+    setCat: (state, action: PayloadAction<CatT | null>) => {
+      state.cat = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -63,9 +66,22 @@ const catSlice = createSlice({
       .addCase(fetchCat.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
+      })
+      .addCase(updateCat.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(updateCat.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.cat = action.payload;
+      })
+      .addCase(updateCat.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
       });
   },
 });
 
-export const { setPresets, setSelectedPresetIndex, setLoading, setError } = catSlice.actions;
+export const { setPresets, setSelectedPresetIndex, setLoading, setError, setCat } =
+  catSlice.actions;
 export default catSlice.reducer;

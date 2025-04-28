@@ -17,6 +17,7 @@ export const catSchema = z.object({
   affection: z.number(),
   boldness: z.number(),
   level: z.number(),
+  CatPreset: catPresetSchema,
 });
 
 export const createCatSchema = z.object({

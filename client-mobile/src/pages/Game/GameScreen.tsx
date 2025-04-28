@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, View, SafeAreaView, Dimensions } from 'react-native';
+import React, { useEffect } from 'react';
+import { StyleSheet, View, SafeAreaView, Dimensions, Text, Image } from 'react-native';
 import { RootStackParamList } from '@/app/types/navigation';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import ToysPanelWidget from '@/widgets/ToysPanel/ui/ToysPanel';
@@ -8,6 +8,8 @@ import { CustomToast } from '@/widgets/CustomToast/ui/CustomToast';
 import CatActionsWidget from '@/widgets/CatAction/ui/CatAction';
 import CatStatsWidget from '@/widgets/CatStats/ui/CatStats';
 import Animated, { FadeInUp } from 'react-native-reanimated';
+import { useAppDispatch, useAppSelector } from '@/app/store';
+import { fetchCat } from '@/entities/cat/model/thunks';
 
 type GameScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Game'>;
 
@@ -18,6 +20,12 @@ interface GameScreenProps {
 const { width, height } = Dimensions.get('window');
 
 export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
+  const dispatch = useAppDispatch();
+  const cat = useAppSelector((state) => state.cat.cat);
+  useEffect(() => {
+    dispatch(fetchCat());
+  }, [dispatch]);
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
@@ -25,21 +33,28 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
         <View style={styles.mainContent}>
           {/* Игрушки */}
           <Animated.View entering={FadeInUp.duration(500)} style={styles.toysContainer}>
-            <ToysPanelWidget />
+            <ToysPanelWidget cat={cat} />
           </Animated.View>
 
           {/* Котик */}
           <Animated.View entering={FadeInUp.duration(600).delay(100)} style={styles.catContainer}>
             <View style={styles.cat}>
-              <Animated.Text entering={FadeInUp.duration(700)} style={styles.catText}>
-                🐾 Здесь будет котик
-              </Animated.Text>
+              {cat?.CatPreset?.img ? (
+                <Image
+                  source={{ uri: cat.CatPreset.img }}
+                  style={styles.catImage}
+                  resizeMode='contain'
+                />
+              ) : (
+                <Text style={styles.catText}>🐱</Text>
+              )}
+              <Text style={styles.catName}>{cat?.name}</Text>
             </View>
           </Animated.View>
 
           {/* Статы */}
           <Animated.View entering={FadeInUp.duration(700).delay(200)} style={styles.statsContainer}>
-            <CatStatsWidget />
+            <CatStatsWidget cat={cat} />
           </Animated.View>
         </View>
 
@@ -107,6 +122,16 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#555',
     fontWeight: 'bold',
+  },
+  catImage: {
+    width: 200,
+    height: 300,
+    marginBottom: 10,
+  },
+  catName: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333',
   },
   actionsContainer: {
     alignItems: 'center',
