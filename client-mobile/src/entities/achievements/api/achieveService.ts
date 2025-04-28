@@ -1,16 +1,10 @@
-import { API_URL } from '@/shared/api/authApi';
-import axios from 'axios';
-import { AchieveT } from '../model/types';
 import { achieveSchema } from '../model/schema';
+import axiosInstance from '@/shared/api/axiosInstance';
 
 class AchieveService {
-  constructor(private readonly apiUrl: string) {
-    this.apiUrl = apiUrl;
-  }
-
   async getAll() {
     try {
-      const response = await axios.get(this.apiUrl + '/achievements');
+      const response = await axiosInstance.get('/achievements');
       return achieveSchema.array().parse(response.data);
     } catch (error) {
       console.error(error);
@@ -20,7 +14,7 @@ class AchieveService {
 
   async getAllUser(id: number) {
     try {
-      const response = await axios.get(this.apiUrl + `/achievements/user/${id}`);
+      const response = await axiosInstance.get(`/achievements/user/${id}`);
       return achieveSchema.array().parse(response.data);
     } catch (error) {
       console.error(error);
@@ -29,4 +23,4 @@ class AchieveService {
   }
 }
 
-export default new AchieveService(API_URL);
+export default new AchieveService();
