@@ -69,6 +69,19 @@ class ToyController {
       return res.status(201).json(result);
     } catch (error) {
       console.error('Error in buyToy controller:', error);
+
+      if (error.message === 'Недостаточно рыбок для покупки игрушки') {
+        return res.status(403).json({ message: error.message });
+      }
+
+      if (
+        error.message === 'Cat not found' ||
+        error.message === 'User not found' ||
+        error.message === 'Toy not found'
+      ) {
+        return res.status(404).json({ message: error.message });
+      }
+
       return res.status(500).json({ message: error.message || 'Ошибка сервера.' });
     }
   }

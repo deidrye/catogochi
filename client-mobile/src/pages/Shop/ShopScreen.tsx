@@ -6,13 +6,15 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
+  Animated,
 } from 'react-native';
 import { RootStackParamList } from '@/app/types/navigation';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAppDispatch, useAppSelector } from '@/app/store';
 import { buyToy, fetchOwnedToys, fetchShopToys } from '@/entities/toy/model/toyThunks';
+import { useAuth } from '@/hooks/useAuth';
 
-// SVG импорты (предполагается, что они такие же, как в ToysPanelWidget)
+// SVG иконки
 import BallIcon from '@/assets/toys/ball.svg';
 import TreeIcon from '@/assets/toys/christmas-tree.svg';
 import ClewIcon from '@/assets/toys/clew.svg';
@@ -25,6 +27,7 @@ import NewspaperIcon from '@/assets/toys/newspaper.svg';
 import OctopusIcon from '@/assets/toys/octopus.svg';
 import RexIcon from '@/assets/toys/rex.svg';
 import PostIcon from '@/assets/toys/scratching-post.svg';
+import { fetchUserPoints } from '@/entities/user/model/userThunks';
 import { setLogsAndGetAchieves } from '@/features/logs-feature/model/checkLog';
 import { AchieveT } from '@/entities/achievements/model/types';
 import { pushUserAchieve } from '@/entities/achievements/model/slice';
@@ -55,11 +58,19 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
   const ownedToys = useAppSelector((state) => state.toy.ownedToys);
   const shopToys = useAppSelector((state) => state.toy.shopToys);
   const isLoading = useAppSelector((state) => state.toy.isLoading);
-  const catId = 1; // Замените на актуальное значение
+
+  const catId = 1; // замените по необходимости
+
   const [initialLoading, setInitialLoading] = useState(true);
+
+  // Анимации
+  const balanceOpacity = useState(new Animated.Value(0))[0];
+  const balanceTranslateY = useState(new Animated.Value(10))[0];
+  const balanceScale = useState(new Animated.Value(1))[0];
   const [optimisticToys, setOptimisticToys] = useState<number[]>([]); // Локальное состояние для оптимистичных toyId
   const [isBuying, setIsBuying] = useState<Record<number, boolean>>({}); // Состояние для блокировки кнопок
   const user = useAppSelector((store) => store.auth.user);
+
 
   useEffect(() => {
     const loadData = async () => {
@@ -68,15 +79,41 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
         await Promise.all([
           dispatch(fetchOwnedToys(catId)).unwrap(),
           dispatch(fetchShopToys(catId)).unwrap(),
+          dispatch(fetchUserPoints(user?.user.id!)).unwrap(),
         ]);
       } catch (error) {
         console.error('Ошибка при загрузке данных:', error);
       } finally {
         setInitialLoading(false);
+        // Появление баланса
+        Animated.parallel([
+          Animated.timing(balanceOpacity, {
+            toValue: 1,
+            duration: 600,
+            useNativeDriver: true,
+          }),
+          Animated.timing(balanceTranslateY, {
+            toValue: 0,
+            duration: 600,
+            useNativeDriver: true,
+          }),
+        ]).start();
       }
     };
+
     loadData();
   }, [dispatch, catId]);
+
+  useEffect(() => {
+    if (user?.user.points !== undefined) {
+      balanceScale.setValue(1.2);
+      Animated.spring(balanceScale, {
+        toValue: 1,
+        friction: 3,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [user?.user.points]);
 
   const handleBuyToy = async (toyId: number) => {
     if (isNaN(toyId) || isNaN(catId)) {
@@ -84,16 +121,11 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
       return;
     }
 
-    // Оптимистично обновляем UI
     setOptimisticToys((prev) => [...prev, toyId]);
     setIsBuying((prev) => ({ ...prev, [toyId]: true }));
 
     try {
-      // console.log('Покупка игрушки:', { catId, toyId });
-      const toyEvent = await dispatch(buyToy({ catId, toyId })).unwrap();
-      // console.log('Ответ после покупки игрушки:', toyEvent);
-
-      // Обновляем ownedToys по ответу сервера
+      await dispatch(buyToy({ catId, toyId })).unwrap();
       await dispatch(fetchOwnedToys(catId)).unwrap();
 
       const setAchieveCallback = (achieve: AchieveT) => void dispatch(pushUserAchieve(achieve));
@@ -103,18 +135,14 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
       );
     } catch (error) {
       console.error('Ошибка при покупке игрушки:', error);
-      // Откатываем оптимистичное обновление при ошибке
       setOptimisticToys((prev) => prev.filter((id) => id !== toyId));
     } finally {
-      // Снимаем блокировку кнопки
       setIsBuying((prev) => ({ ...prev, [toyId]: false }));
     }
   };
 
-  const isToyBought = (toyId: number) => {
-    // Проверяем как ownedToys, так и оптимистичные toyId
-    return ownedToys.some((item) => item.toyId === toyId) || optimisticToys.includes(toyId);
-  };
+  const isToyBought = (toyId: number) =>
+    ownedToys.some((item) => item.toyId === toyId) || optimisticToys.includes(toyId);
 
   const renderToy = ({ item }: { item: (typeof shopToys)[number] }) => {
     const IconComponent = iconMap[item.img];
@@ -123,16 +151,16 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
 
     return (
       <View style={styles.card}>
-        <IconComponent width={100} height={100} />
+        <IconComponent width={80} height={80} />
         <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.price}>{item.price} рыбок</Text>
+        <Text style={styles.price}>{item.price} рыбок </Text>
         <TouchableOpacity
           style={[styles.buyButton, bought && styles.disabledButton]}
           onPress={() => !bought && !buying && handleBuyToy(item.id)}
           disabled={bought || buying}
         >
           <Text style={styles.buyText}>
-            {buying ? 'Покупка...' : bought ? 'Уже куплено' : 'Купить'}
+            {buying ? 'Покупка...' : bought ? 'Куплено' : 'Купить'}
           </Text>
         </TouchableOpacity>
       </View>
@@ -142,14 +170,35 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
   if (initialLoading || isLoading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size='large' color='#FF8C00' />
+        <ActivityIndicator size="large" color="#FF8C00" />
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
+      {/* Заголовок */}
       <Text style={styles.title}>Магазин игрушек</Text>
+  
+      {/* Баланс */}
+      <Animated.View
+        style={[
+          styles.pointsWrapper,
+          {
+            opacity: balanceOpacity,
+            transform: [
+              { translateY: balanceTranslateY },
+              { scale: balanceScale },
+            ],
+          },
+        ]}
+      >
+        <Text style={styles.pointsAmount}>
+          Ваш баланс: {user?.user.points ?? 0} рыбок
+        </Text>
+      </Animated.View>
+  
+      {/* Список игрушек */}
       <FlatList
         data={shopToys}
         renderItem={renderToy}
@@ -170,8 +219,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
     textAlign: 'center',
+    marginTop: 10,
+    marginBottom: 5,
   },
   list: {
     paddingBottom: 20,
@@ -183,7 +233,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 12,
     padding: 10,
-    marginBottom: 10,
+    marginBottom: 15,
     width: '48%',
     alignItems: 'center',
     shadowColor: '#000',
@@ -215,5 +265,25 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 14,
     fontWeight: 'bold',
+  },
+  pointsWrapper: {
+    backgroundColor: '#FFFAF0', // мягкий фон
+    alignSelf: 'flex-end',
+    marginBottom: 12,
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    borderRadius: 20, // скругление посильнее как бейдж
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 6,
+    elevation: 6,
+    borderWidth: 1,
+    borderColor: '#FF8C00', // лёгкая рамка в цвет акцента
+  },
+  pointsAmount: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#FF8C00',
   },
 });

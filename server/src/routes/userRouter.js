@@ -12,4 +12,6 @@ userRouter
 userRouter.patch('/:id/make-admin', UserController.makeUserAdmin);
 userRouter.get('/:id/password', UserController.takeUserPassword);
 
+userRouter.get('/:id/points', UserController.getUserPoints);
+
 module.exports = userRouter;

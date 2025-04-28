@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import authReducer from '../features/auth/model/slice';
 import toyReducer from '../entities/toy/model/toySlice';
+import userReducer from '../entities/user/model/userSlice';
 import achieveReducer from '../entities/achievements/model/slice';
 import catReducer from '../entities/cat/model/slice';
 export const store = configureStore({
@@ -10,6 +11,7 @@ export const store = configureStore({
     toy: toyReducer,
     achievements: achieveReducer,
     cat: catReducer,
+    user: userReducer,  // Хранит в себе только состояние очков пользователя
   },
 });
 
