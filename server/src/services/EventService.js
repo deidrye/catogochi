@@ -1,46 +1,32 @@
-const supabase = require('../../supabase/supabaseClient');
+const { Event } = require('../../db/models');
 
 class EventService {
   static async getAll() {
-    const { data, error } = await supabase.from('events').select('*');
-    if (error) throw error;
-    return data;
+    const events = await Event.findAll();
+    return events;
   }
 
   static async getById(id) {
-    const { data, error } = await supabase
-      .from('events')
-      .select('*')
-      .eq('id', id)
-      .single();
-    if (error) throw error;
-    return data;
+    const event = await Event.findByPk(id);
+    return event;
   }
 
   static async create(event) {
-    const { data, error } = await supabase
-      .from('events')
-      .insert([event])
-      .select()
-      .single();
-    if (error) throw error;
-    return data;
+    const newEvent = await Event.create(event);
+    return newEvent;
   }
 
   static async update(id, fields) {
-    const { data, error } = await supabase
-      .from('events')
-      .update(fields)
-      .eq('id', id)
-      .select()
-      .single();
-    if (error) throw error;
-    return data;
+    const event = await Event.findByPk(id);
+    if (!event) throw new Error('Event not found');
+    const updatedEvent = await event.update(fields);
+    return updatedEvent;
   }
 
   static async delete(id) {
-    const { error } = await supabase.from('events').delete().eq('id', id);
-    if (error) throw error;
+    const event = await Event.findByPk(id);
+    if (!event) throw new Error('Event not found');
+    await event.destroy();
   }
 }
 

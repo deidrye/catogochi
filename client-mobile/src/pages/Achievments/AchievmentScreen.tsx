@@ -60,7 +60,7 @@ export default function AchievementsScreen() {
 
             {isCompleted && (
               <Text style={styles.completedText}>
-                Получено: {new Date(achieve.created_at).toLocaleDateString()}
+                Получено: {new Date(achieve.createdAt).toLocaleDateString()}
               </Text>
             )}
           </View>
