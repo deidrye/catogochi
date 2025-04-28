@@ -33,7 +33,6 @@ export const ToyEventSchema = z.object({
   toyId: z.number(),
 });
 
-
 export const ToyEventCreateSchema = ToyEventSchema.omit({
   id: true,
 });
@@ -47,7 +46,7 @@ export const OwnedToySchema = z.object({
   id: z.number(),
   catId: z.number(),
   toyId: z.number(),
-  created_at: z.string(),
+  createdAt: z.string(),
   title: z.string(),
   description: z.string(),
   effect: z.object({
@@ -57,5 +56,5 @@ export const OwnedToySchema = z.object({
     boldness: z.number().optional(),
     angry: z.number().optional(),
   }),
-  toys: toySchema,
+  Toy: toySchema,
 });

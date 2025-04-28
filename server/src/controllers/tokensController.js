@@ -1,5 +1,5 @@
 const cookieConfig = require('../configs/cookieConfig');
-const tokensService = require('../services/tokensService');
+const tokensService = require('../services/TokensService');
 
 const tokensController = {
   async refresh(req, res) {
