@@ -23,9 +23,9 @@ class CatController {
 
   static async create(req, res) {
     try {
-      if (!req.body.name || !req.body.image) {
+      if (!req.body.name || !req.body.catPresetId) {
         return res.status(400).json({
-          message: 'Необходимо указать имя и изображение кота',
+          message: 'Необходимо указать имя и ID пресета кота',
         });
       }
 
