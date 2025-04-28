@@ -31,6 +31,8 @@ import { fetchUserPoints } from '@/entities/user/model/userThunks';
 import { setLogsAndGetAchieves } from '@/features/logs-feature/model/checkLog';
 import { AchieveT } from '@/entities/achievements/model/types';
 import { pushUserAchieve } from '@/entities/achievements/model/slice';
+import { setPoints } from '@/entities/user/model/userSlice';
+import { ToyType } from '@/entities/toy/model/toyType';
 
 const iconMap: Record<string, React.FC<any>> = {
   'ball.svg': BallIcon,
@@ -59,7 +61,7 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
   const shopToys = useAppSelector((state) => state.toy.shopToys);
   const isLoading = useAppSelector((state) => state.toy.isLoading);
 
-  const catId = 1; // замените по необходимости
+  const catId = useAppSelector((store) => store.cat.cat?.id); // замените по необходимости
 
   const [initialLoading, setInitialLoading] = useState(true);
 
@@ -70,15 +72,15 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
   const [optimisticToys, setOptimisticToys] = useState<number[]>([]); // Локальное состояние для оптимистичных toyId
   const [isBuying, setIsBuying] = useState<Record<number, boolean>>({}); // Состояние для блокировки кнопок
   const user = useAppSelector((store) => store.auth.user);
-
+  const points = useAppSelector((store) => store.user.points);
 
   useEffect(() => {
     const loadData = async () => {
       try {
         setInitialLoading(true);
         await Promise.all([
-          dispatch(fetchOwnedToys(catId)).unwrap(),
-          dispatch(fetchShopToys(catId)).unwrap(),
+          dispatch(fetchOwnedToys(catId!)).unwrap(),
+          dispatch(fetchShopToys(catId!)).unwrap(),
           dispatch(fetchUserPoints(user?.user.id!)).unwrap(),
         ]);
       } catch (error) {
@@ -113,31 +115,33 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
         useNativeDriver: true,
       }).start();
     }
-  }, [user?.user.points]);
+  }, [points]);
 
-  const handleBuyToy = async (toyId: number) => {
-    if (isNaN(toyId) || isNaN(catId)) {
-      console.error('Некорректный toyId или catId:', { toyId, catId });
+  const handleBuyToy = async (toy: ToyType) => {
+    if (isNaN(toy.id) || isNaN(catId!)) {
+      console.error('Некорректный toyId или catId:', { toyId: toy.id, catId });
       return;
     }
 
-    setOptimisticToys((prev) => [...prev, toyId]);
-    setIsBuying((prev) => ({ ...prev, [toyId]: true }));
-
+    setOptimisticToys((prev) => [...prev, toy.id]);
+    setIsBuying((prev) => ({ ...prev, [toy.id]: true }));
+    dispatch(setPoints(-toy.price));
     try {
-      await dispatch(buyToy({ catId, toyId })).unwrap();
-      await dispatch(fetchOwnedToys(catId)).unwrap();
+      await dispatch(buyToy({ catId: catId!, toyId: toy.id })).unwrap();
+      await dispatch(fetchOwnedToys(catId!)).unwrap();
 
       const setAchieveCallback = (achieve: AchieveT) => void dispatch(pushUserAchieve(achieve));
+      const setPointsCallback = (points: number) => void dispatch(setPoints(points));
       await setLogsAndGetAchieves(
-        { userId: user!.user.id, type: 'BuyToy', toyId },
+        { userId: user!.user.id, type: 'BuyToy', toyId: toy.id },
         setAchieveCallback,
+        setPointsCallback,
       );
     } catch (error) {
       console.error('Ошибка при покупке игрушки:', error);
-      setOptimisticToys((prev) => prev.filter((id) => id !== toyId));
+      setOptimisticToys((prev) => prev.filter((id) => id !== toy.id));
     } finally {
-      setIsBuying((prev) => ({ ...prev, [toyId]: false }));
+      setIsBuying((prev) => ({ ...prev, [toy.id]: false }));
     }
   };
 
@@ -156,7 +160,7 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
         <Text style={styles.price}>{item.price} рыбок </Text>
         <TouchableOpacity
           style={[styles.buyButton, bought && styles.disabledButton]}
-          onPress={() => !bought && !buying && handleBuyToy(item.id)}
+          onPress={() => !bought && !buying && handleBuyToy(item)}
           disabled={bought || buying}
         >
           <Text style={styles.buyText}>
@@ -170,7 +174,7 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
   if (initialLoading || isLoading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="large" color="#FF8C00" />
+        <ActivityIndicator size='large' color='#FF8C00' />
       </View>
     );
   }
@@ -179,25 +183,20 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
     <View style={styles.container}>
       {/* Заголовок */}
       <Text style={styles.title}>Магазин игрушек</Text>
-  
+
       {/* Баланс */}
       <Animated.View
         style={[
           styles.pointsWrapper,
           {
             opacity: balanceOpacity,
-            transform: [
-              { translateY: balanceTranslateY },
-              { scale: balanceScale },
-            ],
+            transform: [{ translateY: balanceTranslateY }, { scale: balanceScale }],
           },
         ]}
       >
-        <Text style={styles.pointsAmount}>
-          Ваш баланс: {user?.user.points ?? 0} рыбок
-        </Text>
+        <Text style={styles.pointsAmount}>Ваш баланс: {points} рыбок</Text>
       </Animated.View>
-  
+
       {/* Список игрушек */}
       <FlatList
         data={shopToys}

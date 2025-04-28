@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { fetchUserPoints } from './userThunks';
 import { UserSliceT } from './userTypes';
 
@@ -11,7 +11,11 @@ const initialState: UserSliceT = {
 const userSlice = createSlice({
   name: 'user',
   initialState,
-  reducers: {},
+  reducers: {
+    setPoints(state, action: PayloadAction<number>) {
+      if (state.points + action.payload > 0) state.points += action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchUserPoints.pending, (state) => {
@@ -29,6 +33,6 @@ const userSlice = createSlice({
   },
 });
 
-export const {} = userSlice.actions;
+export const { setPoints } = userSlice.actions;
 
 export default userSlice.reducer;
