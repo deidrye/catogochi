@@ -4,6 +4,8 @@ import { StyleSheet, TouchableOpacity, Text, ScrollView, View } from 'react-nati
 import { RootStackParamList } from '@/app/types/navigation';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import ToysPanelWidget from '@/widgets/ToysPanel/ui/ToysPanel';
+import Toast from 'react-native-toast-message';
+import { CustomToast } from '@/widgets/CustomToast/ui/CustomToast';
 
 type GameScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Game'>;
 
@@ -17,15 +19,20 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.cat}>
-        Здесь будет котик
-      </View>
-      <TouchableOpacity style={styles.button} onPress={goToShop}>
-        <Text style={styles.buttonText}>Перейти в магазин</Text>
-      </TouchableOpacity>
-      <ToysPanelWidget />
-    </ScrollView>
+    <>
+      <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.cat}>Здесь будет котик</View>
+        <TouchableOpacity style={styles.button} onPress={goToShop}>
+          <Text style={styles.buttonText}>Перейти в магазин</Text>
+        </TouchableOpacity>
+        <ToysPanelWidget />
+      </ScrollView>
+      <Toast
+        config={{
+          success: (props) => <CustomToast {...props} />,
+        }}
+      />
+    </>
   );
 };
 

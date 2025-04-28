@@ -1,9 +1,9 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import toyService from '../api/toyService';
-import { ToyCreateType, ToyEventCreateType, ToyEventWithToy } from './toyType';
+import { OwnedToyType, ToyCreateType, ToyEventCreateType, ToyEventWithToy } from './toyType';
 
-export const fetchShopToys = createAsyncThunk('toy/fetchShopToys', () => {
-  return toyService.getAll();
+export const fetchShopToys = createAsyncThunk('toy/fetchShopToys', (catId: number) => {
+  return toyService.getAll(catId); // Передаем catId
 });
 
 export const fetchToyFromShop = createAsyncThunk('toy/fetchToyFromShop', async (id: number) => {
@@ -27,9 +27,21 @@ export const updateToyInShop = createAsyncThunk(
   },
 );
 
-export const buyToy = createAsyncThunk<ToyEventWithToy, { toyId: number; catId: number }>(
+export const buyToy = createAsyncThunk<OwnedToyType, { toyId: number; catId: number }>(
   'toy/buyToy',
   async ({ toyId, catId }) => {
     return toyService.buyToy(toyId, catId); // Возвращаем уже типизированный объект
   }
 );
+
+// Санка для получения купленных игрушек
+export const fetchOwnedToys = createAsyncThunk<OwnedToyType[], number>(
+  'toy/fetchOwnedToys',
+  async (catId) => {
+    return await toyService.getOwnedToys(catId); // Запрос на сервер для получения данных
+  }
+);
+
+// export const getToys = createAsyncThunk('toy/getToys', async (catId: number) => {
+//   return toyService.getToys(catId);
+// });

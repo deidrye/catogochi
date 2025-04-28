@@ -1,11 +1,12 @@
 import type { AxiosInstance } from 'axios';
 import {
+  OwnedToySchema,
   ToyEventCreateSchema,
   ToyEventSchema,
   ToyEventWithToySchema,
   toySchema,
 } from '../model/toyScheme';
-import { ToyCreateType, ToyEventWithToy, ToyType } from '../model/toyType';
+import { OwnedToyType, ToyCreateType, ToyEventWithToy, ToyType } from '../model/toyType';
 import axiosInstance from '@/shared/api/axiosInstance';
 
 class ToyService {
@@ -16,9 +17,9 @@ class ToyService {
   //------------Все операции связанные с игрушками из магазина------------
 
   // Получение всех игрушек из магазина
-  async getAll(): Promise<ToyType[]> {
+  async getAll(catId: number): Promise<ToyType[]> {
     try {
-      const response = await this.client.get('/toys');
+      const response = await this.client.get(`/toys/${catId}`); // Передаем catId
       // Валидация данных через Zod
       return toySchema.array().parse(response.data);
     } catch (error) {
@@ -74,7 +75,7 @@ class ToyService {
 
   //------------Все операции связанные с игрушками в событиях------------
 
-  async buyToy(toyId: number, catId: number): Promise<ToyEventWithToy> {
+  async buyToy(toyId: number, catId: number): Promise<OwnedToyType> {
     try {
       const response = await this.client.post('/toys/buy', {
         toyId,
@@ -82,30 +83,71 @@ class ToyService {
       });
   
       console.log('Response from /toys/buy:', response.data);
-  
-      // Убедимся, что данные в ответе содержат нужную структуру
-      const { event, toy } = response.data;
-  
-      // Логируем полученные данные
-      console.log('Received event:', event);
-      console.log('Received toy:', toy);
-  
-      // Проверяем, что оба объекта существуют
-      if (!event || !toy) {
-        throw new Error('Missing event or toy in response');
-      }
-  
+
       // Валидируем объект с двумя полями event и toy
-      return ToyEventWithToySchema.parse({
-        event,
-        toy,
-      });
+      return OwnedToySchema.parse(response.data);
     } catch (error: any) {
       console.error('Error buying toy:', error);
       throw error;
     }
   }
+
+  async getOwnedToys(catId: number) {
+    try {
+      const response = await this.client.get(`/toys/owned/${catId}`);
+      console.log(response.data);
+      
+      return OwnedToySchema.array().parse(response.data); // Возвращаем данные
+    } catch (error) {
+      console.error('Ошибка при получении купленных игрушек:', error);
+      throw error;
+    }
+  }
+
+  // async getToys(catId: number): Promise<ToyType[]> {
+  //   try {
+  //     const response = await this.client.get(`/toys/${catId}`);
+  //     return toySchema.array().parse(response.data);
+  //   } catch (error) {
+  //     console.error('Error fetching toys:', error);
+  //     throw error;
+  //   }
+  // }
   
 }
 
 export default new ToyService(axiosInstance); // Экспортируем сервис с экземпляром axios
+
+
+
+// async buyToy(toyId: number, catId: number): Promise<ToyEventWithToy> {
+//   try {
+//     const response = await this.client.post('/toys/buy', {
+//       toyId,
+//       catId,
+//     });
+
+//     console.log('Response from /toys/buy:', response.data);
+
+//     // Убедимся, что данные в ответе содержат нужную структуру
+//     const { event, toy } = response.data;
+
+//     // Логируем полученные данные
+//     console.log('Received event:', event);
+//     console.log('Received toy:', toy);
+
+//     // Проверяем, что оба объекта существуют
+//     if (!event || !toy) {
+//       throw new Error('Missing event or toy in response');
+//     }
+
+//     // Валидируем объект с двумя полями event и toy
+//     return ToyEventWithToySchema.parse({
+//       event,
+//       toy,
+//     });
+//   } catch (error: any) {
+//     console.error('Error buying toy:', error);
+//     throw error;
+//   }
+// }

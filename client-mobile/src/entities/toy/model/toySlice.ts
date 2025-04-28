@@ -3,6 +3,7 @@ import {
   addToyToShop,
   buyToy,
   deleteToyFromShop,
+  fetchOwnedToys,
   fetchShopToys,
   fetchToyFromShop,
   updateToyInShop,
@@ -26,7 +27,7 @@ export const toySlice = createSlice({
       state.isLoading = true;
     });
     builder.addCase(fetchShopToys.fulfilled, (state, action) => {
-      state.shopToys = action.payload;
+      state.shopToys = action.payload; // Данные с флагом isBought
       state.isLoading = false;
     });
     builder.addCase(fetchShopToys.rejected, (state, action) => {
@@ -96,7 +97,7 @@ export const toySlice = createSlice({
       state.isLoading = false;
 
       const existingToyIndex = state.ownedToys.findIndex(
-        (toy) => toy.toy.id === action.payload.toy.id,
+        (item) => item.toys.id === action.payload.id,
       );
 
       if (existingToyIndex >= 0) {
@@ -110,6 +111,32 @@ export const toySlice = createSlice({
       state.error = action.error.message ?? 'Что-то пошло не так при покупке игрушки';
       state.isLoading = false;
     });
+
+    // Санка для получения купленных игрушек
+    builder.addCase(fetchOwnedToys.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(fetchOwnedToys.fulfilled, (state, action) => {
+      state.ownedToys = action.payload;
+      state.isLoading = false;
+    });
+    builder.addCase(fetchOwnedToys.rejected, (state, action) => {
+      state.error = action.error.message ?? null;
+      state.isLoading = false;
+    });
+
+    // // Получение игрушек с их статусом купленности
+    // builder.addCase(getToys.pending, (state) => {
+    //   state.isLoading = true;
+    // });
+    // builder.addCase(getToys.fulfilled, (state, action) => {
+    //   state.shopToys = action.payload;
+    //   state.isLoading = false;
+    // });
+    // builder.addCase(getToys.rejected, (state, action) => {
+    //   state.error = action.error.message ?? null;
+    //   state.isLoading = false;
+    // });
   },
 });
 

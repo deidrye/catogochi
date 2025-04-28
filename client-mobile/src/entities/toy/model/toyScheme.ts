@@ -42,3 +42,20 @@ export const ToyEventWithToySchema = z.object({
   event: ToyEventSchema,
   toy: toySchema,
 });
+
+export const OwnedToySchema = z.object({
+  id: z.number(),
+  catId: z.number(),
+  toyId: z.number(),
+  created_at: z.string(),
+  title: z.string(),
+  description: z.string(),
+  effect: z.object({
+    hp: z.number().optional(),
+    energy: z.number().optional(),
+    affection: z.number().optional(),
+    boldness: z.number().optional(),
+    angry: z.number().optional(),
+  }),
+  toys: toySchema,
+});

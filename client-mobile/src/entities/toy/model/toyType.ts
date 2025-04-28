@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ToyCreateSchema, ToyEventCreateSchema, ToyEventSchema, toySchema } from './toyScheme';
+import { OwnedToySchema, ToyCreateSchema, ToyEventCreateSchema, ToyEventSchema, toySchema } from './toyScheme';
 
 export type ToyType = z.infer<typeof toySchema>;
 export type ToyCreateType = z.infer<typeof ToyCreateSchema>;
@@ -12,9 +12,11 @@ export type ToyEventWithToy = {
   toy: ToyType;
 };
 
+export type OwnedToyType = z.infer<typeof OwnedToySchema>;
+
 export type ToySliceType = {
   shopToys: ToyType[];
-  ownedToys: ToyEventWithToy[];
+  ownedToys: OwnedToyType[];
   currentToy: ToyType | null;
   isLoading: boolean;
   error: string | null;

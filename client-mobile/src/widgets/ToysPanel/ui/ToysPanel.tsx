@@ -1,7 +1,9 @@
-// CatToysWidget.tsx
-import React from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
-import { useAppSelector } from '@/app/store';
+import React, { useEffect } from 'react';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
+import Toast from 'react-native-toast-message';
+import Animated, { FadeInUp } from 'react-native-reanimated';
+import { useAppDispatch, useAppSelector } from '@/app/store';
+import { fetchOwnedToys } from '@/entities/toy/model/toyThunks';
 
 // SVG импорты
 import BallIcon from '@/assets/toys/ball.svg';
@@ -16,6 +18,7 @@ import NewspaperIcon from '@/assets/toys/newspaper.svg';
 import OctopusIcon from '@/assets/toys/octopus.svg';
 import RexIcon from '@/assets/toys/rex.svg';
 import PostIcon from '@/assets/toys/scratching-post.svg';
+import { OwnedToyType } from '@/entities/toy/model/toyType';
 
 const iconMap: Record<string, React.FC<any>> = {
   'ball.svg': BallIcon,
@@ -32,19 +35,63 @@ const iconMap: Record<string, React.FC<any>> = {
   'scratching-post.svg': PostIcon,
 };
 
-const ToysPanelWidget: React.FC = () => {
-  // Получаем список игрушек из стора
-  const ownedToys = useAppSelector((state) => state.toy.ownedToys);
+// Кастомный анимированный тост
+const AnimatedToast = ({ text }: { text: string }) => {
+  return (
+    <Animated.View
+      entering={FadeInUp.duration(500)}
+      style={styles.toastContainer}
+    >
+      <Text style={styles.toastText}>{text}</Text>
+    </Animated.View>
+  );
+};
 
-  const renderToy = ({ item }: { item: any }) => {
-    const IconComponent = iconMap[item.toy.img]; // Обновляем доступ к img через toy
+const ToysPanelWidget: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const ownedToys = useAppSelector((state) => state.toy.ownedToys);
+  const isLoading = useAppSelector((state) => state.toy.isLoading);
+  const catId = 1; // Пока захардкожено
+
+  useEffect(() => {
+    dispatch(fetchOwnedToys(catId));
+  }, [dispatch, catId]);
+
+  const handleToyPress = (event: OwnedToyType) => {
+    const description = event.description || 'Описание отсутствует';
+    Toast.show({
+      type: 'success',
+      text1: description,
+      position: 'top',
+      visibilityTime: 4000,
+      autoHide: true,
+      topOffset: 60,
+    });
+  };
+
+  const renderToy = ({ item }: { item: typeof ownedToys[number] }) => {
+    const IconComponent = iconMap[item.toys.img];
     return (
       <View style={styles.toyItem}>
-        <IconComponent width={80} height={80} />
-        <Text style={styles.toyTitle}>{item.toy.name}</Text> {/* Обновляем name через toy */}
+        <TouchableOpacity
+          style={styles.toyContent}
+          onPress={() => handleToyPress(item)}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          {IconComponent ? <IconComponent width={50} height={50} /> : <View style={styles.placeholderIcon} />}
+        </TouchableOpacity>
       </View>
     );
   };
+
+  if (isLoading) {
+    return (
+      <View style={styles.toysContainer}>
+        <Text style={styles.sectionTitle}>Мои игрушки</Text>
+        <ActivityIndicator size="large" color="#FF8C00" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.toysContainer}>
@@ -53,9 +100,10 @@ const ToysPanelWidget: React.FC = () => {
         <FlatList
           data={ownedToys}
           renderItem={renderToy}
-          keyExtractor={(item) => item.toy.id.toString()} // Используем toy.id как ключ
-          horizontal
-          showsHorizontalScrollIndicator={false}
+          keyExtractor={(item) => item.id.toString()}
+          showsVerticalScrollIndicator={false}
+          style={styles.flatList}
+          nestedScrollEnabled
         />
       ) : (
         <Text style={styles.emptyText}>У вас нет игрушек</Text>
@@ -66,39 +114,77 @@ const ToysPanelWidget: React.FC = () => {
 
 const styles = StyleSheet.create({
   toysContainer: {
-    marginTop: 30,
-    padding: 10,
+    marginTop: 20,
+    padding: 8,
     backgroundColor: '#f0f0f0',
     borderRadius: 12,
+    maxHeight: 280,
+    width: 100,
+    alignSelf: 'center',
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 8,
     textAlign: 'center',
   },
+  flatList: {
+    flexGrow: 0,
+  },
   toyItem: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: '#fff',
-    padding: 10,
+    padding: 8,
     borderRadius: 8,
-    marginRight: 20,
-    width: 120, // Ширина карточки
+    marginBottom: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 3, // Для Android тень
-    alignItems: 'center',
+    elevation: 3,
   },
-  toyTitle: {
-    fontSize: 14,
+  toyContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 4,
+  },
+  placeholderIcon: {
+    width: 50,
+    height: 50,
+    backgroundColor: '#ddd',
+    borderRadius: 8,
+  },
+  deleteButton: {
+    backgroundColor: '#FF4444',
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 6,
+  },
+  deleteText: {
+    color: '#fff',
+    fontSize: 10,
     fontWeight: 'bold',
-    marginTop: 8,
   },
   emptyText: {
     textAlign: 'center',
     color: '#999',
+    fontSize: 12,
+  },
+  toastContainer: {
+    backgroundColor: '#FF8C00',
+    padding: 16,
+    borderRadius: 12,
+    marginHorizontal: 20,
+    marginTop: 20,
+  },
+  toastText: {
+    color: 'black',
     fontSize: 14,
+    fontWeight: 'bold',
+    lineHeight: 20,
+    textAlign: 'center',
   },
 });
 
