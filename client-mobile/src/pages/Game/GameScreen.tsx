@@ -26,10 +26,18 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
   const dispatch = useAppDispatch();
   const cat = useAppSelector((state) => state.cat.cat);
   const [currentAction, setCurrentAction] = useState<CatAction>(null);
+  const [toastText, setToastText] = useState<string | null>(null);
 
   useEffect(() => {
     dispatch(fetchCat());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (toastText) {
+      const timer = setTimeout(() => setToastText(null), 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [toastText]);
 
   const handlePlay = () => {
     setCurrentAction('play');
@@ -66,12 +74,17 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      {toastText && (
+        <View style={styles.toastWrapper}>
+          <CustomToast text1={toastText} />
+        </View>
+      )}
       <View style={styles.container}>
         {/* Центральная часть */}
         <View style={styles.mainContent}>
           {/* Игрушки */}
           <Animated.View entering={FadeInUp.duration(500)} style={styles.toysContainer}>
-            <ToysPanelWidget cat={cat} onPlay={handlePlay} />
+            <ToysPanelWidget cat={cat} onPlay={handlePlay} showToast={setToastText} />
           </Animated.View>
 
           {/* Котик */}
@@ -106,14 +119,6 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
           <CatActionsWidget cat={cat} onAction={handleCatAction} />
         </Animated.View>
       </View>
-
-      {/* Тост */}
-      <Toast
-        config={{
-          success: (props) => <CustomToast {...props} />,
-        }}
-        topOffset={60}
-      />
     </SafeAreaView>
   );
 };
@@ -121,7 +126,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#FFF8EF', // Тёплый бежевый фон
+    backgroundColor: '#FFF', // Тёплый бежевый фон
   },
   container: {
     flex: 1,
@@ -179,5 +184,13 @@ const styles = StyleSheet.create({
   actionsContainer: {
     alignItems: 'center',
     marginBottom: 10,
+  },
+  toastWrapper: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    zIndex: 999,
   },
 });

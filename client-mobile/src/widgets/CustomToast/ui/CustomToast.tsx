@@ -11,10 +11,10 @@ export const CustomToast: React.FC<CustomToastProps> = ({ text1 }) => {
 
   return (
     <Animated.View
-      entering={FadeInUp.duration(400)}
+      entering={FadeInUp.duration(600)}
       style={[
         styles.toastContainer,
-        { width: width * 0.9 },
+        { width: width * 0.7 },
       ]}
     >
       {/* Яркая полоска слева */}
