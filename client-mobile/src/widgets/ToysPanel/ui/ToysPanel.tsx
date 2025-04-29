@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import Toast from 'react-native-toast-message';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import { useAppDispatch, useAppSelector } from '@/app/store';
 import { fetchOwnedToys } from '@/entities/toy/model/toyThunks';
@@ -34,6 +33,7 @@ import { AchieveT } from '@/entities/achievements/model/types';
 import { pushUserAchieve } from '@/entities/achievements/model/slice';
 import { setLogsAndGetAchieves } from '@/features/logs-feature/model/checkLog';
 import { setPoints } from '@/entities/user/model/userSlice';
+import { CustomToast } from '@/widgets/CustomToast/ui/CustomToast';
 
 const iconMap: Record<string, React.FC<any>> = {
   'ball.svg': BallIcon,
@@ -62,9 +62,10 @@ const AnimatedToast = ({ text }: { text: string }) => {
 interface ToysPanelProps {
   cat: CatT | null;
   onPlay: () => void;
+  showToast: (message: string) => void;
 }
 
-const ToysPanelWidget: React.FC<ToysPanelProps> = ({ cat, onPlay }) => {
+const ToysPanelWidget: React.FC<ToysPanelProps> = ({ cat, onPlay, showToast }) => {
   const dispatch = useAppDispatch();
   const ownedToys = useAppSelector((state) => state.toy.ownedToys);
   const isLoading = useAppSelector((state) => state.toy.isLoading);
@@ -104,14 +105,9 @@ const ToysPanelWidget: React.FC<ToysPanelProps> = ({ cat, onPlay }) => {
     dispatch(updateCat(updatedCat));
     onPlay(); // Вызываем колбэк для анимации
 
-    Toast.show({
-      type: 'success',
-      text1: event.description || 'Описание отсутствует',
-      position: 'top',
-      visibilityTime: 4000,
-      autoHide: true,
-      topOffset: 60,
-    });
+    console.log('Показ тоста:', event.description);
+
+    showToast(event.description || 'Описание отсутствует');
 
     const setAchieveCallback = (achieve: AchieveT) => void dispatch(pushUserAchieve(achieve));
     const setPointsCallback = (points: number) => void dispatch(setPoints(points));
