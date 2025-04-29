@@ -5,6 +5,7 @@ export const logSchema = z.object({
   type: z.string(),
   eventId: z.number().nullable().optional(),
   toyId: z.number().nullable().optional(),
+  nowPoints: z.number(),
 });
 
 export type LogT = z.infer<typeof logSchema>;

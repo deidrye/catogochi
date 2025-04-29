@@ -133,7 +133,7 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
       const setAchieveCallback = (achieve: AchieveT) => void dispatch(pushUserAchieve(achieve));
       const setPointsCallback = (points: number) => void dispatch(setPoints(points));
       await setLogsAndGetAchieves(
-        { userId: user!.user.id, type: 'BuyToy', toyId: toy.id },
+        { userId: user!.user.id, type: 'BuyToy', toyId: toy.id, nowPoints: points - toy.price },
         setAchieveCallback,
         setPointsCallback,
       );
