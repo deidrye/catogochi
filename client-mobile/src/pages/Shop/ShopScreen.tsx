@@ -61,7 +61,7 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
   const shopToys = useAppSelector((state) => state.toy.shopToys);
   const isLoading = useAppSelector((state) => state.toy.isLoading);
 
-  const catId = useAppSelector((store) => store.cat.cat?.id); // замените по необходимости
+  const catId = useAppSelector((store) => store.cat.cat?.id); 
 
   const [initialLoading, setInitialLoading] = useState(true);
 

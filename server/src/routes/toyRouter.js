@@ -2,8 +2,6 @@ const express = require('express');
 const ToyController = require('../controllers/ToyController');
 const router = express.Router();
 
-
-
 router.route('/').post(ToyController.create);
 
 router.route('/:catId').get(ToyController.getAll); // Получение всех игрушек из магазина c статусом купленности
