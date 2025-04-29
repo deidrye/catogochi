@@ -129,6 +129,8 @@ module.exports = {
           'https://cdnl.iconscout.com/lottie/premium/thumb/lovely-cat-animated-icon-download-in-lottie-json-gif-static-svg-file-formats--animal-kitten-pet-cute-pack-icons-5473697.mp4',
         imgMain:
           'https://cdnl.iconscout.com/lottie/premium/thumb/cute-cat-sitting-on-pillow-animation-download-in-lottie-json-gif-static-svg-file-formats--activity-pack-animal-animations-5605481.mp4',
+        // imgSleep:
+        //   'https://cdnl.iconscout.com/lottie/premium/thumb/cat-sleeping-on-pillow-animated-icon-download-in-lottie-json-gif-static-svg-file-formats--pretty-logo-rest-sleep-activity-pack-animal-icons-7865287.mp4',
         imgSleep:
           'https://cdnl.iconscout.com/lottie/premium/thumb/cat-sleeping-animation-download-in-lottie-json-gif-static-svg-file-formats--sleep-rest-pack-animal-animations-7795851.mp4',
         imgPlay:
