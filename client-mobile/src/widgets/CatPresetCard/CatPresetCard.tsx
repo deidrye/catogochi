@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import Video from 'react-native-video';
 import { CatPresetT } from '@/entities/cat/model/types';
 
 interface CatPresetCardProps {
@@ -11,12 +12,16 @@ interface CatPresetCardProps {
 export const CatPresetCard: React.FC<CatPresetCardProps> = ({ preset, isSelected, onPress }) => {
   return (
     <TouchableOpacity style={[styles.catCard, isSelected && styles.selectedCard]} onPress={onPress}>
-      <Image
-        source={{
-          uri: preset.imgMain,
-        }}
-        style={styles.catImage}
-      />
+      <View style={styles.videoContainer}>
+        <Video
+          source={{ uri: preset.imgMain }}
+          style={styles.video}
+          resizeMode='cover'
+          repeat={true}
+          paused={false}
+          muted={true}
+        />
+      </View>
       <Text style={styles.catName}>{preset.name}</Text>
     </TouchableOpacity>
   );
@@ -26,22 +31,30 @@ const styles = StyleSheet.create({
   catCard: {
     alignItems: 'center',
     backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 20,
+    padding: 25,
+    borderRadius: 25,
     elevation: 4,
-    margin: 10,
+    margin: 15,
+    overflow: 'hidden',
+    width: 280,
   },
   selectedCard: {
     borderColor: '#FF6B6B',
     borderWidth: 2,
   },
-  catImage: {
-    width: 150,
-    height: 150,
-    marginBottom: 10,
+  videoContainer: {
+    width: 220,
+    height: 220,
+    marginBottom: 15,
+    borderRadius: 15,
+    overflow: 'hidden',
+  },
+  video: {
+    width: '100%',
+    height: '100%',
   },
   catName: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: '600',
     color: '#555',
   },
