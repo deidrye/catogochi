@@ -9,6 +9,7 @@ const {
   Event,
   Achievement,
   UserAchievement,
+  CatAction,
 } = require('../models');
 
 /** @type {import('sequelize-cli').Migration} */
@@ -102,6 +103,24 @@ module.exports = {
         img: 'scratching-post.svg',
       },
     ]);
+    await CatAction.bulkCreate([
+      {
+        name: 'Покормить',
+        effect: { hp: +10, energy: +20, affection: +5, angry: -5 },
+      },
+      {
+        name: 'Поиграть',
+        effect: { energy: -15, boldness: +10, affection: +5, angry: -5 },
+      },
+      {
+        name: 'Приласкать',
+        effect: { affection: +20, angry: -10, boldness: -5 },
+      },
+      {
+        name: 'Уложить спать',
+        effect: { energy: +30, angry: -10 },
+      },
+    ]);
 
     await CatPreset.bulkCreate([
       {
@@ -110,6 +129,8 @@ module.exports = {
           'https://cdnl.iconscout.com/lottie/premium/thumb/lovely-cat-animated-icon-download-in-lottie-json-gif-static-svg-file-formats--animal-kitten-pet-cute-pack-icons-5473697.mp4',
         imgMain:
           'https://cdnl.iconscout.com/lottie/premium/thumb/cute-cat-sitting-on-pillow-animation-download-in-lottie-json-gif-static-svg-file-formats--activity-pack-animal-animations-5605481.mp4',
+        // imgSleep:
+        //   'https://cdnl.iconscout.com/lottie/premium/thumb/cat-sleeping-on-pillow-animated-icon-download-in-lottie-json-gif-static-svg-file-formats--pretty-logo-rest-sleep-activity-pack-animal-icons-7865287.mp4',
         imgSleep:
           'https://cdnl.iconscout.com/lottie/premium/thumb/cat-sleeping-animation-download-in-lottie-json-gif-static-svg-file-formats--sleep-rest-pack-animal-animations-7795851.mp4',
         imgPlay:
@@ -159,6 +180,7 @@ module.exports = {
         catPresetId: 2,
       },
     ]);
+
     await Event.bulkCreate([
       {
         title: 'Играл с хвостом',
@@ -268,5 +290,6 @@ module.exports = {
     await queryInterface.bulkDelete('Events', null, {});
     await queryInterface.bulkDelete('Achievements', null, {});
     await queryInterface.bulkDelete('UserAchievements', null, {});
+    await queryInterface.bulkDelete('CatActions', null, {});
   },
 };

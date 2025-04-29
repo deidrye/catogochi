@@ -3,7 +3,6 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { CatT } from '@/entities/cat/model/types';
 
-// Тип для пропсов кнопки
 type ActionButtonProps = {
   title: string;
   iconName: string;
@@ -13,10 +12,9 @@ type ActionButtonProps = {
 
 interface CatActionsWidgetProps {
   cat: CatT | null;
-  onAction: (actionType: 'eat' | 'play' | 'weasel' | 'sleep') => void;
+  onAction: (actionType: 'Покормить' | 'Поиграть' | 'Приласкать' | 'Уложить спать') => void;
 }
 
-// Компонент кнопки действия
 const ActionButton: React.FC<ActionButtonProps> = ({ title, iconName, color, onPress }) => (
   <Pressable
     style={({ pressed }) => [
@@ -36,24 +34,11 @@ const ActionButton: React.FC<ActionButtonProps> = ({ title, iconName, color, onP
 
 // Основной компонент виджета
 const CatActionsWidget: React.FC<CatActionsWidgetProps> = ({ cat, onAction }) => {
-  const handleFeed = () => {
-    if (!cat) return;
-    onAction('eat');
-  };
-
-  const handlePlay = () => {
-    if (!cat) return;
-    onAction('play');
-  };
-
-  const handlePet = () => {
-    if (!cat) return;
-    onAction('weasel');
-  };
-
-  const handleSleep = () => {
-    if (!cat) return;
-    onAction('sleep');
+  const handleAction = (actionType: 'Покормить' | 'Поиграть' | 'Приласкать' | 'Уложить спать') => {
+    if (!cat) {
+      return;
+    }
+    onAction(actionType);
   };
 
   return (
@@ -64,11 +49,26 @@ const CatActionsWidget: React.FC<CatActionsWidgetProps> = ({ cat, onAction }) =>
           title='Покормить'
           iconName='restaurant'
           color='#28a745'
-          onPress={handleFeed}
+          onPress={() => handleAction('Покормить')}
         />
-        <ActionButton title='Поиграть' iconName='toys' color='#007bff' onPress={handlePlay} />
-        <ActionButton title='Приласкать' iconName='favorite' color='#dc3545' onPress={handlePet} />
-        <ActionButton title='Уложить спать' iconName='bed' color='#6f42c1' onPress={handleSleep} />
+        <ActionButton
+          title='Поиграть'
+          iconName='toys'
+          color='#007bff'
+          onPress={() => handleAction('Поиграть')}
+        />
+        <ActionButton
+          title='Приласкать'
+          iconName='favorite'
+          color='#dc3545'
+          onPress={() => handleAction('Приласкать')}
+        />
+        <ActionButton
+          title='Уложить спать'
+          iconName='bed'
+          color='#6f42c1'
+          onPress={() => handleAction('Уложить спать')}
+        />
       </View>
     </View>
   );

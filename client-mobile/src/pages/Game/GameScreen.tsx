@@ -4,12 +4,11 @@ import { StyleSheet, View, SafeAreaView, Dimensions, Text } from 'react-native';
 import { RootStackParamList } from '@/app/types/navigation';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import ToysPanelWidget from '@/widgets/ToysPanel/ui/ToysPanel';
-import Toast from 'react-native-toast-message';
 import { CustomToast } from '@/widgets/CustomToast/ui/CustomToast';
 import CatActionsWidget from '@/widgets/CatAction/ui/CatAction';
 import CatStatsWidget from '@/widgets/CatStats/ui/CatStats';
 import { useAppDispatch, useAppSelector } from '@/app/store';
-import { fetchCat } from '@/entities/cat/model/thunks';
+import { fetchCat, updateCat, fetchActions } from '@/entities/cat/model/thunks';
 import { Video, ResizeMode } from 'expo-av';
 
 type GameScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Game'>;
@@ -20,16 +19,18 @@ interface GameScreenProps {
 
 const { width, height } = Dimensions.get('window');
 
-type CatAction = 'eat' | 'play' | 'weasel' | 'sleep' | null;
+type CatAction = 'Покормить' | 'Поиграть' | 'Приласкать' | 'Уложить спать' | null;
 
 export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
   const dispatch = useAppDispatch();
   const cat = useAppSelector((state) => state.cat.cat);
+  const actions = useAppSelector((state) => state.cat.actions);
   const [currentAction, setCurrentAction] = useState<CatAction>(null);
   const [toastText, setToastText] = useState<string | null>(null);
 
   useEffect(() => {
     dispatch(fetchCat());
+    dispatch(fetchActions());
   }, [dispatch]);
 
   useEffect(() => {
@@ -40,36 +41,72 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
   }, [toastText]);
 
   const handlePlay = () => {
-    setCurrentAction('play');
+    setCurrentAction('Поиграть');
     setTimeout(() => {
       setCurrentAction(null);
     }, 3000);
   };
 
-  const handleCatAction = (actionType: CatAction) => {
-    if (!actionType) return;
+  const handleCatAction = async (actionType: CatAction) => {
+    console.log('Starting handleCatAction with:', { actionType, cat, actions });
 
-    setCurrentAction(actionType);
-    setTimeout(() => {
-      setCurrentAction(null);
-    }, 3000);
+    if (!actionType || !cat || !actions) {
+      console.log('Missing required data:', { actionType, cat, actions });
+      return;
+    }
+
+    const action = actions.find((a) => a.name === actionType);
+
+    if (!action) {
+      console.log(
+        'Action not found. Available actions:',
+        actions.map((a) => a.name),
+      );
+      return;
+    }
+
+    try {
+      setCurrentAction(actionType);
+
+      const updatedStats = Object.entries(action.effect).reduce((acc, [key, value]) => {
+        if (typeof cat[key as keyof typeof cat] === 'number') {
+          return {
+            ...acc,
+            [key]: Math.max(
+              0,
+              Math.min(100, (cat[key as keyof typeof cat] as number) + (value || 0)),
+            ),
+          };
+        }
+        return acc;
+      }, {});
+      const updatedCat = { ...cat, ...updatedStats };
+      await dispatch(updateCat(updatedCat)).unwrap();
+
+      setToastText(`${actionType}`);
+    } catch (error) {
+      setToastText('Произошла ошибка при выполнении действия');
+    } finally {
+      setTimeout(() => setCurrentAction(null), 3000);
+    }
   };
 
   const getActionImage = () => {
-    if (!cat?.CatPreset) return cat?.CatPreset?.imgMain || '';
-
-    switch (currentAction) {
-      case 'eat':
-        return cat.CatPreset.imgEat;
-      case 'play':
-        return cat.CatPreset.imgPlay;
-      case 'weasel':
-        return cat.CatPreset.imgWeasel;
-      case 'sleep':
-        return cat.CatPreset.imgSleep;
-      default:
-        return cat.CatPreset.imgMain;
+    if (!cat?.CatPreset) {
+      return '';
     }
+
+    const actionMap: Record<Exclude<CatAction, null>, keyof typeof cat.CatPreset> = {
+      Покормить: 'imgEat',
+      Поиграть: 'imgPlay',
+      Приласкать: 'imgWeasel',
+      'Уложить спать': 'imgSleep',
+    };
+
+    const imageKey = currentAction ? actionMap[currentAction] : 'imgMain';
+    const image = cat.CatPreset[imageKey];
+
+    return image;
   };
 
   return (
@@ -79,8 +116,8 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
           <CustomToast text1={toastText} />
         </View>
       )}
+
       <View style={styles.container}>
-        {/* Центральная часть */}
         <View style={styles.mainContent}>
           {/* Игрушки */}
           <Animated.View entering={FadeInUp.duration(500)} style={styles.toysContainer}>
@@ -91,18 +128,16 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
           <Animated.View entering={FadeInUp.duration(600).delay(100)} style={styles.catContainer}>
             <View style={styles.cat}>
               {cat?.CatPreset ? (
-                <View style={styles.cat}>
-                  <Video
-                    source={{ uri: getActionImage() }}
-                    style={styles.catImage}
-                    videoStyle={styles.catImage}
-                    resizeMode={ResizeMode.CONTAIN}
-                    shouldPlay
-                    isLooping
-                    isMuted
-                    useNativeControls={false}
-                  />
-                </View>
+                <Video
+                  source={{ uri: getActionImage() as string }}
+                  style={styles.catImage}
+                  videoStyle={styles.catImage}
+                  resizeMode={ResizeMode.CONTAIN}
+                  shouldPlay
+                  isLooping
+                  isMuted
+                  useNativeControls={false}
+                />
               ) : (
                 <Text style={styles.catText}>🐱</Text>
               )}
@@ -128,7 +163,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#FFF', // Тёплый бежевый фон
+    backgroundColor: '#FFF',
   },
   container: {
     flex: 1,
