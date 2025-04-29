@@ -8,6 +8,7 @@ export const catPresetSchema = z.object({
   imgPlay: z.string(),
   imgEat: z.string(),
   imgWeasel: z.string(),
+  imgCreate: z.string(),
 });
 
 export const catSchema = z.object({

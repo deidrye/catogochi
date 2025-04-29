@@ -16,7 +16,7 @@ class CatService {
       where: { userId: id },
       include: {
         model: CatPreset,
-        attributes: ['id', 'name', 'imgMain', 'imgSleep', 'imgPlay', 'imgEat', 'imgWeasel'],
+        attributes: ['id', 'name', 'imgMain', 'imgSleep', 'imgPlay', 'imgEat', 'imgWeasel', 'imgCreate'],
       },
     });
     if (!cat) throw new Error('Cat not found');
@@ -50,7 +50,7 @@ class CatService {
       where: { userId: id },
       include: {
         model: CatPreset,
-        attributes: ['id', 'name', 'imgMain', 'imgSleep', 'imgPlay', 'imgEat', 'imgWeasel'],
+        attributes: ['id', 'name', 'imgMain', 'imgSleep', 'imgPlay', 'imgEat', 'imgWeasel', 'imgCreate'],
       },
     });
 

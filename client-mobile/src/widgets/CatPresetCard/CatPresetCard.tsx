@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import Video from 'react-native-video';
 import { CatPresetT } from '@/entities/cat/model/types';
+import { ResizeMode, Video } from 'expo-av';
 
 interface CatPresetCardProps {
   preset: CatPresetT;
@@ -14,12 +14,14 @@ export const CatPresetCard: React.FC<CatPresetCardProps> = ({ preset, isSelected
     <TouchableOpacity style={[styles.catCard, isSelected && styles.selectedCard]} onPress={onPress}>
       <View style={styles.videoContainer}>
         <Video
-          source={{ uri: preset.imgMain }}
+          source={{ uri: preset.imgCreate }}
           style={styles.video}
-          resizeMode='cover'
-          repeat={true}
-          paused={false}
-          muted={true}
+          videoStyle={styles.video}
+          resizeMode={ResizeMode.CONTAIN}
+          isLooping
+          isMuted
+          shouldPlay
+          useNativeControls={false}
         />
       </View>
       <Text style={styles.catName}>{preset.name}</Text>
@@ -30,32 +32,45 @@ export const CatPresetCard: React.FC<CatPresetCardProps> = ({ preset, isSelected
 const styles = StyleSheet.create({
   catCard: {
     alignItems: 'center',
-    backgroundColor: '#fff',
-    padding: 25,
-    borderRadius: 25,
-    elevation: 4,
-    margin: 15,
+    justifyContent: 'center',
+    padding: 20,
+    borderRadius: 20,
+    elevation: 5,
+    margin: 12,
     overflow: 'hidden',
-    width: 280,
+    width: 260,
+    flex: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
   },
   selectedCard: {
     borderColor: '#FF6B6B',
-    borderWidth: 2,
+    borderWidth: 3,
+    transform: [{ scale: 1.05 }],
+    shadowOpacity: 0.5,
   },
   videoContainer: {
-    width: 220,
-    height: 220,
+    width: 240,
+    height: 240,
     marginBottom: 15,
-    borderRadius: 15,
+    borderRadius: 20,
     overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center', // Добавлено для центрирования содержимого
+    flex: 1,
   },
   video: {
-    width: '100%',
-    height: '100%',
+    width: 220,
+    height: 220,
   },
   catName: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '600',
-    color: '#555',
+    color: '#333',
+    textShadowColor: '#fff',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 3,
   },
 });
