@@ -246,6 +246,14 @@ module.exports = {
         achievementId: 1,
       },
       {
+        userId: 1,
+        achievementId: 2,
+      },
+      {
+        userId: 2,
+        achievementId: 1,
+      },
+      {
         userId: 2,
         achievementId: 2,
       },

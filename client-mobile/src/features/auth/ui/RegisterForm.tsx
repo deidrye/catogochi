@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, TextInput, StyleSheet, TouchableOpacity, Text } from 'react-native';
-import { useAppDispatch } from '../../../app/store';
+import { useAppDispatch, useAppSelector } from '../../../app/store';
 import { register } from '../model/thunks';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../app/types/navigation';
-import { registerSchema } from '../../../shared/lib/zod/schemas';
+import { registerSchema, userSchema } from '../../../shared/lib/zod/schemas';
+import { AchieveT } from '@/entities/achievements/model/types';
+import { pushUserAchieve } from '@/entities/achievements/model/slice';
+import { setPoints } from '@/entities/user/model/userSlice';
+import { setLogsAndGetAchieves } from '@/features/logs-feature/model/checkLog';
+import { fetchUserPoints } from '@/entities/user/model/userThunks';
 
 type RegisterFormNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Register'>;
 
@@ -18,11 +23,33 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [error, setError] = useState('');
+  const points = useAppSelector((store) => store.user.points);
+  const pointsRef = useRef(points);
+  useEffect(() => {
+    pointsRef.current = points;
+  }, [points]);
 
   const handleSubmit = async () => {
     try {
       const data = registerSchema.parse({ email, password, name });
-      await dispatch(register(data)).unwrap();
+      const regRes = await dispatch(register(data)).unwrap();
+      const user = userSchema.parse(regRes);
+      await dispatch(fetchUserPoints(user.user.id)).unwrap();
+
+      const setAchieveCallback = (achieve: AchieveT) => void dispatch(pushUserAchieve(achieve));
+      const setPointsCallback = (actualPoints: number) => void dispatch(setPoints(actualPoints));
+      const actualPoints = pointsRef.current;
+
+      await setLogsAndGetAchieves(
+        {
+          userId: user.user.id,
+          type: 'Basic',
+          achievementId: 1,
+          nowPoints: actualPoints,
+        },
+        setAchieveCallback,
+        setPointsCallback,
+      );
       navigation.navigate('CreateCat');
     } catch (err: any) {
       setError(err.message || 'Ошибка регистрации');

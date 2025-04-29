@@ -2,21 +2,26 @@ import { LogT } from '../schema/logSchema';
 import axiosInstance from '../../../shared/api/axiosInstance';
 import { AchieveT } from '@/entities/achievements/model/types';
 import { achieveSchema } from '@/entities/achievements/model/schema';
-import { useAppDispatch, useAppSelector } from '@/app/store';
-// const dispatch = useAppDispatch()
 
 export const setLogsAndGetAchieves = async (
-  { userId, type, eventId = null, toyId = null, nowPoints }: LogT,
+  { userId, type, eventId = null, toyId = null, achievementId = null, nowPoints }: LogT,
   callbackAchieve: (achieve: AchieveT) => void,
   callbackPoints: (points: AchieveT['reward']) => void,
 ) => {
-  const response = await axiosInstance.post('/logs', { userId, type, eventId, toyId });
+  const response = await axiosInstance.post('/logs', {
+    userId,
+    type,
+    eventId,
+    toyId,
+    achievementId,
+  });
   const achieves = achieveSchema.array().parse(response.data);
   if (achieves.length > 0) {
     achieves.forEach((achieve) => {
       callbackAchieve(achieve);
     });
     const sumPoints = achieves.reduce((acc, achieve) => acc + achieve.reward, 0);
+
     const pointsResponse = await axiosInstance.put(`/users/${userId}`, {
       points: nowPoints + sumPoints,
     });
