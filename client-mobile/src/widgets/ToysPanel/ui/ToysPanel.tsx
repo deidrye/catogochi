@@ -70,8 +70,11 @@ const ToysPanelWidget: React.FC<ToysPanelProps> = ({ cat, onPlay }) => {
   const isLoading = useAppSelector((state) => state.toy.isLoading);
   const catId = cat?.id;
   const user = useAppSelector((store) => store.auth.user);
+  const points = useAppSelector((store) => store.user.points);
 
   useEffect(() => {
+    console.log(catId);
+
     if (catId) {
       dispatch(fetchOwnedToys(catId));
     }
@@ -113,7 +116,7 @@ const ToysPanelWidget: React.FC<ToysPanelProps> = ({ cat, onPlay }) => {
     const setAchieveCallback = (achieve: AchieveT) => void dispatch(pushUserAchieve(achieve));
     const setPointsCallback = (points: number) => void dispatch(setPoints(points));
     await setLogsAndGetAchieves(
-      { userId: user!.user.id, type: 'ToyGame', toyId: event.Toy.id },
+      { userId: user!.user.id, type: 'ToyGame', toyId: event.Toy.id, nowPoints: points },
       setAchieveCallback,
       setPointsCallback,
     );

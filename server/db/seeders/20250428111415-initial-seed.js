@@ -107,13 +107,15 @@ module.exports = {
       {
         name: 'Мурзик',
         imgMain:
-          'https://img.freepik.com/free-vector/sweet-eyed-kitten-cartoon-character_1308-135596.jpg?t=st=1745839355~exp=1745842955~hmac=e1299feacdbc6a328ac4af40a7ac0fa258e0841709678b7385c94d1ad65037d5&w=740',
+          'https://cdnl.iconscout.com/lottie/premium/thumb/cute-cat-sitting-on-pillow-animation-download-in-lottie-json-gif-static-svg-file-formats--activity-pack-animal-animations-5605481.mp4',
         imgSleep:
-          'https://yac-wh-sb-prod-s3-media-07001.storage.yandexcloud.net/media/images/image_25.max-2880x1820.format-png_joUIUcI.png',
+          'https://cdnl.iconscout.com/lottie/premium/thumb/cat-sleeping-animation-download-in-lottie-json-gif-static-svg-file-formats--sleep-rest-pack-animal-animations-7795851.mp4',
         imgPlay:
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgKn_4N7PLQHZkRnMhI5bVgWZtYpunp2xK7Q&s',
-        imgEat: 'https://zoo-perm.ru/wp-content/uploads/2022/01/kot-est-myaso.jpg',
-        imgWeasel: 'https://news.itmo.ru/images/news/big/p8680.jpg',
+          'https://cdnl.iconscout.com/lottie/premium/thumb/cat-playing-with-ball-animated-icon-download-in-lottie-json-gif-static-svg-file-formats--play-kitten-kitty-pack-animal-icons-5473699.mp4',
+        imgEat:
+          'https://cdnl.iconscout.com/lottie/premium/thumb/cat-drinking-milk-animation-download-in-lottie-json-gif-static-svg-file-formats--pretty-logo-pet-cute-activity-pack-animal-animations-6614175.mp4',
+        imgWeasel:
+          'https://cdnl.iconscout.com/lottie/premium/thumb/lovely-cat-animated-icon-download-in-lottie-json-gif-static-svg-file-formats--lover-animal-kitten-pet-pack-icons-5473698.mp4',
       },
 
       {
@@ -247,11 +249,12 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    /**
-     * Add commands to revert seed here.
-     *
-     * Example:
-     * await queryInterface.bulkDelete('People', null, {});
-     */
+    await queryInterface.bulkDelete('Users', null, {});
+    await queryInterface.bulkDelete('Toys', null, {});
+    await queryInterface.bulkDelete('CatPresets', null, {});
+    await queryInterface.bulkDelete('Cats', null, {});
+    await queryInterface.bulkDelete('Events', null, {});
+    await queryInterface.bulkDelete('Achievements', null, {});
+    await queryInterface.bulkDelete('UserAchievements', null, {});
   },
 };
