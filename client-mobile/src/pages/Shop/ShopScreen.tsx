@@ -61,16 +61,15 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
   const shopToys = useAppSelector((state) => state.toy.shopToys);
   const isLoading = useAppSelector((state) => state.toy.isLoading);
 
-  const catId = useAppSelector((store) => store.cat.cat?.id); // замените по необходимости
-
+  const catId = useAppSelector((store) => store.cat.cat?.id);
   const [initialLoading, setInitialLoading] = useState(true);
 
   // Анимации
   const balanceOpacity = useState(new Animated.Value(0))[0];
   const balanceTranslateY = useState(new Animated.Value(10))[0];
   const balanceScale = useState(new Animated.Value(1))[0];
-  const [optimisticToys, setOptimisticToys] = useState<number[]>([]); // Локальное состояние для оптимистичных toyId
-  const [isBuying, setIsBuying] = useState<Record<number, boolean>>({}); // Состояние для блокировки кнопок
+
+  const [loadingButtons, setLoadingButtons] = useState<Record<number, boolean>>({});
   const user = useAppSelector((store) => store.auth.user);
   const points = useAppSelector((store) => store.user.points);
 
@@ -123,9 +122,9 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
       return;
     }
 
-    setOptimisticToys((prev) => [...prev, toy.id]);
-    setIsBuying((prev) => ({ ...prev, [toy.id]: true }));
+    setLoadingButtons((prev) => ({ ...prev, [toy.id]: true }));
     dispatch(setPoints(-toy.price));
+
     try {
       await dispatch(buyToy({ catId: catId!, toyId: toy.id })).unwrap();
       await dispatch(fetchOwnedToys(catId!)).unwrap();
@@ -133,45 +132,50 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
       const setAchieveCallback = (achieve: AchieveT) => void dispatch(pushUserAchieve(achieve));
       const setPointsCallback = (points: number) => void dispatch(setPoints(points));
       await setLogsAndGetAchieves(
-        { userId: user!.user.id, type: 'BuyToy', toyId: toy.id },
+        { userId: user!.user.id, type: 'BuyToy', toyId: toy.id, nowPoints: points - toy.price },
         setAchieveCallback,
         setPointsCallback,
       );
     } catch (error) {
       console.error('Ошибка при покупке игрушки:', error);
-      setOptimisticToys((prev) => prev.filter((id) => id !== toy.id));
+      // Возвращаем баллы при ошибке
+      dispatch(setPoints(toy.price));
     } finally {
-      setIsBuying((prev) => ({ ...prev, [toy.id]: false }));
+      setLoadingButtons((prev) => ({ ...prev, [toy.id]: false }));
     }
   };
 
-  const isToyBought = (toyId: number) =>
-    ownedToys.some((item) => item.toyId === toyId) || optimisticToys.includes(toyId);
+  const isToyBought = (toyId: number) => ownedToys.some((item) => item.toyId === toyId);
 
-  const renderToy = ({ item }: { item: (typeof shopToys)[number] }) => {
-    const IconComponent = iconMap[item.img];
-    const bought = isToyBought(item.id);
-    const buying = isBuying[item.id] || false;
+  const renderToy = React.useCallback(
+    ({ item }: { item: (typeof shopToys)[number] }) => {
+      const IconComponent = iconMap[item.img];
+      const bought = isToyBought(item.id);
+      const isLoading = loadingButtons[item.id] || false;
 
-    return (
-      <View style={styles.card}>
-        <IconComponent width={80} height={80} />
-        <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.price}>{item.price} рыбок </Text>
-        <TouchableOpacity
-          style={[styles.buyButton, bought && styles.disabledButton]}
-          onPress={() => !bought && !buying && handleBuyToy(item)}
-          disabled={bought || buying}
-        >
-          <Text style={styles.buyText}>
-            {buying ? 'Покупка...' : bought ? 'Куплено' : 'Купить'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    );
-  };
+      return (
+        <View style={styles.card}>
+          <IconComponent width={80} height={80} />
+          <Text style={styles.name}>{item.name}</Text>
+          <Text style={styles.price}>{item.price} рыбок </Text>
+          <TouchableOpacity
+            style={[styles.buyButton, (bought || isLoading) && styles.disabledButton]}
+            onPress={() => !bought && !isLoading && handleBuyToy(item)}
+            disabled={bought || isLoading}
+          >
+            {isLoading ? (
+              <ActivityIndicator size='small' color='#fff' />
+            ) : (
+              <Text style={styles.buyText}>{bought ? 'Куплено' : 'Купить'}</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      );
+    },
+    [ownedToys, loadingButtons],
+  );
 
-  if (initialLoading || isLoading) {
+  if (initialLoading) {
     return (
       <View style={styles.container}>
         <ActivityIndicator size='large' color='#FF8C00' />
@@ -205,6 +209,7 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
         numColumns={2}
         columnWrapperStyle={styles.row}
         contentContainerStyle={styles.list}
+        extraData={{ ownedToys, loadingButtons }} // Передаем только необходимые данные для ререндера
       />
     </View>
   );
@@ -256,6 +261,10 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 12,
+    minWidth: 80,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 36,
   },
   disabledButton: {
     backgroundColor: '#ccc',
@@ -266,19 +275,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   pointsWrapper: {
-    backgroundColor: '#FFFAF0', // мягкий фон
+    backgroundColor: '#FFFAF0',
     alignSelf: 'flex-end',
     marginBottom: 12,
     paddingVertical: 6,
     paddingHorizontal: 14,
-    borderRadius: 20, // скругление посильнее как бейдж
+    borderRadius: 20,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 6,
     elevation: 6,
     borderWidth: 1,
-    borderColor: '#FF8C00', // лёгкая рамка в цвет акцента
+    borderColor: '#FF8C00',
   },
   pointsAmount: {
     fontSize: 15,
