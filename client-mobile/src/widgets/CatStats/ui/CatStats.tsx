@@ -18,7 +18,16 @@ const StatRow: React.FC<StatProps> = ({ label, value, color }) => (
       </Text>
       <Text style={styles.statValue}>{value}%</Text>
     </View>
-    <Progress.Bar progress={value / 100} width={null} color={color} style={styles.progressBar} />
+    <Progress.Bar
+      progress={value / 100}
+      width={null}
+      height={20}
+      color={color}
+      borderColor={color} // Цвет рамки
+      borderWidth={1} // Толщина рамки
+      unfilledColor='transparent' // Без фона
+      style={styles.progressBar}
+    />
   </>
 );
 
@@ -27,7 +36,9 @@ const CatStatsWidget: React.FC<{ cat: CatT | null }> = ({ cat }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Статистика состояния кота</Text>
+      <Text style={styles.title}>Статистика</Text>
+      <Text style={styles.title}>состояния</Text>
+      <Text style={styles.endTitle}>кота</Text>
       <StatRow label='Злость' value={cat.angry} color='#FF6347' />
       <StatRow label='Здоровье' value={cat.hp} color='#32CD32' />
       <StatRow label='Энергия' value={cat.energy} color='#FFD700' />
@@ -39,18 +50,24 @@ const CatStatsWidget: React.FC<{ cat: CatT | null }> = ({ cat }) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
-    padding: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.07)',
+    padding: 11,
     borderRadius: 15,
-    width: '80%',
+    width: '100%',
     marginTop: 20,
     alignItems: 'center',
   },
   title: {
-    fontSize: 20,
-    color: '#fff',
+    fontSize: 14,
+    color: 'black',
     fontWeight: 'bold',
-    marginBottom: 15,
+    letterSpacing: 0.2,
+  },
+  endTitle: {
+    fontSize: 14,
+    color: 'black',
+    fontWeight: 'bold',
+    marginBottom: 20,
   },
   statRow: {
     flexDirection: 'row',
@@ -58,18 +75,18 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   statLabel: {
-    fontSize: 16,
-    color: '#fff',
+    fontSize: 13,
+    color: 'black',
   },
   statValue: {
-    fontSize: 16,
-    color: '#fff',
-    marginLeft: 10,
+    fontSize: 13,
+    color: 'black',
+    marginLeft: 4,
     fontWeight: 'bold',
   },
   progressBar: {
     width: '100%',
-    height: 8,
+    height: 20,
     marginBottom: 20,
   },
 });

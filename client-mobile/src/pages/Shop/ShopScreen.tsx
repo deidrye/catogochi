@@ -14,6 +14,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAppDispatch, useAppSelector } from '@/app/store';
 import { buyToy, fetchOwnedToys, fetchShopToys } from '@/entities/toy/model/toyThunks';
 import { useAuth } from '@/hooks/useAuth';
+import { Audio } from 'expo-av';
+import buySoundFile from '@/assets/sounds/buying.mp3';
 
 // SVG иконки
 import BallIcon from '@/assets/toys/ball.svg';
@@ -34,6 +36,7 @@ import { AchieveT } from '@/entities/achievements/model/types';
 import { pushUserAchieve } from '@/entities/achievements/model/slice';
 import { setPoints } from '@/entities/user/model/userSlice';
 import { ToyType } from '@/entities/toy/model/toyType';
+import { NotEnoughPointsModal } from '@/widgets/NotEnoughPointsModal/NotEnoughPointsModal';
 
 const iconMap: Record<string, React.FC<any>> = {
   'ball.svg': BallIcon,
@@ -73,6 +76,33 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
   const user = useAppSelector((store) => store.auth.user);
   const points = useAppSelector((store) => store.user.points);
   const pointsRef = useRef(points);
+
+  const [showModal, setShowModal] = useState(false);
+  const [selectedToy, setSelectedToy] = useState<ToyType | null>(null);
+ 
+  // Звук при покупке
+  const buySound = useRef<Audio.Sound | null>(null);
+
+  useEffect(() => {
+    const loadSound = async () => {
+      const { sound } = await Audio.Sound.createAsync(buySoundFile);
+      buySound.current = sound;
+    };
+    loadSound();
+  
+    return () => {
+      buySound.current?.unloadAsync();
+    };
+  }, []);
+
+  const playBuySound = async () => {
+    try {
+      await buySound.current?.replayAsync();
+    } catch (err) {
+      console.warn('Ошибка воспроизведения звука:', err);
+    }
+  };
+
   useEffect(() => {
     pointsRef.current = points;
   }, [points]);
@@ -132,6 +162,7 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
       await dispatch(setPoints(-toy.price));
       try {
         await dispatch(buyToy({ catId: catId!, toyId: toy.id })).unwrap();
+        await playBuySound();
         await dispatch(fetchOwnedToys(catId!)).unwrap();
         const setAchieveCallback = (achieve: AchieveT) => void dispatch(pushUserAchieve(achieve));
         const setPointsCallback = (actualPoints: number) => void dispatch(setPoints(actualPoints));
@@ -152,6 +183,9 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
       } finally {
         setLoadingButtons((prev) => ({ ...prev, [toy.id]: false }));
       }
+    } else {
+      setSelectedToy(toy);
+      setShowModal(true);
     }
   };
 
@@ -220,6 +254,14 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
         columnWrapperStyle={styles.row}
         contentContainerStyle={styles.list}
         extraData={{ ownedToys, loadingButtons }} // Передаем только необходимые данные для ререндера
+      />
+
+      <NotEnoughPointsModal
+        visible={showModal}
+        onClose={() => setShowModal(false)}
+        toyName={selectedToy?.name || ''}
+        toyPrice={selectedToy?.price || 0}
+        currentPoints={points}
       />
     </View>
   );
