@@ -9,6 +9,7 @@ const {
   Event,
   Achievement,
   UserAchievement,
+  CatAction,
 } = require('../models');
 
 /** @type {import('sequelize-cli').Migration} */
@@ -102,6 +103,24 @@ module.exports = {
         img: 'scratching-post.svg',
       },
     ]);
+    await CatAction.bulkCreate([
+      {
+        name: 'Покормить',
+        effect: { hp: +10, energy: +20, affection: +5, angry: -5 },
+      },
+      {
+        name: 'Поиграть',
+        effect: { energy: -15, boldness: +10, affection: +5, angry: -5 },
+      },
+      {
+        name: 'Приласкать',
+        effect: { affection: +20, angry: -10, boldness: -5 },
+      },
+      {
+        name: 'Уложить спать',
+        effect: { energy: +30, angry: -10 },
+      },
+    ]);
 
     await CatPreset.bulkCreate([
       {
@@ -159,6 +178,7 @@ module.exports = {
         catPresetId: 2,
       },
     ]);
+
     await Event.bulkCreate([
       {
         title: 'Играл с хвостом',
@@ -268,5 +288,6 @@ module.exports = {
     await queryInterface.bulkDelete('Events', null, {});
     await queryInterface.bulkDelete('Achievements', null, {});
     await queryInterface.bulkDelete('UserAchievements', null, {});
+    await queryInterface.bulkDelete('CatActions', null, {});
   },
 };

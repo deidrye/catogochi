@@ -1,4 +1,4 @@
-import { catPresetSchema, catSchema } from '../model/schema';
+import { catActionSchema, catPresetSchema, catSchema } from '../model/schema';
 import { CatT, CreateCatT } from '../model/types';
 import axiosInstance from '@/shared/api/axiosInstance';
 
@@ -42,6 +42,15 @@ export class CatService {
     } catch (error) {
       console.error(error);
       throw new Error('updateCat error');
+    }
+  }
+  static async getActions() {
+    try {
+      const response = await axiosInstance.get('/cat-actions');
+      return catActionSchema.array().parse(response.data);
+    } catch (error) {
+      console.error(error);
+      throw new Error('getActions error');
     }
   }
 }

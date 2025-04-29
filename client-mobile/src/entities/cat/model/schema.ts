@@ -31,10 +31,23 @@ export const createCatSchema = z.object({
   userId: z.number(),
 });
 
+export const catActionSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  effect: z.object({
+    hp: z.number().optional(),
+    energy: z.number().optional(),
+    affection: z.number().optional(),
+    boldness: z.number().optional(),
+    angry: z.number().optional(),
+  }),
+});
+
 export const catSliceSchema = z.object({
   presets: z.array(catPresetSchema),
   selectedPresetIndex: z.number(),
   isLoading: z.boolean(),
   error: z.string().nullable(),
   cat: catSchema.nullable(),
+  actions: z.array(catActionSchema),
 });

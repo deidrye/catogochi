@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { CatPresetT } from '@/entities/cat/model/types';
 import { ResizeMode, Video } from 'expo-av';
@@ -10,10 +10,13 @@ interface CatPresetCardProps {
 }
 
 export const CatPresetCard: React.FC<CatPresetCardProps> = ({ preset, isSelected, onPress }) => {
+  const videoRef = useRef<Video>(null);
+
   return (
     <TouchableOpacity style={[styles.catCard, isSelected && styles.selectedCard]} onPress={onPress}>
       <View style={styles.videoContainer}>
         <Video
+          ref={videoRef}
           source={{ uri: preset.imgCreate }}
           style={styles.video}
           videoStyle={styles.video}
