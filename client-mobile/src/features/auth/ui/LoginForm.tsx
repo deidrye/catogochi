@@ -5,6 +5,8 @@ import { login } from '../model/thunks';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../app/types/navigation';
 import { loginSchema } from '../../../shared/lib/zod/schemas';
+import { fetchCat } from '@/entities/cat/model/thunks';
+import { catSchema } from '@/entities/cat/model/schema';
 
 type LoginFormNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Login'>;
 
@@ -25,7 +27,12 @@ export const LoginForm: React.FC<LoginFormProps> = ({ navigation }) => {
       console.log('Данные для входа валидны:', data);
       const result = await dispatch(login(data)).unwrap();
       console.log('Успешный вход, результат:', result);
-      navigation.navigate('CreateCat');
+      const response = await dispatch(fetchCat());
+      if (!!response.payload) {
+        navigation.navigate('Main');
+      } else {
+        navigation.navigate('CreateCat');
+      }
     } catch (err: any) {
       console.error('Ошибка при входе:', {
         message: err.message,
