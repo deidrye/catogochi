@@ -10,6 +10,7 @@ import CatStatsWidget from '@/widgets/CatStats/ui/CatStats';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import { useAppDispatch, useAppSelector } from '@/app/store';
 import { fetchCat } from '@/entities/cat/model/thunks';
+import Video from 'react-native-video';
 
 type GameScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Game'>;
 
@@ -77,16 +78,21 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
           <Animated.View entering={FadeInUp.duration(600).delay(100)} style={styles.catContainer}>
             <View style={styles.cat}>
               {cat?.CatPreset ? (
-                <Image
-                  source={{ uri: getActionImage() }}
-                  style={styles.catImage}
-                  resizeMode='contain'
-                />
+                <View style={styles.cat}>
+                  <Video
+                    source={{ uri: getActionImage() }}
+                    style={styles.catImage}
+                    resizeMode='contain'
+                    repeat={true}
+                    paused={false}
+                    muted={true}
+                  />
+                </View>
               ) : (
                 <Text style={styles.catText}>🐱</Text>
               )}
-              <Text style={styles.catName}>{cat?.name}</Text>
             </View>
+            <Text style={styles.catName}>{cat?.name}</Text>
           </Animated.View>
 
           {/* Статы */}

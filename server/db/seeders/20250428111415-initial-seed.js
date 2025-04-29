@@ -30,84 +30,72 @@ module.exports = {
 
     await Toy.bulkCreate([
       {
-        id: 1,
         name: 'Мячик',
         price: 35,
         effect: { energy: -15, angry: -5, boldness: 5 },
         img: 'ball.svg',
       },
       {
-        id: 2,
         name: 'Елка',
         price: 15,
         effect: { affection: 5, energy: +5, angry: 5 },
         img: 'christmas-tree.svg',
       },
       {
-        id: 3,
         name: 'Клубок',
         price: 35,
         effect: { energy: -10, hp: -5, angry: -5 },
         img: 'clew.svg',
       },
       {
-        id: 4,
         name: 'Перо',
         price: 30,
         effect: { energy: -10, affection: 5, boldness: 5 },
         img: 'feather.svg',
       },
       {
-        id: 5,
         name: 'Удочка',
         price: 15,
         effect: { energy: -10, boldness: 10 },
         img: 'fish-rod.svg',
       },
       {
-        id: 6,
         name: 'Рыбка',
         price: 20,
         effect: { affection: 15, hp: 5, angry: -10 },
         img: 'fish.svg',
       },
       {
-        id: 7,
         name: 'Лазер',
         price: 25,
         effect: { energy: -20, boldness: 15, angry: 10 },
         img: 'laser-pen.svg',
       },
       {
-        id: 8,
         name: 'Мышка',
         price: 10,
         effect: { hp: 5, affection: 5, energy: -5 },
         img: 'mouse.svg',
       },
       {
-        id: 9,
         name: 'Газета',
         price: 15,
         effect: { angry: 15, affection: -10 },
         img: 'newspaper.svg',
       },
       {
-        id: 10,
         name: 'Осьминог',
         price: 20,
         effect: { affection: 10, boldness: 5 },
         img: 'octopus.svg',
       },
       {
-        id: 11,
         name: 'Динозавр',
         price: 25,
         effect: { boldness: 20, angry: 5, hp: -10 },
         img: 'rex.svg',
       },
       {
-        id: 12,
         name: 'Когтеточка',
         price: 30,
         effect: { energy: -10, angry: -10, hp: +5 },
@@ -119,13 +107,15 @@ module.exports = {
       {
         name: 'Мурзик',
         imgMain:
-          'https://img.freepik.com/free-vector/sweet-eyed-kitten-cartoon-character_1308-135596.jpg?t=st=1745839355~exp=1745842955~hmac=e1299feacdbc6a328ac4af40a7ac0fa258e0841709678b7385c94d1ad65037d5&w=740',
+          'https://cdnl.iconscout.com/lottie/premium/thumb/cute-cat-sitting-on-pillow-animation-download-in-lottie-json-gif-static-svg-file-formats--activity-pack-animal-animations-5605481.mp4',
         imgSleep:
-          'https://yac-wh-sb-prod-s3-media-07001.storage.yandexcloud.net/media/images/image_25.max-2880x1820.format-png_joUIUcI.png',
+          'https://cdnl.iconscout.com/lottie/premium/thumb/cat-sleeping-animation-download-in-lottie-json-gif-static-svg-file-formats--sleep-rest-pack-animal-animations-7795851.mp4',
         imgPlay:
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgKn_4N7PLQHZkRnMhI5bVgWZtYpunp2xK7Q&s',
-        imgEat: 'https://zoo-perm.ru/wp-content/uploads/2022/01/kot-est-myaso.jpg',
-        imgWeasel: 'https://news.itmo.ru/images/news/big/p8680.jpg',
+          'https://cdnl.iconscout.com/lottie/premium/thumb/cat-playing-with-ball-animated-icon-download-in-lottie-json-gif-static-svg-file-formats--play-kitten-kitty-pack-animal-icons-5473699.mp4',
+        imgEat:
+          'https://cdnl.iconscout.com/lottie/premium/thumb/cat-drinking-milk-animation-download-in-lottie-json-gif-static-svg-file-formats--pretty-logo-pet-cute-activity-pack-animal-animations-6614175.mp4',
+        imgWeasel:
+          'https://cdnl.iconscout.com/lottie/premium/thumb/lovely-cat-animated-icon-download-in-lottie-json-gif-static-svg-file-formats--lover-animal-kitten-pet-pack-icons-5473698.mp4',
       },
 
       {
@@ -259,11 +249,12 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    /**
-     * Add commands to revert seed here.
-     *
-     * Example:
-     * await queryInterface.bulkDelete('People', null, {});
-     */
+    await queryInterface.bulkDelete('Users', null, {});
+    await queryInterface.bulkDelete('Toys', null, {});
+    await queryInterface.bulkDelete('CatPresets', null, {});
+    await queryInterface.bulkDelete('Cats', null, {});
+    await queryInterface.bulkDelete('Events', null, {});
+    await queryInterface.bulkDelete('Achievements', null, {});
+    await queryInterface.bulkDelete('UserAchievements', null, {});
   },
 };
