@@ -13,7 +13,7 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     setPoints(state, action: PayloadAction<number>) {
-      if (state.points + action.payload > 0) state.points += action.payload;
+      if (state.points + action.payload >= 0) state.points += action.payload;
     },
   },
   extraReducers: (builder) => {

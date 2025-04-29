@@ -1,3 +1,4 @@
+import Animated, { FadeInUp } from 'react-native-reanimated';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, SafeAreaView, Dimensions, Text, Image } from 'react-native';
 import { RootStackParamList } from '@/app/types/navigation';
@@ -7,7 +8,6 @@ import Toast from 'react-native-toast-message';
 import { CustomToast } from '@/widgets/CustomToast/ui/CustomToast';
 import CatActionsWidget from '@/widgets/CatAction/ui/CatAction';
 import CatStatsWidget from '@/widgets/CatStats/ui/CatStats';
-import Animated, { FadeInUp } from 'react-native-reanimated';
 import { useAppDispatch, useAppSelector } from '@/app/store';
 import { fetchCat } from '@/entities/cat/model/thunks';
 import Video from 'react-native-video';
