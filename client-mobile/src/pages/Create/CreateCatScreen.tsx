@@ -1,17 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/app/types/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { fetchPresets, createCat } from '@/entities/cat/model/thunks';
-import { RootState, AppDispatch } from '@/app/store';
+import { RootState, AppDispatch, useAppSelector } from '@/app/store';
 import { CreateCatT, CatPresetT } from '@/entities/cat/model/types';
 import { CatPresetList } from '@/widgets/CatPresetList/CatPresetList';
 import { CreateCatButton } from '@/widgets/CreateCatButton/CreateCatButton';
 import { LoadingScreen } from '@/widgets/LoadingScreen/LoadingScreen';
 import { NoPresetsScreen } from '@/widgets/NoPresetsScreen/NoPresetsScreen';
 import { AuthGuard } from '@/widgets/AuthGuard/AuthGuard';
+import { AchieveT } from '@/entities/achievements/model/types';
+import { pushUserAchieve } from '@/entities/achievements/model/slice';
+import { setPoints } from '@/entities/user/model/userSlice';
+import { setLogsAndGetAchieves } from '@/features/logs-feature/model/checkLog';
 
 type CreateCatScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'CreateCat'>;
 
@@ -23,8 +27,12 @@ export default function CreateCatScreen({ navigation }: CreateCatScreenProps) {
   const dispatch = useDispatch<AppDispatch>();
   const { presets, isLoading } = useSelector((state: RootState) => state.cat);
   const { user } = useAuth();
-
   const [selectedPreset, setSelectedPreset] = useState<CatPresetT | null>(null);
+  const points = useAppSelector((store) => store.user.points);
+  const pointsRef = useRef(points);
+  useEffect(() => {
+    pointsRef.current = points;
+  }, [points]);
 
   useEffect(() => {
     dispatch(fetchPresets());
@@ -43,6 +51,20 @@ export default function CreateCatScreen({ navigation }: CreateCatScreenProps) {
         userId: user!.user.id,
       };
       await dispatch(createCat(catData)).unwrap();
+
+      const setAchieveCallback = (achieve: AchieveT) => void dispatch(pushUserAchieve(achieve));
+      const setPointsCallback = (actualPoints: number) => void dispatch(setPoints(actualPoints));
+      const actualPoints = pointsRef.current;
+      await setLogsAndGetAchieves(
+        {
+          userId: user!.user.id,
+          type: 'Basic',
+          nowPoints: actualPoints,
+        },
+        setAchieveCallback,
+        setPointsCallback,
+      );
+
       navigation.navigate('Main');
     } catch (error) {
       Alert.alert('Ошибка', 'Не удалось создать кота');

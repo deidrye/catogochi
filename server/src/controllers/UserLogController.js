@@ -26,7 +26,7 @@ class UserLogController {
 
   static async createLog(req, res) {
     try {
-      const { userId, type, eventId, toyId } = req.body;
+      const { userId, type, eventId, toyId, achievementId } = req.body;
       await UserLogService.createLog({
         userId,
         type,
@@ -41,21 +41,30 @@ class UserLogController {
         await AchievementService.getUnassignedAchievementsByType(userId, type);
       const parsedAchieves = JSON.parse(JSON.stringify(unassignedAchievements));
       const reachedAchievements = [];
-      for (const achieve of parsedAchieves) {
-        console.log(achieve);
-
-        if (achieve.countCondition <= thisTypeLogs.length) {
-          // eslint-disable-next-line no-await-in-loop
-          await AchievementService.assignAchievementToUser(userId, achieve.id);
+      if (type === 'Basic' && achievementId) {
+        const [achieve, created] = await AchievementService.assignAchievementToUser(
+          userId,
+          achievementId,
+        );
+        if (created) {
           reachedAchievements.push(achieve);
-        } else break;
+        } else {
+          return res.status(400).json({ message: 'Достижение уже получено' });
+        }
+      } else {
+        for (const achieve of parsedAchieves) {
+          if (achieve.countCondition <= thisTypeLogs.length) {
+            // eslint-disable-next-line no-await-in-loop
+            await AchievementService.assignAchievementToUser(userId, achieve.id);
+            reachedAchievements.push(achieve);
+          } else break;
+        }
       }
-      console.log(reachedAchievements);
 
-      res.status(201).json(reachedAchievements);
+      return res.status(201).json(reachedAchievements);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: 'Ошибка создания лога' });
+      return res.status(500).json({ message: 'Ошибка создания лога' });
     }
   }
 

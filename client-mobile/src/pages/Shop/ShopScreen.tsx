@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -59,7 +59,6 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
   const dispatch = useAppDispatch();
   const ownedToys = useAppSelector((state) => state.toy.ownedToys);
   const shopToys = useAppSelector((state) => state.toy.shopToys);
-  const isLoading = useAppSelector((state) => state.toy.isLoading);
 
   const catId = useAppSelector((store) => store.cat.cat?.id);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -72,6 +71,10 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
   const [loadingButtons, setLoadingButtons] = useState<Record<number, boolean>>({});
   const user = useAppSelector((store) => store.auth.user);
   const points = useAppSelector((store) => store.user.points);
+  const pointsRef = useRef(points);
+  useEffect(() => {
+    pointsRef.current = points;
+  }, [points]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -80,7 +83,7 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
         await Promise.all([
           dispatch(fetchOwnedToys(catId!)).unwrap(),
           dispatch(fetchShopToys(catId!)).unwrap(),
-          dispatch(fetchUserPoints(user?.user.id!)).unwrap(),
+          dispatch(fetchUserPoints(user!.user.id)).unwrap(),
         ]);
       } catch (error) {
         console.error('Ошибка при загрузке данных:', error);
@@ -103,7 +106,7 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
     };
 
     loadData();
-  }, [dispatch, catId]);
+  }, [dispatch]);
 
   useEffect(() => {
     if (user?.user.points !== undefined) {
@@ -117,31 +120,37 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
   }, [points]);
 
   const handleBuyToy = async (toy: ToyType) => {
+    const actualPoints = pointsRef.current;
     if (isNaN(toy.id) || isNaN(catId!)) {
       console.error('Некорректный toyId или catId:', { toyId: toy.id, catId });
       return;
     }
 
-    setLoadingButtons((prev) => ({ ...prev, [toy.id]: true }));
-    dispatch(setPoints(-toy.price));
-
-    try {
-      await dispatch(buyToy({ catId: catId!, toyId: toy.id })).unwrap();
-      await dispatch(fetchOwnedToys(catId!)).unwrap();
-
-      const setAchieveCallback = (achieve: AchieveT) => void dispatch(pushUserAchieve(achieve));
-      const setPointsCallback = (points: number) => void dispatch(setPoints(points));
-      await setLogsAndGetAchieves(
-        { userId: user!.user.id, type: 'BuyToy', toyId: toy.id, nowPoints: points - toy.price },
-        setAchieveCallback,
-        setPointsCallback,
-      );
-    } catch (error) {
-      console.error('Ошибка при покупке игрушки:', error);
-      // Возвращаем баллы при ошибке
-      dispatch(setPoints(toy.price));
-    } finally {
-      setLoadingButtons((prev) => ({ ...prev, [toy.id]: false }));
+    if (actualPoints - toy.price >= 0) {
+      setLoadingButtons((prev) => ({ ...prev, [toy.id]: true }));
+      await dispatch(setPoints(-toy.price));
+      try {
+        await dispatch(buyToy({ catId: catId!, toyId: toy.id })).unwrap();
+        await dispatch(fetchOwnedToys(catId!)).unwrap();
+        const setAchieveCallback = (achieve: AchieveT) => void dispatch(pushUserAchieve(achieve));
+        const setPointsCallback = (actualPoints: number) => void dispatch(setPoints(actualPoints));
+        await setLogsAndGetAchieves(
+          {
+            userId: user!.user.id,
+            type: 'BuyToy',
+            toyId: toy.id,
+            nowPoints: actualPoints - toy.price,
+          },
+          setAchieveCallback,
+          setPointsCallback,
+        );
+      } catch (error) {
+        console.error('Ошибка при покупке игрушки:', error);
+        // Возвращаем баллы при ошибке
+        dispatch(setPoints(toy.price));
+      } finally {
+        setLoadingButtons((prev) => ({ ...prev, [toy.id]: false }));
+      }
     }
   };
 
