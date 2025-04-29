@@ -106,6 +106,8 @@ module.exports = {
     await CatPreset.bulkCreate([
       {
         name: 'Мурзик',
+        imgCreate:
+          'https://cdnl.iconscout.com/lottie/premium/thumb/lovely-cat-animated-icon-download-in-lottie-json-gif-static-svg-file-formats--animal-kitten-pet-cute-pack-icons-5473697.mp4',
         imgMain:
           'https://cdnl.iconscout.com/lottie/premium/thumb/cute-cat-sitting-on-pillow-animation-download-in-lottie-json-gif-static-svg-file-formats--activity-pack-animal-animations-5605481.mp4',
         imgSleep:
@@ -120,6 +122,8 @@ module.exports = {
 
       {
         name: 'Барсик',
+        imgCreate:
+          'https://img.freepik.com/premium-vector/black-cat-anime-manga-style-drawing-funny-feline-cartoon-clipart-vector_691560-11531.jpg?w=740',
         imgMain:
           'https://img.freepik.com/premium-vector/black-cat-anime-manga-style-drawing-funny-feline-cartoon-clipart-vector_691560-11531.jpg?w=740',
         imgSleep:
@@ -239,6 +243,14 @@ module.exports = {
     await UserAchievement.bulkCreate([
       {
         userId: 1,
+        achievementId: 1,
+      },
+      {
+        userId: 1,
+        achievementId: 2,
+      },
+      {
+        userId: 2,
         achievementId: 1,
       },
       {

@@ -6,16 +6,20 @@
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "android": {
       "debug": {
         "allowClearTextTraffic": true
-      }
+      },
+      "package": "com.anonymous.catogochimobile"
     },
     "ios": {
       "debug": {
         "hostType": "lan"
-      }
+      },
+      "bundleIdentifier": "com.anonymous.catogochimobile"
     }
   }
 }

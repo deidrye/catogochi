@@ -20,6 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       imgPlay: DataTypes.TEXT,
       imgEat: DataTypes.TEXT,
       imgWeasel: DataTypes.TEXT,
+      imgCreate: DataTypes.TEXT,
     },
     {
       sequelize,

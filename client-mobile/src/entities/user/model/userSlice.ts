@@ -23,8 +23,8 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchUserPoints.fulfilled, (state, action) => {
-        state.isLoading = false;
         state.points = action.payload;
+        state.isLoading = false;
       })
       .addCase(fetchUserPoints.rejected, (state, action) => {
         state.isLoading = false;

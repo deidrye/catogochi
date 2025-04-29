@@ -22,11 +22,11 @@ export const LoginForm: React.FC<LoginFormProps> = ({ navigation }) => {
 
   const handleSubmit = async () => {
     try {
-      console.log('Начало процесса входа');
+      // console.log('Начало процесса входа');
       const data = loginSchema.parse({ email, password });
-      console.log('Данные для входа валидны:', data);
+      // console.log('Данные для входа валидны:', data);
       const result = await dispatch(login(data)).unwrap();
-      console.log('Успешный вход, результат:', result);
+      // console.log('Успешный вход, результат:', result);
       const response = await dispatch(fetchCat());
       if (!!response.payload) {
         navigation.navigate('Main');

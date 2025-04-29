@@ -5,6 +5,7 @@ export const logSchema = z.object({
   type: z.string(),
   eventId: z.number().nullable().optional(),
   toyId: z.number().nullable().optional(),
+  achievementId: z.number().nullable().optional(),
   nowPoints: z.number(),
 });
 

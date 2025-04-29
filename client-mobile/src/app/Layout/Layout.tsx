@@ -2,7 +2,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { GameScreen } from '@/pages/Game/GameScreen';
 import { ShopScreen } from '@/pages/Shop/ShopScreen';
 import AchievementsScreen from '@/pages/Achievments/AchievmentScreen';
-import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Text, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAppDispatch } from '../store';
 import { logout } from '@/features/auth/model/thunks';
@@ -23,7 +23,7 @@ export default function MainTabs() {
   };
 
   return (
-    <View style={styles.wrapper}>
+    <SafeAreaView style={styles.wrapper}>
       <View style={styles.topBar}>
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Text style={styles.logoutText}>Выйти</Text>
@@ -35,6 +35,8 @@ export default function MainTabs() {
         screenOptions={{
           tabBarStyle: styles.tabBar,
           tabBarLabelStyle: styles.tabLabel,
+          lazy: true, // Ленивая загрузка
+          swipeEnabled: true, // Разрешить свайп
         }}
       >
         <Tab.Screen name='Game' component={GameScreen} options={{ tabBarLabel: 'Кот' }} />
@@ -45,7 +47,7 @@ export default function MainTabs() {
           options={{ tabBarLabel: 'Достижения' }}
         />
       </Tab.Navigator>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -67,6 +69,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0,
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
+    zIndex: 1, // Важно для iOS
+    height: 50, // Явно задайте высоту
   },
   tabLabel: {
     fontSize: 14,

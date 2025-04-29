@@ -1,6 +1,6 @@
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, SafeAreaView, Dimensions, Text, Image } from 'react-native';
+import { StyleSheet, View, SafeAreaView, Dimensions, Text } from 'react-native';
 import { RootStackParamList } from '@/app/types/navigation';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import ToysPanelWidget from '@/widgets/ToysPanel/ui/ToysPanel';
@@ -10,7 +10,7 @@ import CatActionsWidget from '@/widgets/CatAction/ui/CatAction';
 import CatStatsWidget from '@/widgets/CatStats/ui/CatStats';
 import { useAppDispatch, useAppSelector } from '@/app/store';
 import { fetchCat } from '@/entities/cat/model/thunks';
-import Video from 'react-native-video';
+import { Video, ResizeMode } from 'expo-av';
 
 type GameScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Game'>;
 
@@ -95,10 +95,12 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
                   <Video
                     source={{ uri: getActionImage() }}
                     style={styles.catImage}
-                    resizeMode='contain'
-                    repeat={true}
-                    paused={false}
-                    muted={true}
+                    videoStyle={styles.catImage}
+                    resizeMode={ResizeMode.CONTAIN}
+                    shouldPlay
+                    isLooping
+                    isMuted
+                    useNativeControls={false}
                   />
                 </View>
               ) : (
@@ -172,9 +174,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   catImage: {
-    width: 200,
-    height: 300,
-    marginBottom: 10,
+    width: 400,
+    height: 400,
   },
   catName: {
     fontSize: 20,
