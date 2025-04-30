@@ -6,14 +6,12 @@ import {
   StyleSheet,
   ActivityIndicator,
   TouchableOpacity,
-  ScrollView,
 } from 'react-native';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import { useAppDispatch, useAppSelector } from '@/app/store';
 import { fetchOwnedToys } from '@/entities/toy/model/toyThunks';
 import { fetchCat, updateCat } from '@/entities/cat/model/thunks';
 
-// SVG импорты
 import BallIcon from '@/assets/toys/ball.svg';
 import TreeIcon from '@/assets/toys/christmas-tree.svg';
 import ClewIcon from '@/assets/toys/clew.svg';
@@ -26,14 +24,13 @@ import NewspaperIcon from '@/assets/toys/newspaper.svg';
 import OctopusIcon from '@/assets/toys/octopus.svg';
 import RexIcon from '@/assets/toys/rex.svg';
 import PostIcon from '@/assets/toys/scratching-post.svg';
+
 import { OwnedToyType } from '@/entities/toy/model/toyType';
 import { CatT } from '@/entities/cat/model/types';
-import { toySchema } from '@/entities/toy/model/toyScheme';
 import { AchieveT } from '@/entities/achievements/model/types';
 import { pushUserAchieve } from '@/entities/achievements/model/slice';
 import { setLogsAndGetAchieves } from '@/features/logs-feature/model/checkLog';
 import { setPoints } from '@/entities/user/model/userSlice';
-import { CustomToast } from '@/widgets/CustomToast/ui/CustomToast';
 
 const iconMap: Record<string, React.FC<any>> = {
   'ball.svg': BallIcon,
@@ -50,7 +47,6 @@ const iconMap: Record<string, React.FC<any>> = {
   'scratching-post.svg': PostIcon,
 };
 
-// Кастомный анимированный тост
 const AnimatedToast = ({ text }: { text: string }) => {
   return (
     <Animated.View entering={FadeInUp.duration(500)} style={styles.toastContainer}>
@@ -63,9 +59,10 @@ interface ToysPanelProps {
   cat: CatT | null;
   onPlay: () => void;
   showToast: (message: string) => void;
+  disabled: boolean;
 }
 
-const ToysPanelWidget: React.FC<ToysPanelProps> = ({ cat, onPlay, showToast }) => {
+const ToysPanelWidget: React.FC<ToysPanelProps> = ({ cat, onPlay, showToast, disabled }) => {
   const dispatch = useAppDispatch();
   const ownedToys = useAppSelector((state) => state.toy.ownedToys);
   const isLoading = useAppSelector((state) => state.toy.isLoading);
@@ -74,17 +71,13 @@ const ToysPanelWidget: React.FC<ToysPanelProps> = ({ cat, onPlay, showToast }) =
   const points = useAppSelector((store) => store.user.points);
 
   useEffect(() => {
-    console.log(catId);
-
     if (catId) {
       dispatch(fetchOwnedToys(catId));
     }
   }, [dispatch, catId]);
 
   const handleToyPress = async (event: OwnedToyType) => {
-    if (!cat || !catId) {
-      return;
-    }
+    if (!cat || !catId || disabled) return;
 
     const effect = event.Toy.effect as Record<keyof typeof cat, number>;
     const updatedStats = Object.entries(effect).reduce((acc, [key, value]) => {
@@ -103,10 +96,7 @@ const ToysPanelWidget: React.FC<ToysPanelProps> = ({ cat, onPlay, showToast }) =
     };
 
     dispatch(updateCat(updatedCat));
-    onPlay(); // Вызываем колбэк для анимации
-
-    console.log('Показ тоста:', event.description);
-
+    onPlay();
     showToast(event.description || 'Описание отсутствует');
 
     const setAchieveCallback = (achieve: AchieveT) => void dispatch(pushUserAchieve(achieve));
@@ -123,8 +113,9 @@ const ToysPanelWidget: React.FC<ToysPanelProps> = ({ cat, onPlay, showToast }) =
     return (
       <View style={styles.toyItem}>
         <TouchableOpacity
-          style={styles.toyContent}
+          style={[styles.toyContent, disabled && styles.disabledToy]}
           onPress={() => handleToyPress(item)}
+          disabled={disabled}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
           {IconComponent ? (
@@ -203,22 +194,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 4,
   },
+  disabledToy: {
+    opacity: 0.4,
+  },
   placeholderIcon: {
     width: 50,
     height: 50,
     backgroundColor: '#ddd',
     borderRadius: 8,
-  },
-  deleteButton: {
-    backgroundColor: '#FF4444',
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    borderRadius: 6,
-  },
-  deleteText: {
-    color: '#fff',
-    fontSize: 10,
-    fontWeight: 'bold',
   },
   emptyText: {
     textAlign: 'center',

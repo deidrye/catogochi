@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { CatService } from '../api/catService';
 import { CatT, CreateCatT } from './types';
-import { setError, setLoading, setPresets, setCat } from './slice';
+import { setError, setLoading, setPresets, setCat, setActions } from './slice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const fetchPresets = createAsyncThunk('cat/fetchPresets', async (_, { dispatch }) => {
@@ -62,6 +62,20 @@ export const updateCat = createAsyncThunk('cat/updateCat', async (cat: CatT, { d
     return updatedCat;
   } catch (error) {
     dispatch(setError(error instanceof Error ? error.message : 'Ошибка обновления кота'));
+    throw error;
+  } finally {
+    dispatch(setLoading(false));
+  }
+});
+
+export const fetchActions = createAsyncThunk('cat/fetchActions', async (_, { dispatch }) => {
+  try {
+    dispatch(setLoading(true));
+    const actions = await CatService.getActions();
+    dispatch(setActions(actions));
+    return actions;
+  } catch (error) {
+    dispatch(setError(error instanceof Error ? error.message : 'Ошибка загрузки действий'));
     throw error;
   } finally {
     dispatch(setLoading(false));

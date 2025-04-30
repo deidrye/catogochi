@@ -8,10 +8,11 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate({ Cat, Toy, UserLog }) {
+    static associate({ Cat, Toy, UserLog, CatAction }) {
       this.belongsTo(Cat, { foreignKey: 'catId' });
       this.belongsTo(Toy, { foreignKey: 'toyId' });
       this.hasMany(UserLog, { foreignKey: 'toyId' });
+      this.belongsTo(CatAction, { foreignKey: 'catActionId' });
     }
   }
   Event.init(
@@ -21,6 +22,7 @@ module.exports = (sequelize, DataTypes) => {
       effect: DataTypes.JSONB,
       catId: DataTypes.INTEGER,
       toyId: DataTypes.INTEGER,
+      catActionId: DataTypes.INTEGER,
     },
     {
       sequelize,

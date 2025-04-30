@@ -35,6 +35,13 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
       },
+      catActionId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: { model: 'CatActions', key: 'id' },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
