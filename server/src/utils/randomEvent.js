@@ -22,7 +22,6 @@ async function getOfflineEvents(userId, catId) {
   const now = new Date();
   const rangeOfTimeOut =
     (now - lastTime) / (1000 * 60 * 40) > 10 ? 10 : (now - lastTime) / (1000 * 60 * 40);
-  console.log(rangeOfTimeOut);
 
   const totalEvents = { angry: 0, hp: 0, energy: 0, affection: 0, boldness: 0 };
   if (rangeOfTimeOut >= 1) {

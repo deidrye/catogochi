@@ -9,7 +9,6 @@ const wss = new WebSocket.Server({ server });
 
 const offlineEvents = async (ws, userId, catId) => {
   const totalEvents = await getOfflineEvents(userId, catId);
-  console.log(totalEvents);
 
   ws.send(JSON.stringify({ type: 'offline', payload: totalEvents }));
 };
@@ -28,7 +27,9 @@ wss.on('connection', (ws) => {
       // Обрабатываем инициализационное сообщение
       if (message.type === 'init' && message.payload.catId) {
         clients.set(ws, { catId: message.payload.catId, userId: message.payload.userId });
-        console.log(`User with cat ${message.payload.catId} initialized`);
+        console.log(
+          `User ${message.payload.userId} with cat ${message.payload.catId} initialized`,
+        );
         offlineEvents(ws, message.payload.userId, message.payload.catId);
       }
     } catch (err) {
