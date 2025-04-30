@@ -11,6 +11,7 @@ import CatStatsWidget from '@/widgets/CatStats/ui/CatStats';
 import { useAppDispatch, useAppSelector } from '@/app/store';
 import { fetchCat } from '@/entities/cat/model/thunks';
 import { Video, ResizeMode } from 'expo-av';
+import { setOffline, setOnline } from '@/entities/cat/model/slice';
 
 type GameScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Game'>;
 
@@ -30,6 +31,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
 
   useEffect(() => {
     dispatch(fetchCat());
+    dispatch(setOnline());
   }, [dispatch]);
 
   useEffect(() => {

@@ -37,4 +37,5 @@ export const catSliceSchema = z.object({
   isLoading: z.boolean(),
   error: z.string().nullable(),
   cat: catSchema.nullable(),
+  isCatOnline: z.boolean(),
 });

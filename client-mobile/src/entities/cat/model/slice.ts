@@ -8,6 +8,7 @@ const initialState: CatSliceT = {
   isLoading: false,
   error: null,
   cat: null,
+  isCatOnline: false,
 };
 
 const catSlice = createSlice({
@@ -28,6 +29,12 @@ const catSlice = createSlice({
     },
     setCat: (state, action: PayloadAction<CatT | null>) => {
       state.cat = action.payload;
+    },
+    setOnline: (state) => {
+      state.isCatOnline = true;
+    },
+    setOffline: (state) => {
+      state.isCatOnline = false;
     },
   },
   extraReducers: (builder) => {
@@ -82,6 +89,13 @@ const catSlice = createSlice({
   },
 });
 
-export const { setPresets, setSelectedPresetIndex, setLoading, setError, setCat } =
-  catSlice.actions;
+export const {
+  setPresets,
+  setSelectedPresetIndex,
+  setLoading,
+  setError,
+  setCat,
+  setOnline,
+  setOffline,
+} = catSlice.actions;
 export default catSlice.reducer;

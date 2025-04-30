@@ -16,6 +16,7 @@ import { AchieveT } from '@/entities/achievements/model/types';
 import { pushUserAchieve } from '@/entities/achievements/model/slice';
 import { setPoints } from '@/entities/user/model/userSlice';
 import { setLogsAndGetAchieves } from '@/features/logs-feature/model/checkLog';
+import { setOnline } from '@/entities/cat/model/slice';
 
 type CreateCatScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'CreateCat'>;
 
@@ -66,6 +67,7 @@ export default function CreateCatScreen({ navigation }: CreateCatScreenProps) {
       );
 
       navigation.navigate('Main');
+      dispatch(setOnline());
     } catch (error) {
       Alert.alert('Ошибка', 'Не удалось создать кота');
     }

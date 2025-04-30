@@ -7,6 +7,7 @@ import { RootStackParamList } from '../../../app/types/navigation';
 import { loginSchema } from '../../../shared/lib/zod/schemas';
 import { fetchCat } from '@/entities/cat/model/thunks';
 import { catSchema } from '@/entities/cat/model/schema';
+import { setOnline } from '@/entities/cat/model/slice';
 
 type LoginFormNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Login'>;
 
@@ -30,6 +31,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ navigation }) => {
       const response = await dispatch(fetchCat());
       if (!!response.payload) {
         navigation.navigate('Main');
+        dispatch(setOnline());
       } else {
         navigation.navigate('CreateCat');
       }
