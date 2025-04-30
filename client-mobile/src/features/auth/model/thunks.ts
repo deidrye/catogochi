@@ -39,5 +39,4 @@ export const checkAuth = createAsyncThunk('auth/check', async (_, { rejectWithVa
   } catch (error: any) {
     return rejectWithValue(error.response?.data?.message || 'Ошибка проверки аутентификации');
   }
-}); 
-
+});
