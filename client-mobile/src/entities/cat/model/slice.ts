@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { createCat, fetchCat, fetchPresets, updateCat } from './thunks';
-import { CatT, CatSliceT, CatPresetT } from './types';
+import { createCat, fetchActions, fetchCat, fetchPresets, updateCat } from './thunks';
+import { CatT, CatSliceT, CatPresetT, CatActionT } from './types';
 
 const initialState: CatSliceT = {
   presets: [],
@@ -8,6 +8,8 @@ const initialState: CatSliceT = {
   isLoading: false,
   error: null,
   cat: null,
+  isCatOnline: false,
+  actions: [],
 };
 
 const catSlice = createSlice({
@@ -28,6 +30,15 @@ const catSlice = createSlice({
     },
     setCat: (state, action: PayloadAction<CatT | null>) => {
       state.cat = action.payload;
+    },
+    setOnline: (state) => {
+      state.isCatOnline = true;
+    },
+    setOffline: (state) => {
+      state.isCatOnline = false;
+    },
+    setActions: (state, action: PayloadAction<CatActionT[]>) => {
+      state.actions = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -78,10 +89,30 @@ const catSlice = createSlice({
       .addCase(updateCat.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
+      })
+      .addCase(fetchActions.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchActions.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.actions = action.payload;
+      })
+      .addCase(fetchActions.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
       });
   },
 });
 
-export const { setPresets, setSelectedPresetIndex, setLoading, setError, setCat } =
-  catSlice.actions;
+export const {
+  setPresets,
+  setSelectedPresetIndex,
+  setLoading,
+  setError,
+  setCat,
+  setOnline,
+  setOffline,
+  setActions,
+} = catSlice.actions;
 export default catSlice.reducer;

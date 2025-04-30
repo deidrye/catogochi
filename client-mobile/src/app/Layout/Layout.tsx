@@ -8,6 +8,7 @@ import { useAppDispatch } from '../store';
 import { logout } from '@/features/auth/model/thunks';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
+import { setOffline } from '@/entities/cat/model/slice';
 
 type MainTabsNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -20,6 +21,7 @@ export default function MainTabs() {
   const handleLogout = async () => {
     await dispatch(logout());
     navigation.navigate('Login');
+    dispatch(setOffline());
   };
 
   return (

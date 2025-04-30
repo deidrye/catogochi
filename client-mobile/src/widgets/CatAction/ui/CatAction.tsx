@@ -3,58 +3,46 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { CatT } from '@/entities/cat/model/types';
 
-// Тип для пропсов кнопки
 type ActionButtonProps = {
   title: string;
   iconName: string;
   color: string;
   onPress: () => void;
+  disabled?: boolean;
 };
 
 interface CatActionsWidgetProps {
   cat: CatT | null;
-  onAction: (actionType: 'eat' | 'play' | 'weasel' | 'sleep') => void;
+  onAction: (actionType: 'Покормить' | 'Поиграть' | 'Приласкать' | 'Уложить спать') => void;
+  disabled?: boolean;
 }
 
-// Компонент кнопки действия
-const ActionButton: React.FC<ActionButtonProps> = ({ title, iconName, color, onPress }) => (
+const ActionButton: React.FC<ActionButtonProps> = ({
+  title,
+  iconName,
+  color,
+  onPress,
+  disabled,
+}) => (
   <Pressable
+    onPress={onPress}
+    disabled={disabled}
     style={({ pressed }) => [
       styles.button,
-      { backgroundColor: color },
-      pressed ? styles.buttonPressed : {},
+      { backgroundColor: disabled ? '#ccc' : color },
+      pressed && !disabled ? styles.buttonPressed : null,
     ]}
-    onPress={onPress}
     accessibilityLabel={`Кнопка ${title}`}
   >
     <View style={styles.buttonContent}>
-      <Icon name={iconName} size={18} color='#fff' style={styles.icon} />
+      <Icon name={iconName} size={18} color='#fff' />
       <Text style={styles.buttonText}>{title}</Text>
     </View>
   </Pressable>
 );
 
-// Основной компонент виджета
-const CatActionsWidget: React.FC<CatActionsWidgetProps> = ({ cat, onAction }) => {
-  const handleFeed = () => {
-    if (!cat) return;
-    onAction('eat');
-  };
-
-  const handlePlay = () => {
-    if (!cat) return;
-    onAction('play');
-  };
-
-  const handlePet = () => {
-    if (!cat) return;
-    onAction('weasel');
-  };
-
-  const handleSleep = () => {
-    if (!cat) return;
-    onAction('sleep');
-  };
+const CatActionsWidget: React.FC<CatActionsWidgetProps> = ({ cat, onAction, disabled }) => {
+  if (!cat) return null;
 
   return (
     <View style={styles.container}>
@@ -64,7 +52,29 @@ const CatActionsWidget: React.FC<CatActionsWidgetProps> = ({ cat, onAction }) =>
           title='Еда'
           iconName='restaurant'
           color='#28a745'
-          onPress={handleFeed}
+          onPress={() => onAction('Покормить')}
+          disabled={disabled}
+        />
+        <ActionButton
+          title='Поиграть'
+          iconName='toys'
+          color='#007bff'
+          onPress={() => onAction('Поиграть')}
+          disabled={disabled}
+        />
+        <ActionButton
+          title='Приласкать'
+          iconName='favorite'
+          color='#dc3545'
+          onPress={() => onAction('Приласкать')}
+          disabled={disabled}
+        />
+        <ActionButton
+          title='Уложить спать'
+          iconName='bed'
+          color='#6f42c1'
+          onPress={() => onAction('Уложить спать')}
+          disabled={disabled}
         />
         <ActionButton title='Игра' iconName='toys' color='#007bff' onPress={handlePlay} />
         <ActionButton title='Ласка' iconName='favorite' color='#dc3545' onPress={handlePet} />
@@ -117,12 +127,7 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.95 }],
   },
   buttonContent: {
-    flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'center',
-  },
-  icon: {
-    marginBottom: 4,
   },
   buttonText: {
     fontSize: 15,

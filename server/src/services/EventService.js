@@ -1,8 +1,18 @@
+const { Op } = require('sequelize');
 const { Event } = require('../../db/models');
 
 class EventService {
   static async getAll() {
     const events = await Event.findAll();
+    return events;
+  }
+
+  static async getAllByCatId(catId) {
+    const events = await Event.findAll({
+      where: {
+        [Op.or]: [{ catId: null }, { catId }],
+      },
+    });
     return events;
   }
 
