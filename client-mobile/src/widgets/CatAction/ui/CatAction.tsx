@@ -8,38 +8,41 @@ type ActionButtonProps = {
   iconName: string;
   color: string;
   onPress: () => void;
+  disabled?: boolean;
 };
 
 interface CatActionsWidgetProps {
   cat: CatT | null;
   onAction: (actionType: 'Покормить' | 'Поиграть' | 'Приласкать' | 'Уложить спать') => void;
+  disabled?: boolean;
 }
 
-const ActionButton: React.FC<ActionButtonProps> = ({ title, iconName, color, onPress }) => (
+const ActionButton: React.FC<ActionButtonProps> = ({
+  title,
+  iconName,
+  color,
+  onPress,
+  disabled,
+}) => (
   <Pressable
+    onPress={onPress}
+    disabled={disabled}
     style={({ pressed }) => [
       styles.button,
-      { backgroundColor: color },
-      pressed ? styles.buttonPressed : {},
+      { backgroundColor: disabled ? '#ccc' : color },
+      pressed && !disabled ? styles.buttonPressed : null,
     ]}
-    onPress={onPress}
     accessibilityLabel={`Кнопка ${title}`}
   >
     <View style={styles.buttonContent}>
-      <Icon name={iconName} size={18} color='#fff' style={styles.icon} />
+      <Icon name={iconName} size={18} color='#fff' />
       <Text style={styles.buttonText}>{title}</Text>
     </View>
   </Pressable>
 );
 
-// Основной компонент виджета
-const CatActionsWidget: React.FC<CatActionsWidgetProps> = ({ cat, onAction }) => {
-  const handleAction = (actionType: 'Покормить' | 'Поиграть' | 'Приласкать' | 'Уложить спать') => {
-    if (!cat) {
-      return;
-    }
-    onAction(actionType);
-  };
+const CatActionsWidget: React.FC<CatActionsWidgetProps> = ({ cat, onAction, disabled }) => {
+  if (!cat) return null;
 
   return (
     <View style={styles.container}>
@@ -49,25 +52,29 @@ const CatActionsWidget: React.FC<CatActionsWidgetProps> = ({ cat, onAction }) =>
           title='Покормить'
           iconName='restaurant'
           color='#28a745'
-          onPress={() => handleAction('Покормить')}
+          onPress={() => onAction('Покормить')}
+          disabled={disabled}
         />
         <ActionButton
           title='Поиграть'
           iconName='toys'
           color='#007bff'
-          onPress={() => handleAction('Поиграть')}
+          onPress={() => onAction('Поиграть')}
+          disabled={disabled}
         />
         <ActionButton
           title='Приласкать'
           iconName='favorite'
           color='#dc3545'
-          onPress={() => handleAction('Приласкать')}
+          onPress={() => onAction('Приласкать')}
+          disabled={disabled}
         />
         <ActionButton
           title='Уложить спать'
           iconName='bed'
           color='#6f42c1'
-          onPress={() => handleAction('Уложить спать')}
+          onPress={() => onAction('Уложить спать')}
+          disabled={disabled}
         />
       </View>
     </View>
@@ -117,12 +124,7 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.95 }],
   },
   buttonContent: {
-    flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'center',
-  },
-  icon: {
-    marginBottom: 4,
   },
   buttonText: {
     fontSize: 12,

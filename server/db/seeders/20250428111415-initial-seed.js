@@ -144,15 +144,17 @@ module.exports = {
       {
         name: 'Барсик',
         imgCreate:
-          'https://img.freepik.com/premium-vector/black-cat-anime-manga-style-drawing-funny-feline-cartoon-clipart-vector_691560-11531.jpg?w=740',
+          'https://cdnl.iconscout.com/lottie/premium/thumb/graduate-cat-animated-sticker-download-in-lottie-json-gif-static-svg-file-formats--cute-kitten-degree-pet-mortarboard-pack-animal-stickers-7342914.mp4',
         imgMain:
-          'https://img.freepik.com/premium-vector/black-cat-anime-manga-style-drawing-funny-feline-cartoon-clipart-vector_691560-11531.jpg?w=740',
+          'https://cdnl.iconscout.com/lottie/premium/thumb/cat-reading-news-animated-sticker-download-in-lottie-json-gif-static-svg-file-formats--newspaper-kitten-pack-animal-stickers-7342906.mp4',
         imgSleep:
-          'https://yac-wh-sb-prod-s3-media-07001.storage.yandexcloud.net/media/images/image_25.max-2880x1820.format-png_joUIUcI.png',
+          'https://cdnl.iconscout.com/lottie/premium/thumb/cat-sleeping-animated-sticker-download-in-lottie-json-gif-static-svg-file-formats--napping-kitten-pet-pack-animal-stickers-7342902.mp4',
         imgPlay:
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgKn_4N7PLQHZkRnMhI5bVgWZtYpunp2xK7Q&s',
-        imgEat: 'https://zoo-perm.ru/wp-content/uploads/2022/01/kot-est-myaso.jpg',
-        imgWeasel: 'https://news.itmo.ru/images/news/big/p8680.jpg',
+          'https://cdnl.iconscout.com/lottie/premium/thumb/cat-on-basketball-animated-sticker-download-in-lottie-json-gif-static-svg-file-formats--ball-toy-playing-pack-animal-stickers-7342901.mp4',
+        imgEat:
+          'https://cdnl.iconscout.com/lottie/premium/thumb/chef-cat-animated-sticker-download-in-lottie-json-gif-static-svg-file-formats--animal-cute-kitten-pet-knife-toque-pack-stickers-7342917.mp4',
+        imgWeasel:
+          'https://cdnl.iconscout.com/lottie/premium/thumb/cat-with-flower-animated-sticker-download-in-lottie-json-gif-static-svg-file-formats--valentine-cute-kitten-pet-pack-animal-stickers-7342923.mp4',
       },
     ]);
 

@@ -1,4 +1,4 @@
-import Animated, { FadeInUp } from 'react-native-reanimated';
+import Animated, { FadeInUp, FadeIn, FadeOut } from 'react-native-reanimated';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, SafeAreaView, Dimensions, Text } from 'react-native';
 import { RootStackParamList } from '@/app/types/navigation';
@@ -27,6 +27,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
   const actions = useAppSelector((state) => state.cat.actions);
   const [currentAction, setCurrentAction] = useState<CatAction>(null);
   const [toastText, setToastText] = useState<string | null>(null);
+  const [isActionDisabled, setIsActionDisabled] = useState(false);
 
   useEffect(() => {
     dispatch(fetchCat());
@@ -41,29 +42,23 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
   }, [toastText]);
 
   const handlePlay = () => {
+    if (isActionDisabled) return;
+    setIsActionDisabled(true);
     setCurrentAction('Поиграть');
     setTimeout(() => {
       setCurrentAction(null);
+      setIsActionDisabled(false);
     }, 3000);
   };
 
   const handleCatAction = async (actionType: CatAction) => {
-    console.log('Starting handleCatAction with:', { actionType, cat, actions });
+    if (isActionDisabled) return; // блокируем повторное нажатие
+    setIsActionDisabled(true); // отключаем кнопки на 3 секунды
 
-    if (!actionType || !cat || !actions) {
-      console.log('Missing required data:', { actionType, cat, actions });
-      return;
-    }
+    if (!actionType || !cat || !actions) return;
 
     const action = actions.find((a) => a.name === actionType);
-
-    if (!action) {
-      console.log(
-        'Action not found. Available actions:',
-        actions.map((a) => a.name),
-      );
-      return;
-    }
+    if (!action) return;
 
     try {
       setCurrentAction(actionType);
@@ -87,7 +82,10 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
     } catch (error) {
       setToastText('Произошла ошибка при выполнении действия');
     } finally {
-      setTimeout(() => setCurrentAction(null), 3000);
+      setTimeout(() => {
+        setCurrentAction(null);
+        setIsActionDisabled(false); // возвращаем доступ к кнопкам
+      }, 3000);
     }
   };
 
@@ -121,23 +119,30 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
         <View style={styles.mainContent}>
           {/* Игрушки */}
           <Animated.View entering={FadeInUp.duration(500)} style={styles.toysContainer}>
-            <ToysPanelWidget cat={cat} onPlay={handlePlay} showToast={setToastText} />
+            <ToysPanelWidget
+              cat={cat}
+              onPlay={handlePlay}
+              showToast={setToastText}
+              disabled={isActionDisabled}
+            />
           </Animated.View>
 
           {/* Котик */}
           <Animated.View entering={FadeInUp.duration(600).delay(100)} style={styles.catContainer}>
             <View style={styles.cat}>
               {cat?.CatPreset ? (
-                <Video
-                  source={{ uri: getActionImage() as string }}
-                  style={styles.catImage}
-                  videoStyle={styles.catImage}
-                  resizeMode={ResizeMode.CONTAIN}
-                  shouldPlay
-                  isLooping
-                  isMuted
-                  useNativeControls={false}
-                />
+                <Animated.View entering={FadeIn.duration(300)} exiting={FadeOut.duration(300)}>
+                  <Video
+                    source={{ uri: getActionImage() as string }}
+                    style={styles.catImage}
+                    videoStyle={styles.catImage}
+                    resizeMode={ResizeMode.CONTAIN}
+                    shouldPlay
+                    isLooping
+                    isMuted
+                    useNativeControls={false}
+                  />
+                </Animated.View>
               ) : (
                 <Text style={styles.catText}>🐱</Text>
               )}
@@ -153,7 +158,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
 
         {/* Действия */}
         <Animated.View entering={FadeInUp.duration(800).delay(300)} style={styles.actionsContainer}>
-          <CatActionsWidget cat={cat} onAction={handleCatAction} />
+          <CatActionsWidget cat={cat} onAction={handleCatAction} disabled={isActionDisabled} />
         </Animated.View>
       </View>
     </SafeAreaView>
