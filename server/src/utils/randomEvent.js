@@ -18,6 +18,9 @@ async function setLastSession(userId) {
 
 async function getOfflineEvents(userId, catId) {
   const user = await UserService.getById(userId);
+  if (!user.lastSession) {
+    return {};
+  }
   const lastTime = new Date(user.lastSession);
   const now = new Date();
   const rangeOfTimeOut =
