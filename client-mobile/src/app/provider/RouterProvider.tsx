@@ -16,6 +16,7 @@ export default function RouterProvider() {
   const dispatch = useAppDispatch();
   const { user, isInitialized } = useAppSelector((state) => state.auth);
   const userAchieves = useAppSelector((store) => store.achievements.userAchieves);
+  const showAchieveToggle = useAppSelector((store) => store.achievements.showAchieveToggle);
   const prevAchievesLength = useRef(userAchieves.length);
 
   useEffect(() => {
@@ -34,7 +35,7 @@ export default function RouterProvider() {
       });
     }
     prevAchievesLength.current = userAchieves.length;
-  }, [userAchieves]);
+  }, [showAchieveToggle]);
 
   if (!isInitialized) {
     return (

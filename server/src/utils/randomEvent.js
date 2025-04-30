@@ -11,21 +11,24 @@ async function randomEvent(catId) {
   return events[randomValue(0, events.length - 1)];
 }
 
-async function setLastSession(userId) {
-  const now = new Date();
-  await UserService.updateUser(userId, { lastSession: now });
-}
-
 async function getOfflineEvents(userId, catId) {
   const user = await UserService.getById(userId);
-  if (!user.lastSession) {
+
+  const lastTime = user.lastSession;
+  if (!lastTime) {
     return {};
   }
-  const lastTime = new Date(user.lastSession);
   const now = new Date();
-  const rangeOfTimeOut =
-    (now - lastTime) / (1000 * 60 * 40) > 10 ? 10 : (now - lastTime) / (1000 * 60 * 40);
+  console.log(now - lastTime);
 
+  const rangeOfTimeOut = Math.floor(
+    (now - lastTime) / (1000 * 60 * 20) > 10 ? 10 : (now - lastTime) / (1000 * 60 * 20),
+  );
+  console.log(rangeOfTimeOut);
+
+  if (rangeOfTimeOut < 1) {
+    return {};
+  }
   const totalEvents = { angry: 0, hp: 0, energy: 0, affection: 0, boldness: 0 };
   if (rangeOfTimeOut >= 1) {
     for (let i = 1; i < rangeOfTimeOut; i++) {
@@ -45,4 +48,4 @@ async function getOfflineEvents(userId, catId) {
   };
 }
 
-module.exports = { randomValue, randomEvent, setLastSession, getOfflineEvents };
+module.exports = { randomValue, randomEvent, getOfflineEvents };

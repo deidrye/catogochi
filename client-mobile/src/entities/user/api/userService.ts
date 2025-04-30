@@ -1,6 +1,6 @@
-import axiosInstance from "@/shared/api/axiosInstance";
-import { AxiosInstance } from "axios";
-import { userPointsSchema } from "../model/userSchema";
+import axiosInstance from '@/shared/api/axiosInstance';
+import { AxiosInstance } from 'axios';
+import { userPointsSchema } from '../model/userSchema';
 
 class UserService {
   constructor(private readonly client: AxiosInstance) {
@@ -16,6 +16,14 @@ class UserService {
       throw error;
     }
   }
-}   
+
+  async exitGame(id: number) {
+    try {
+      await this.client.post(`/users/${id}/exit`);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+}
 
 export default new UserService(axiosInstance);
