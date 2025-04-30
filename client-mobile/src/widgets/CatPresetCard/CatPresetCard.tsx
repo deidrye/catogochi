@@ -36,37 +36,32 @@ const styles = StyleSheet.create({
   catCard: {
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
     borderRadius: 20,
-    elevation: 5,
-    margin: 12,
+    margin: 5,
     overflow: 'hidden',
-    width: 260,
+    width: 240,
+    height: 240,
     flex: 1,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
+
     shadowRadius: 10,
   },
   selectedCard: {
     borderColor: '#FF6B6B',
     borderWidth: 3,
     transform: [{ scale: 1.05 }],
-    shadowOpacity: 0.5,
   },
   videoContainer: {
-    width: 240,
-    height: 240,
+    width: '100%',
+    height: '100%',
     marginBottom: 15,
     borderRadius: 20,
-    overflow: 'hidden',
-    justifyContent: 'center',
-    alignItems: 'center', // Добавлено для центрирования содержимого
     flex: 1,
   },
   video: {
-    width: 220,
-    height: 220,
+    width: '100%',
+    height: '100%',
   },
   catName: {
     fontSize: 20,
@@ -75,5 +70,6 @@ const styles = StyleSheet.create({
     textShadowColor: '#fff',
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 3,
+    marginBottom: 20,
   },
 });
