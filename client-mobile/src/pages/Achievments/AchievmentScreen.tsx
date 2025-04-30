@@ -1,13 +1,31 @@
 import { useAppDispatch, useAppSelector } from '@/app/store';
+import { RootStackParamList } from '@/app/types/navigation';
 import { fetchAchieves, fetchAchievesOfUser } from '@/entities/achievements/model/thunks';
+import { setOffline } from '@/entities/cat/model/slice';
+import { logout } from '@/features/auth/model/thunks';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Alert } from 'react-native';
+import Toast from 'react-native-root-toast';
+
+type MainNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export default function AchievementsScreen() {
+  const navigation = useNavigation<MainNavigationProp>();
   const dispatch = useAppDispatch();
   const user = useAppSelector((store) => store.auth.user);
   const achievements = useAppSelector((store) => store.achievements.list);
   const userAchievements = useAppSelector((store) => store.achievements.userAchieves);
+
+  const logoutFunc = async () => {
+    await dispatch(logout()).unwrap();
+    await dispatch(setOffline());
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Login' }],
+    });
+  };
 
   useEffect(() => {
     dispatch(fetchAchievesOfUser(user?.user.id!));
@@ -23,6 +41,17 @@ export default function AchievementsScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
+      {/* Блок с информацией пользователя */}
+      <View style={styles.userInfoContainer}>
+        <View style={styles.userTextContainer}>
+          <Text style={styles.userName}>{user?.user.name}</Text>
+          <Text style={styles.userEmail}>{user?.user.email}</Text>
+        </View>
+        <TouchableOpacity style={styles.logoutButton} onPress={logoutFunc} activeOpacity={0.7}>
+          <Text style={styles.logoutButtonText}>Выйти</Text>
+        </TouchableOpacity>
+      </View>
+
       <Text style={styles.header}>Мои достижения</Text>
 
       {sortedAchievements.map((achieve) => {
@@ -34,12 +63,6 @@ export default function AchievementsScreen() {
             style={[styles.card, isCompleted ? styles.completedCard : styles.incompleteCard]}
           >
             <View style={styles.cardHeader}>
-              {/* {isCompleted && (
-                <Image 
-                  source={require('@/shared/assets/icons/checkmark.png')}
-                  style={styles.badgeIcon}
-                />
-              )} */}
               <Text style={styles.cardTitle}>{achieve.name}</Text>
             </View>
 
@@ -47,10 +70,6 @@ export default function AchievementsScreen() {
 
             <View style={styles.rewardContainer}>
               <Text style={styles.rewardLabel}>Награда:</Text>
-              {/* <Image 
-                source={require('@/shared/assets/icons/fish.png')}
-                style={styles.fishIcon}
-              /> */}
               <Text style={styles.rewardText}>{achieve.reward} рыбок</Text>
             </View>
 
@@ -74,6 +93,44 @@ const styles = StyleSheet.create({
   scrollContainer: {
     padding: 20,
     paddingBottom: 40,
+  },
+  userInfoContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 30,
+    backgroundColor: '#f8f9fa',
+    padding: 15,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  userTextContainer: {
+    flex: 1,
+  },
+  userName: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#2c3e50',
+  },
+  userEmail: {
+    fontSize: 16,
+    color: '#7f8c8d',
+    marginTop: 4,
+  },
+  logoutButton: {
+    backgroundColor: '#e74c3c',
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+    zIndex: 1, // Добавьте это свойство
+  },
+  logoutButtonText: {
+    color: 'white',
+    fontWeight: '600',
   },
   header: {
     fontSize: 32,
@@ -108,11 +165,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 12,
   },
-  badgeIcon: {
-    width: 24,
-    height: 24,
-    marginRight: 12,
-  },
   cardTitle: {
     fontSize: 22,
     fontWeight: '700',
@@ -133,11 +185,6 @@ const styles = StyleSheet.create({
   rewardLabel: {
     fontSize: 18,
     color: '#666',
-    marginRight: 8,
-  },
-  fishIcon: {
-    width: 24,
-    height: 24,
     marginRight: 8,
   },
   rewardText: {

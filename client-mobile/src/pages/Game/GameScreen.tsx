@@ -11,6 +11,7 @@ import { useAppDispatch, useAppSelector } from '@/app/store';
 import { fetchCat, updateCat, fetchActions } from '@/entities/cat/model/thunks';
 import { Video, ResizeMode } from 'expo-av';
 import { setOffline, setOnline } from '@/entities/cat/model/slice';
+import { fetchAchievesOfUser } from '@/entities/achievements/model/thunks';
 
 type GameScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Game'>;
 
@@ -29,11 +30,13 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
   const [currentAction, setCurrentAction] = useState<CatAction>(null);
   const [toastText, setToastText] = useState<string | null>(null);
   const [isActionDisabled, setIsActionDisabled] = useState(false);
+  const user = useAppSelector((store) => store.auth.user?.user);
 
   useEffect(() => {
     dispatch(fetchCat());
     dispatch(setOnline());
     dispatch(fetchActions());
+    dispatch(fetchAchievesOfUser(user?.id!));
   }, [dispatch]);
 
   useEffect(() => {

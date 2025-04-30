@@ -14,4 +14,6 @@ userRouter.get('/:id/password', UserController.takeUserPassword);
 
 userRouter.get('/:id/points', UserController.getUserPoints);
 
+userRouter.post('/:id/exit', UserController.setLastSession);
+
 module.exports = userRouter;

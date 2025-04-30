@@ -16,6 +16,12 @@ class UserController {
   static async getById(req, res) {
     try {
       const { id } = req.params;
+      if (!id) {
+        return res.status(400).json({ message: 'Не указан id' });
+      }
+      if (Number.isNaN(Number(id))) {
+        return res.status(400).json({ message: 'id должен быть числом' });
+      }
       const user = await UserService.getById(id);
       if (!user) return res.status(404).json({ message: 'Пользователь не найден' });
       console.log('[DB] /api/users/getById');
@@ -103,6 +109,22 @@ class UserController {
       return res.json(points); // Просто возвращаем само число
     } catch (error) {
       return res.status(500).json({ message: error.message });
+    }
+  }
+
+  static async setLastSession(req, res) {
+    try {
+      const { id } = req.params;
+      if (!id) {
+        return res.status(400).json({ message: 'Не указан id' });
+      }
+      if (Number.isNaN(Number(id))) {
+        return res.status(400).json({ message: 'id должен быть числом' });
+      }
+      await UserService.setLastSession(id);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Ошибка записи последней сессии' });
     }
   }
 }

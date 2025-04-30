@@ -5,6 +5,7 @@ import { fetchAchieves, fetchAchievesOfUser } from './thunks';
 const initialState: AchieveSliceT = {
   list: [],
   userAchieves: [],
+  showAchieveToggle: false,
 };
 
 const achieveSlice = createSlice({
@@ -13,6 +14,7 @@ const achieveSlice = createSlice({
   reducers: {
     pushUserAchieve(state, action: PayloadAction<AchieveT>) {
       state.userAchieves.push(action.payload);
+      state.showAchieveToggle = !state.showAchieveToggle;
     },
   },
   extraReducers(builder) {
