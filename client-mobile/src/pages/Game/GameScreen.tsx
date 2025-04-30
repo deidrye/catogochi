@@ -185,8 +185,10 @@ const styles = StyleSheet.create({
   },
   toysContainer: {
     flex: 1,
+    marginLeft: 10,
     maxWidth: 120,
     alignItems: 'center',
+    zIndex: 1,
   },
   catContainer: {
     flex: 2,
@@ -195,19 +197,22 @@ const styles = StyleSheet.create({
   },
   statsContainer: {
     flex: 1.5,
-    alignItems: 'center',
+    alignItems: 'flex-end', // прижимает содержимое к правому краю
+    justifyContent: 'center',
+    zIndex: 1,
   },
   cat: {
+    marginTop: 80,
+    marginLeft: 20,
     width: width * 0.4,
     height: height * 0.45,
-    backgroundColor: '#e0e0e0',
     borderRadius: 25,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
+    // shadowColor: '#000',
+    // shadowOffset: { width: 0, height: 4 },
+    // shadowOpacity: 0.2,
+    // shadowRadius: 6,
     elevation: 5,
   },
   catText: {
@@ -216,7 +221,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   catImage: {
-    width: 400,
+    width: 200,
     height: 400,
   },
   catName: {

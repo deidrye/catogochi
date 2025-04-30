@@ -49,7 +49,7 @@ const CatActionsWidget: React.FC<CatActionsWidgetProps> = ({ cat, onAction, disa
       <Text style={styles.title}>Действия с котом</Text>
       <View style={styles.buttonGrid}>
         <ActionButton
-          title='Покормить'
+          title='Еда'
           iconName='restaurant'
           color='#28a745'
           onPress={() => onAction('Покормить')}
@@ -76,6 +76,9 @@ const CatActionsWidget: React.FC<CatActionsWidgetProps> = ({ cat, onAction, disa
           onPress={() => onAction('Уложить спать')}
           disabled={disabled}
         />
+        <ActionButton title='Игра' iconName='toys' color='#007bff' onPress={handlePlay} />
+        <ActionButton title='Ласка' iconName='favorite' color='#dc3545' onPress={handlePet} />
+        <ActionButton title='Сон' iconName='bed' color='#6f42c1' onPress={handleSleep} />
       </View>
     </View>
   );
@@ -83,10 +86,10 @@ const CatActionsWidget: React.FC<CatActionsWidgetProps> = ({ cat, onAction, disa
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    backgroundColor: 'rgba(0, 0, 0, 0.07)',
     padding: 12,
     borderRadius: 10,
-    width: '80%',
+    width: '95%',
     marginTop: 15,
     alignItems: 'center',
     shadowColor: '#000',
@@ -96,22 +99,22 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   title: {
-    fontSize: 16,
-    color: '#fff',
+    fontSize: 17,
+    color: 'black',
     fontWeight: '700',
-    marginBottom: 8,
+    marginBottom: 20,
   },
   buttonGrid: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexWrap: 'nowrap',
     justifyContent: 'space-between',
     width: '100%',
   },
   button: {
-    width: 80,
-    height: 80,
-    borderRadius: 8,
-    margin: 4,
+    width: '21%',
+    aspectRatio: 1, // сохраняет квадратную форму
+    borderRadius: 12,
+    marginHorizontal: 2,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
@@ -127,7 +130,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonText: {
-    fontSize: 12,
+    fontSize: 15,
     color: '#fff',
     fontWeight: '600',
     textAlign: 'center',
