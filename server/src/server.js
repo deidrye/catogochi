@@ -9,6 +9,9 @@ const wss = new WebSocket.Server({ server });
 
 const offlineEvents = async (ws, userId, catId) => {
   const totalEvents = await getOfflineEvents(userId, catId);
+  if (!totalEvents.title) {
+    return;
+  }
 
   ws.send(JSON.stringify({ type: 'offline', payload: totalEvents }));
 };

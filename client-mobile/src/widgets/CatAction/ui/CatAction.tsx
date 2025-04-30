@@ -76,9 +76,9 @@ const CatActionsWidget: React.FC<CatActionsWidgetProps> = ({ cat, onAction, disa
           onPress={() => onAction('Уложить спать')}
           disabled={disabled}
         />
-        <ActionButton title='Игра' iconName='toys' color='#007bff' onPress={handlePlay} />
+        {/* <ActionButton title='Игра' iconName='toys' color='#007bff' onPress={handlePlay} />
         <ActionButton title='Ласка' iconName='favorite' color='#dc3545' onPress={handlePet} />
-        <ActionButton title='Сон' iconName='bed' color='#6f42c1' onPress={handleSleep} />
+        <ActionButton title='Сон' iconName='bed' color='#6f42c1' onPress={handleSleep} /> */}
       </View>
     </View>
   );
