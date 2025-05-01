@@ -59,7 +59,7 @@ interface ShopScreenProps {
   navigation: ShopScreenNavigationProp;
 }
 
-export const ShopScreen: React.FC<ShopScreenProps> = () => {
+export const ShopScreen: React.FC<ShopScreenProps> = ({ navigation }) => {
   const dispatch = useAppDispatch();
   const ownedToys = useAppSelector((state) => state.toy.ownedToys);
   const shopToys = useAppSelector((state) => state.toy.shopToys);
@@ -231,19 +231,28 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
     <View style={styles.container}>
       {/* Заголовок */}
       <Text style={styles.title}>Магазин игрушек</Text>
-
       {/* Баланс */}
-      <Animated.View
-        style={[
-          styles.pointsWrapper,
-          {
-            opacity: balanceOpacity,
-            transform: [{ translateY: balanceTranslateY }, { scale: balanceScale }],
-          },
-        ]}
-      >
-        <Text style={styles.pointsAmount}>Ваш баланс: {points} рыбок</Text>
-      </Animated.View>
+      <View style={styles.topBar}>
+        <TouchableOpacity
+          style={styles.buyButton}
+          onPress={() => navigation.navigate('BuyFish')}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.buyText}>Купить рыбов</Text>
+        </TouchableOpacity>
+
+        <Animated.View
+          style={[
+            styles.pointsWrapper,
+            {
+              opacity: balanceOpacity,
+              transform: [{ translateY: balanceTranslateY }, { scale: balanceScale }],
+            },
+          ]}
+        >
+          <Text style={styles.pointsAmount}>Ваш баланс: {points} рыбок</Text>
+        </Animated.View>
+      </View>
 
       {/* Список игрушек */}
       <FlatList
@@ -345,5 +354,15 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
     color: '#FF8C00',
+  },
+  buyFishWrapper: {
+    alignSelf: 'center',
+    marginVertical: 12,
+  },
+  topBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
   },
 });
