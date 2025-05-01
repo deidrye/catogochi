@@ -85,7 +85,7 @@ export function EventProvider({ children }: Props) {
           }),
         );
       }
-
+      
       Toast.show({
         type: 'success',
         text1: `Добро пожаловать, ${user?.user.name}`,

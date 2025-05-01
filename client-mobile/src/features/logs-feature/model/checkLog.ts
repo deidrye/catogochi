@@ -1,7 +1,7 @@
-import { LogT } from '../schema/logSchema';
 import axiosInstance from '../../../shared/api/axiosInstance';
 import { AchieveT } from '@/entities/achievements/model/types';
 import { achieveSchema } from '@/entities/achievements/model/schema';
+import { LogT } from '@/entities/log/model/types';
 const responseAchieveSchema = achieveSchema.optional();
 
 export const setLogsAndGetAchieves = async (

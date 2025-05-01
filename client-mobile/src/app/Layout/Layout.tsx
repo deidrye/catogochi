@@ -6,6 +6,8 @@ import { StyleSheet, SafeAreaView } from 'react-native';
 import { useAppDispatch, useAppSelector } from '../store';
 import { useEffect } from 'react';
 import { exitGame } from '@/entities/user/model/userThunks';
+import { fetchActions, fetchCat } from '@/entities/cat/model/thunks';
+import { setOnline } from '@/entities/cat/model/slice';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -19,6 +21,15 @@ export default function MainTabs() {
       if (user) dispatch(exitGame(user.id));
     };
   }, [isCatOnline]);
+
+  useEffect(() => {
+    async function main() {
+      await dispatch(fetchCat());
+      await dispatch(fetchActions());
+      void dispatch(setOnline());
+    }
+    main();
+  }, [dispatch]);
 
   return (
     <SafeAreaView style={styles.wrapper}>

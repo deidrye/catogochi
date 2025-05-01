@@ -10,7 +10,6 @@ import Layout from '@/app/Layout/Layout';
 import CreateCatScreen from '@/pages/Create/CreateCatScreen';
 import Toast from 'react-native-toast-message';
 import { fetchCat } from '@/entities/cat/model/thunks';
-import { setCat } from '@/entities/cat/model/slice';
 
 const Stack = createNativeStackNavigator();
 
@@ -36,7 +35,7 @@ export default function RouterProvider() {
   }, [cat]);
 
   useEffect(() => {
-    if (userAchieves.length > 0 && userAchieves.length > prevAchievesLength.current) {
+    if (prevAchievesLength.current > 0 && userAchieves.length > prevAchievesLength.current) {
       const lastAchievement = userAchieves[userAchieves.length - 1];
 
       Toast.show({
@@ -47,7 +46,7 @@ export default function RouterProvider() {
       });
     }
     prevAchievesLength.current = userAchieves.length;
-  }, [showAchieveToggle]);
+  }, [userAchieves.length]);
 
   if (!isInitialized) {
     console.log('RouterProvider - user:', user, 'cat:', cat);

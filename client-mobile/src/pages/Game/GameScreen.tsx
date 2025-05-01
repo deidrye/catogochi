@@ -12,6 +12,10 @@ import { fetchCat, updateCat, fetchActions } from '@/entities/cat/model/thunks';
 import { Video, ResizeMode } from 'expo-av';
 import { setOffline, setOnline } from '@/entities/cat/model/slice';
 import { fetchAchievesOfUser } from '@/entities/achievements/model/thunks';
+import { setLogsAndGetAchieves } from '@/features/logs-feature/model/checkLog';
+import { AchieveT } from '@/entities/achievements/model/types';
+import { pushUserAchieve } from '@/entities/achievements/model/slice';
+import { setPoints } from '@/entities/user/model/userSlice';
 
 type GameScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Game'>;
 
@@ -31,6 +35,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
   const [toastText, setToastText] = useState<string | null>(null);
   const [isActionDisabled, setIsActionDisabled] = useState(false);
   const user = useAppSelector((store) => store.auth.user?.user);
+  const points = useAppSelector((store) => store.user.points);
 
   useEffect(() => {
     async function main() {
@@ -70,7 +75,22 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
 
     try {
       setCurrentAction(actionType);
+      const type =
+        actionType === 'Покормить'
+          ? 'Feed'
+          : actionType === 'Поиграть'
+          ? 'CatPlay'
+          : actionType === 'Приласкать'
+          ? 'Meow'
+          : 'Sleep';
 
+      const setAchieveCallback = (achieve: AchieveT) => void dispatch(pushUserAchieve(achieve));
+      const setPointsCallback = (points: number) => void dispatch(setPoints(points));
+      await setLogsAndGetAchieves(
+        { userId: user!.id, type, nowPoints: points },
+        setAchieveCallback,
+        setPointsCallback,
+      );
       const updatedStats = Object.entries(action.effect).reduce((acc, [key, value]) => {
         if (typeof cat[key as keyof typeof cat] === 'number') {
           return {

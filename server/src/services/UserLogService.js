@@ -43,15 +43,25 @@ class UserLogService {
   }
 
   static async getUserLogs(userId) {
-    const logs = await UserLog.findAll({
-      where: { userId },
-      include: [
-        { model: Event, attributes: ['id', 'title'] },
-        { model: Toy, attributes: ['id', 'name'] },
-      ],
-      order: [['createdAt', 'DESC']],
-    });
-    return logs;
+    try {
+      const logs = await UserLog.findAll({
+        where: { userId },
+        include: [
+          {
+            model: Toy,
+            required: false,
+          },
+          {
+            model: Event,
+            required: false,
+          },
+        ],
+        order: [['createdAt', 'DESC']],
+      });
+      return logs;
+    } catch (error) {
+      throw new Error(`Failed to fetch user logs: ${error.message}`);
+    }
   }
 
   static async getUserLogsByType({ userId, type }) {
