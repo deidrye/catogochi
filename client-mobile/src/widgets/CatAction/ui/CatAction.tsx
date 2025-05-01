@@ -90,7 +90,6 @@ const CatActionsWidget: React.FC<CatActionsWidgetProps> = memo(
   ({ cat, onAction, disabled }) => {
     const actions = useAppSelector((state) => state.cat.actions);
 
-    // Log to diagnose re-renders
     useEffect(() => {
       console.log('CatActionsWidget rendered');
     });
@@ -134,7 +133,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.07)',
     padding: 12,
     borderRadius: 10,
-    width: '95%',
+    width: '97%',
     marginTop: 15,
     alignItems: 'center',
     shadowColor: '#000',
@@ -156,8 +155,8 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   button: {
-    width: '21%',
-    aspectRatio: 1,
+    width: '23%',
+    aspectRatio: 1, // сохраняет квадратную форму
     borderRadius: 12,
     marginHorizontal: 2,
     justifyContent: 'center',

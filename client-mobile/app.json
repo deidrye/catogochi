@@ -5,21 +5,34 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
-    "assetBundlePatterns": [
-      "**/*"
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          // "icon": "./assets/notification-icon.png",
+          "color": "#FF6347", // Tomato (или любой другой цвет)
+          "sound": true,                     
+        }
+      ]
     ],
+    "newArchEnabled": true,
+    "assetBundlePatterns": ["**/*"],
     "android": {
       "debug": {
         "allowClearTextTraffic": true
       },
-      "package": "com.anonymous.catogochimobile"
+      "package": "com.anonymous.catogochimobile",
+      "permissions": ["RECEIVE_BOOT_COMPLETED"],
+      "useNextNotificationsApi": true
     },
     "ios": {
       "debug": {
         "hostType": "lan"
       },
-      "bundleIdentifier": "com.anonymous.catogochimobile"
+      "bundleIdentifier": "com.anonymous.catogochimobile",
+      "infoPlist": {
+        "UIBackgroundModes": ["remote-notification"]
+      }
     }
   }
 }
