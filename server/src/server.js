@@ -53,7 +53,7 @@ wss.on('connection', (ws) => {
         }),
       );
     }
-  }, randomValue(5, 20) * 1000 * 5);
+  }, randomValue(3, 6) * 1000);
 
   ws.on('close', async () => {
     clearInterval(interval);

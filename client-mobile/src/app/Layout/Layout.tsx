@@ -27,6 +27,7 @@ export default function MainTabs() {
         screenOptions={{
           tabBarStyle: styles.tabBar,
           tabBarLabelStyle: styles.tabLabel,
+
           swipeEnabled: true, // Разрешить свайп
         }}
       >
