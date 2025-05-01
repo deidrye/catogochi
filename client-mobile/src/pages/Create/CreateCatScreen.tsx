@@ -71,7 +71,6 @@ export default function CreateCatScreen({ navigation }: CreateCatScreenProps) {
       );
 
       navigation.navigate('Main');
-      dispatch(setOnline());
     } catch (error) {
       Alert.alert('Ошибка', 'Не удалось создать кота');
     }
@@ -86,7 +85,6 @@ export default function CreateCatScreen({ navigation }: CreateCatScreenProps) {
   }
 
   return (
-    <AuthGuard navigation={navigation}>
       <View style={styles.container}>
         <Text style={styles.title}>Выбери кота</Text>
         <CatPresetList
@@ -96,7 +94,6 @@ export default function CreateCatScreen({ navigation }: CreateCatScreenProps) {
         />
         <CreateCatButton isLoading={isLoading} onPress={handleCreateCat} />
       </View>
-    </AuthGuard>
   );
 }
 

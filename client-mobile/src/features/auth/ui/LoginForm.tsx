@@ -29,11 +29,14 @@ export const LoginForm: React.FC<LoginFormProps> = ({ navigation }) => {
       const result = await dispatch(login(data)).unwrap();
       // console.log('Успешный вход, результат:', result);
       const response = await dispatch(fetchCat());
-      if (!!response.payload) {
-        navigation.navigate('Main');
-        dispatch(setOnline());
-      } else {
+      if (!response.payload) {
         navigation.navigate('CreateCat');
+      } else {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Main' }],
+        });
+        dispatch(setOnline());
       }
     } catch (err: any) {
       console.error('Ошибка при входе:', {
