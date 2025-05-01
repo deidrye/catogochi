@@ -27,7 +27,7 @@ export default function MainTabs() {
         screenOptions={{
           tabBarStyle: styles.tabBar,
           tabBarLabelStyle: styles.tabLabel,
-          lazy: true, // Ленивая загрузка
+
           swipeEnabled: true, // Разрешить свайп
         }}
       >

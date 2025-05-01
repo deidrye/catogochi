@@ -16,7 +16,7 @@ import { AchieveT } from '@/entities/achievements/model/types';
 import { pushUserAchieve } from '@/entities/achievements/model/slice';
 import { setPoints } from '@/entities/user/model/userSlice';
 import { setLogsAndGetAchieves } from '@/features/logs-feature/model/checkLog';
-import { setOnline } from '@/entities/cat/model/slice';
+import { setCat, setOnline } from '@/entities/cat/model/slice';
 
 type CreateCatScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'CreateCat'>;
 
@@ -36,7 +36,10 @@ export default function CreateCatScreen({ navigation }: CreateCatScreenProps) {
   }, [points]);
 
   useEffect(() => {
-    dispatch(fetchPresets());
+    async function main() {
+      await dispatch(fetchPresets());
+    }
+    main()
   }, [dispatch]);
 
   const handleCreateCat = async () => {
@@ -51,7 +54,8 @@ export default function CreateCatScreen({ navigation }: CreateCatScreenProps) {
         catPresetId: selectedPreset.id,
         userId: user!.user.id,
       };
-      await dispatch(createCat(catData)).unwrap();
+      const cat = await dispatch(createCat(catData)).unwrap();
+      dispatch(setCat(cat));
 
       const setAchieveCallback = (achieve: AchieveT) => void dispatch(pushUserAchieve(achieve));
       const setPointsCallback = (actualPoints: number) => void dispatch(setPoints(actualPoints));

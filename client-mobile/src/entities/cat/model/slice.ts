@@ -16,6 +16,7 @@ const catSlice = createSlice({
   name: 'cat',
   initialState,
   reducers: {
+    clearCat: () => initialState,
     setPresets: (state, action: PayloadAction<CatPresetT[]>) => {
       state.presets = action.payload;
     },
@@ -106,6 +107,7 @@ const catSlice = createSlice({
 });
 
 export const {
+  clearCat,
   setPresets,
   setSelectedPresetIndex,
   setLoading,

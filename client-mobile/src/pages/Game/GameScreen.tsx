@@ -33,10 +33,13 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
   const user = useAppSelector((store) => store.auth.user?.user);
 
   useEffect(() => {
-    dispatch(fetchCat());
-    dispatch(setOnline());
-    dispatch(fetchActions());
-    dispatch(fetchAchievesOfUser(user?.id!));
+    async function main() {
+      await dispatch(fetchCat());
+      await dispatch(fetchActions());
+      await dispatch(fetchAchievesOfUser(user?.id!));
+      void dispatch(setOnline());
+    }
+    main();
   }, [dispatch]);
 
   useEffect(() => {

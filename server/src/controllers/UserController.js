@@ -122,6 +122,7 @@ class UserController {
         return res.status(400).json({ message: 'id должен быть числом' });
       }
       await UserService.setLastSession(id);
+      return res.status(201).json({ message: 'cool' });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ message: 'Ошибка записи последней сессии' });

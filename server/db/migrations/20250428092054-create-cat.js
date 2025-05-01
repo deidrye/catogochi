@@ -41,27 +41,27 @@ module.exports = {
       hp: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        defaultValue: 100,
+        defaultValue: 80,
       },
       energy: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        defaultValue: 100,
+        defaultValue: 50,
       },
       affection: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        defaultValue: 100,
+        defaultValue: 50,
       },
       boldness: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        defaultValue: 100,
+        defaultValue: 50,
       },
       level: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        defaultValue: 100,
+        defaultValue: 50,
       },
       createdAt: {
         allowNull: false,

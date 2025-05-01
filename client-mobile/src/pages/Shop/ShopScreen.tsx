@@ -15,7 +15,7 @@ import { useAppDispatch, useAppSelector } from '@/app/store';
 import { buyToy, fetchOwnedToys, fetchShopToys } from '@/entities/toy/model/toyThunks';
 import { useAuth } from '@/hooks/useAuth';
 import { Audio } from 'expo-av';
-import buySoundFile from '@/assets/sounds/buying.mp3';
+// import buySoundFile from '@/assets/sounds/buying.mp3';
 
 // SVG иконки
 import BallIcon from '@/assets/toys/ball.svg';
@@ -79,21 +79,21 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
 
   const [showModal, setShowModal] = useState(false);
   const [selectedToy, setSelectedToy] = useState<ToyType | null>(null);
- 
+
   // Звук при покупке
   const buySound = useRef<Audio.Sound | null>(null);
 
-  useEffect(() => {
-    const loadSound = async () => {
-      const { sound } = await Audio.Sound.createAsync(buySoundFile);
-      buySound.current = sound;
-    };
-    loadSound();
-  
-    return () => {
-      buySound.current?.unloadAsync();
-    };
-  }, []);
+  // useEffect(() => {
+  //   const loadSound = async () => {
+  //     const { sound } = await Audio.Sound.createAsync(buySoundFile);
+  //     buySound.current = sound;
+  //   };
+  //   loadSound();
+
+  //   return () => {
+  //     buySound.current?.unloadAsync();
+  //   };
+  // }, []);
 
   const playBuySound = async () => {
     try {
@@ -159,7 +159,7 @@ export const ShopScreen: React.FC<ShopScreenProps> = () => {
 
     if (actualPoints - toy.price >= 0) {
       setLoadingButtons((prev) => ({ ...prev, [toy.id]: true }));
-      await dispatch(setPoints(-toy.price));
+      dispatch(setPoints(-toy.price));
       try {
         await dispatch(buyToy({ catId: catId!, toyId: toy.id })).unwrap();
         await playBuySound();

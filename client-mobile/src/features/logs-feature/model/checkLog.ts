@@ -2,6 +2,7 @@ import { LogT } from '../schema/logSchema';
 import axiosInstance from '../../../shared/api/axiosInstance';
 import { AchieveT } from '@/entities/achievements/model/types';
 import { achieveSchema } from '@/entities/achievements/model/schema';
+const responseAchieveSchema = achieveSchema.optional();
 
 export const setLogsAndGetAchieves = async (
   { userId, type, eventId = null, toyId = null, achievementId = null, nowPoints }: LogT,
@@ -15,12 +16,15 @@ export const setLogsAndGetAchieves = async (
     toyId,
     achievementId,
   });
-  const achieves = achieveSchema.array().parse(response.data);
+  console.log('step1', response.data);
+
+  const achieves = responseAchieveSchema.array().parse(response.data);
   if (achieves.length > 0) {
     achieves.forEach((achieve) => {
-      callbackAchieve(achieve);
+      callbackAchieve(achieve!);
     });
-    const sumPoints = achieves.reduce((acc, achieve) => acc + achieve.reward, 0);
+    const sumPoints = achieves.reduce((acc, achieve) => acc + achieve!.reward, 0);
+    console.log('step2');
 
     const pointsResponse = await axiosInstance.put(`/users/${userId}`, {
       points: nowPoints + sumPoints,

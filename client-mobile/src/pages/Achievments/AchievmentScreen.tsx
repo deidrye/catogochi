@@ -1,8 +1,9 @@
 import { useAppDispatch, useAppSelector } from '@/app/store';
 import { RootStackParamList } from '@/app/types/navigation';
 import { fetchAchieves, fetchAchievesOfUser } from '@/entities/achievements/model/thunks';
-import { setOffline } from '@/entities/cat/model/slice';
+import { clearCat, setOffline } from '@/entities/cat/model/slice';
 import { logout } from '@/features/auth/model/thunks';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useEffect } from 'react';
@@ -20,11 +21,8 @@ export default function AchievementsScreen() {
 
   const logoutFunc = async () => {
     await dispatch(logout()).unwrap();
-    await dispatch(setOffline());
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'Login' }],
-    });
+    void dispatch(clearCat());
+    void dispatch(setOffline());
   };
 
   useEffect(() => {
