@@ -37,7 +37,7 @@ export default function RouterProvider() {
   }, [cat]);
 
   useEffect(() => {
-    if (userAchieves.length > 0 && userAchieves.length > prevAchievesLength.current) {
+    if (prevAchievesLength.current > 0 && userAchieves.length > prevAchievesLength.current) {
       const lastAchievement = userAchieves[userAchieves.length - 1];
 
       Toast.show({
@@ -48,7 +48,7 @@ export default function RouterProvider() {
       });
     }
     prevAchievesLength.current = userAchieves.length;
-  }, [showAchieveToggle]);
+  }, [userAchieves.length]);
 
   if (!isInitialized) {
     console.log('RouterProvider - user:', user, 'cat:', cat);

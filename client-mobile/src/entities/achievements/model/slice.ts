@@ -13,8 +13,8 @@ const achieveSlice = createSlice({
   initialState,
   reducers: {
     pushUserAchieve(state, action: PayloadAction<AchieveT>) {
-      state.userAchieves.push(action.payload);
       state.showAchieveToggle = !state.showAchieveToggle;
+      state.userAchieves.push(action.payload);
     },
   },
   extraReducers(builder) {
@@ -34,5 +34,5 @@ const achieveSlice = createSlice({
   },
 });
 
-export const { pushUserAchieve } = achieveSlice.actions;
+export const { pushUserAchieve} = achieveSlice.actions;
 export default achieveSlice.reducer;

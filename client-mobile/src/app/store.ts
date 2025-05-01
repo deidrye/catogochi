@@ -5,13 +5,15 @@ import toyReducer from '../entities/toy/model/toySlice';
 import userReducer from '../entities/user/model/userSlice';
 import achieveReducer from '../entities/achievements/model/slice';
 import catReducer from '../entities/cat/model/slice';
+import logReducer from '../entities/log/model/slice';
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     toy: toyReducer,
     achievements: achieveReducer,
     cat: catReducer,
-    user: userReducer,  // Хранит в себе только состояние очков пользователя
+    user: userReducer,
+    log: logReducer,
   },
 });
 

@@ -2,7 +2,9 @@ import { useAppDispatch, useAppSelector } from '@/app/store';
 import { RootStackParamList } from '@/app/types/navigation';
 import { fetchAchieves, fetchAchievesOfUser } from '@/entities/achievements/model/thunks';
 import { clearCat, setOffline } from '@/entities/cat/model/slice';
+import { setShowModal } from '@/entities/log/model/slice';
 import { logout } from '@/features/auth/model/thunks';
+import HistoryModal from '@/widgets/HistoryModal/HistoryModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -41,9 +43,18 @@ export default function AchievementsScreen() {
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       {/* Блок с информацией пользователя */}
       <View style={styles.userInfoContainer}>
-        <View style={styles.userTextContainer}>
-          <Text style={styles.userName}>{user?.user.name}</Text>
-          <Text style={styles.userEmail}>{user?.user.email}</Text>
+        <View style={styles.userMainRow}>
+          <View style={styles.userTextContainer}>
+            <Text style={styles.userName}>{user?.user.name}</Text>
+            <Text style={styles.userEmail}>{user?.user.email}</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.historyButton}
+            onPress={() => dispatch(setShowModal(true))}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.historyButtonText}>История</Text>
+          </TouchableOpacity>
         </View>
         <TouchableOpacity style={styles.logoutButton} onPress={logoutFunc} activeOpacity={0.7}>
           <Text style={styles.logoutButtonText}>Выйти</Text>
@@ -71,9 +82,9 @@ export default function AchievementsScreen() {
               <Text style={styles.rewardText}>{achieve.reward} рыбок</Text>
             </View>
 
-            <TouchableOpacity style={styles.detailsButton}>
+            {/* <TouchableOpacity style={styles.detailsButton}>
               <Text style={styles.detailsButtonText}>Подробнее</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             {isCompleted && (
               <Text style={styles.completedText}>
@@ -83,32 +94,44 @@ export default function AchievementsScreen() {
           </View>
         );
       })}
+      <HistoryModal />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollContainer: {
-    padding: 20,
-    paddingBottom: 40,
-  },
   userInfoContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 30,
-    backgroundColor: '#f8f9fa',
-    padding: 15,
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    width: '100%',
   },
-  userTextContainer: {
+  userMainRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
     flex: 1,
   },
+  userTextContainer: {
+    marginRight: 10, // отступ между данными пользователя и кнопкой "История"
+  },
+  historyButton: {
+    backgroundColor: '#FFD700',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  historyButtonText: {
+    color: '#000',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  scrollContainer: {
+    padding: 20,
+    paddingBottom: 40,
+  },
+
   userName: {
     fontSize: 20,
     fontWeight: 'bold',
@@ -208,5 +231,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#4caf50',
     fontStyle: 'italic',
+  },
+  buttonsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10, // или marginHorizontal между кнопками
   },
 });

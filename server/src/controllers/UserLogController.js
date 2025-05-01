@@ -94,11 +94,21 @@ class UserLogController {
   static async getUserLogs(req, res) {
     try {
       const { userId } = req.params;
-      const logs = await UserLogService.getUserLogs(userId);
-      res.status(200).json(logs);
+
+      // Validate userId
+      if (!userId) {
+        return res.status(400).json({ message: 'Не указан userId' });
+      }
+      if (Number.isNaN(Number(userId))) {
+        return res.status(400).json({ message: 'userId должен быть числом' });
+      }
+
+      const logs = await UserLogService.getUserLogs(Number(userId));
+
+      return res.status(200).json(logs);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: 'Ошибка получения логов пользователя' });
+      return res.status(500).json({ message: 'Ошибка получения логов пользователя' });
     }
   }
 
