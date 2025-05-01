@@ -34,11 +34,11 @@ class CatController {
       }
 
       const defaultCat = {
-        angry: 100,
-        hp: 100,
-        energy: 100,
-        affection: 100,
-        boldness: 100,
+        angry: 50,
+        hp: 80,
+        energy: 50,
+        affection: 50,
+        boldness: 50,
         level: 1,
       };
 
