@@ -34,6 +34,7 @@ export const createCatSchema = z.object({
 export const catActionSchema = z.object({
   id: z.number(),
   name: z.string(),
+  description: z.string(),
   effect: z.object({
     hp: z.number().optional(),
     energy: z.number().optional(),

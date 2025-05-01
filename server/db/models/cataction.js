@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
   CatAction.init(
     {
       name: DataTypes.STRING,
+      description: DataTypes.STRING,
       effect: DataTypes.JSON,
       createdAt: DataTypes.DATE,
       updatedAt: DataTypes.DATE,

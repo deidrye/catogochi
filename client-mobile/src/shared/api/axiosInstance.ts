@@ -34,7 +34,7 @@ axiosInstance.interceptors.request.use(async (config) => {
 // Логирование каждого ответа
 axiosInstance.interceptors.response.use(
   (response) => {
-    // console.log(`[Axios Response] ${response.status} ${response.config.url}`, response.data);
+    console.log(`[Axios Response] ${response.status} ${response.config.url}`, response.data);
     return response;
   },
   (error) => {
