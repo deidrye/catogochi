@@ -16,7 +16,6 @@ import { AchieveT } from '@/entities/achievements/model/types';
 import { pushUserAchieve } from '@/entities/achievements/model/slice';
 import { setPoints } from '@/entities/user/model/userSlice';
 import { setLogsAndGetAchieves } from '@/features/logs-feature/model/checkLog';
-import { setOnline } from '@/entities/cat/model/slice';
 
 type CreateCatScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'CreateCat'>;
 
@@ -67,7 +66,6 @@ export default function CreateCatScreen({ navigation }: CreateCatScreenProps) {
       );
 
       navigation.navigate('Main');
-      dispatch(setOnline());
     } catch (error) {
       Alert.alert('Ошибка', 'Не удалось создать кота');
     }
@@ -82,7 +80,6 @@ export default function CreateCatScreen({ navigation }: CreateCatScreenProps) {
   }
 
   return (
-    <AuthGuard navigation={navigation}>
       <View style={styles.container}>
         <Text style={styles.title}>Выбери кота</Text>
         <CatPresetList
@@ -92,7 +89,6 @@ export default function CreateCatScreen({ navigation }: CreateCatScreenProps) {
         />
         <CreateCatButton isLoading={isLoading} onPress={handleCreateCat} />
       </View>
-    </AuthGuard>
   );
 }
 

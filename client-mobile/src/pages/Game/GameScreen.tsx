@@ -21,7 +21,7 @@ interface GameScreenProps {
 
 const { width, height } = Dimensions.get('window');
 
-type CatAction = 'Покормить' | 'Поиграть' | 'Приласкать' | 'Уложить спать' | null;
+type CatAction = string | null;
 
 export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
   const dispatch = useAppDispatch();
@@ -56,9 +56,9 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
     }, 3000);
   };
 
-  const handleCatAction = async (actionType: CatAction) => {
-    if (isActionDisabled) return; // блокируем повторное нажатие
-    setIsActionDisabled(true); // отключаем кнопки на 3 секунды
+  const handleCatAction = async (actionType: string) => {
+    if (isActionDisabled) return;
+    setIsActionDisabled(true);
 
     if (!actionType || !cat || !actions) return;
 
@@ -83,20 +83,13 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
       const updatedCat = { ...cat, ...updatedStats };
       await dispatch(updateCat(updatedCat)).unwrap();
 
-      const actionDescriptions = {
-        Покормить: 'Вы накормили кота! Он теперь сыт и доволен 🍗',
-        Поиграть: 'Вы поиграли с котом! Он стал немного счастливее 😸',
-        Приласкать: 'Вы приласкали кота! Он замурлыкал от удовольствия 🐾',
-        'Уложить спать': 'Кот уютно устроился и заснул... 😴',
-      };
-
-      setToastText(actionDescriptions[actionType]);
+      setToastText(action.description);
     } catch (error) {
       setToastText('Произошла ошибка при выполнении действия');
     } finally {
       setTimeout(() => {
         setCurrentAction(null);
-        setIsActionDisabled(false); // возвращаем доступ к кнопкам
+        setIsActionDisabled(false);
       }, 3000);
     }
   };
@@ -106,7 +99,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
       return '';
     }
 
-    const actionMap: Record<Exclude<CatAction, null>, keyof typeof cat.CatPreset> = {
+    const actionMap: Record<string, keyof typeof cat.CatPreset> = {
       Покормить: 'imgEat',
       Поиграть: 'imgPlay',
       Приласкать: 'imgWeasel',

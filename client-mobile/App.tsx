@@ -1,4 +1,5 @@
 import 'react-native-reanimated';
+import * as ScreenCapture from 'expo-screen-capture';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { store } from './src/app/store';

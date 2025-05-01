@@ -18,6 +18,7 @@ export default function RouterProvider() {
   const userAchieves = useAppSelector((store) => store.achievements.userAchieves);
   const showAchieveToggle = useAppSelector((store) => store.achievements.showAchieveToggle);
   const prevAchievesLength = useRef(userAchieves.length);
+  const cat = useAppSelector((store) => store.cat.cat);
 
   useEffect(() => {
     dispatch(checkAuth());
