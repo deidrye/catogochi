@@ -1,13 +1,31 @@
 import { useAppDispatch, useAppSelector } from '@/app/store';
+import { RootStackParamList } from '@/app/types/navigation';
 import { fetchAchieves, fetchAchievesOfUser } from '@/entities/achievements/model/thunks';
+import { clearCat, setOffline } from '@/entities/cat/model/slice';
+import { setShowModal } from '@/entities/log/model/slice';
+import { logout } from '@/features/auth/model/thunks';
+import HistoryModal from '@/widgets/HistoryModal/HistoryModal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Alert } from 'react-native';
+import Toast from 'react-native-root-toast';
+
+type MainNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export default function AchievementsScreen() {
+  const navigation = useNavigation<MainNavigationProp>();
   const dispatch = useAppDispatch();
   const user = useAppSelector((store) => store.auth.user);
   const achievements = useAppSelector((store) => store.achievements.list);
   const userAchievements = useAppSelector((store) => store.achievements.userAchieves);
+
+  const logoutFunc = async () => {
+    await dispatch(logout()).unwrap();
+    void dispatch(clearCat());
+    void dispatch(setOffline());
+  };
 
   useEffect(() => {
     dispatch(fetchAchievesOfUser(user?.user.id!));
@@ -23,6 +41,26 @@ export default function AchievementsScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
+      {/* Блок с информацией пользователя */}
+      <View style={styles.userInfoContainer}>
+        <View style={styles.userMainRow}>
+          <View style={styles.userTextContainer}>
+            <Text style={styles.userName}>{user?.user.name}</Text>
+            <Text style={styles.userEmail}>{user?.user.email}</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.historyButton}
+            onPress={() => dispatch(setShowModal(true))}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.historyButtonText}>История</Text>
+          </TouchableOpacity>
+        </View>
+        <TouchableOpacity style={styles.logoutButton} onPress={logoutFunc} activeOpacity={0.7}>
+          <Text style={styles.logoutButtonText}>Выйти</Text>
+        </TouchableOpacity>
+      </View>
+
       <Text style={styles.header}>Мои достижения</Text>
 
       {sortedAchievements.map((achieve) => {
@@ -34,12 +72,6 @@ export default function AchievementsScreen() {
             style={[styles.card, isCompleted ? styles.completedCard : styles.incompleteCard]}
           >
             <View style={styles.cardHeader}>
-              {/* {isCompleted && (
-                <Image 
-                  source={require('@/shared/assets/icons/checkmark.png')}
-                  style={styles.badgeIcon}
-                />
-              )} */}
               <Text style={styles.cardTitle}>{achieve.name}</Text>
             </View>
 
@@ -47,16 +79,12 @@ export default function AchievementsScreen() {
 
             <View style={styles.rewardContainer}>
               <Text style={styles.rewardLabel}>Награда:</Text>
-              {/* <Image 
-                source={require('@/shared/assets/icons/fish.png')}
-                style={styles.fishIcon}
-              /> */}
               <Text style={styles.rewardText}>{achieve.reward} рыбок</Text>
             </View>
 
-            <TouchableOpacity style={styles.detailsButton}>
+            {/* <TouchableOpacity style={styles.detailsButton}>
               <Text style={styles.detailsButtonText}>Подробнее</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             {isCompleted && (
               <Text style={styles.completedText}>
@@ -66,14 +94,64 @@ export default function AchievementsScreen() {
           </View>
         );
       })}
+      <HistoryModal />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  userInfoContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+  },
+  userMainRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  userTextContainer: {
+    marginRight: 10, // отступ между данными пользователя и кнопкой "История"
+  },
+  historyButton: {
+    backgroundColor: '#FFD700',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  historyButtonText: {
+    color: '#000',
+    fontSize: 14,
+    fontWeight: '500',
+  },
   scrollContainer: {
     padding: 20,
     paddingBottom: 40,
+  },
+
+  userName: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#2c3e50',
+  },
+  userEmail: {
+    fontSize: 16,
+    color: '#7f8c8d',
+    marginTop: 4,
+  },
+  logoutButton: {
+    backgroundColor: '#e74c3c',
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+    zIndex: 1, // Добавьте это свойство
+  },
+  logoutButtonText: {
+    color: 'white',
+    fontWeight: '600',
   },
   header: {
     fontSize: 32,
@@ -108,11 +186,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 12,
   },
-  badgeIcon: {
-    width: 24,
-    height: 24,
-    marginRight: 12,
-  },
   cardTitle: {
     fontSize: 22,
     fontWeight: '700',
@@ -133,11 +206,6 @@ const styles = StyleSheet.create({
   rewardLabel: {
     fontSize: 18,
     color: '#666',
-    marginRight: 8,
-  },
-  fishIcon: {
-    width: 24,
-    height: 24,
     marginRight: 8,
   },
   rewardText: {
@@ -163,5 +231,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#4caf50',
     fontStyle: 'italic',
+  },
+  buttonsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10, // или marginHorizontal между кнопками
   },
 });

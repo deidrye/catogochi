@@ -1,5 +1,5 @@
 const WebSocket = require('ws');
-const { randomEvent, setLastSession, getOfflineEvents } = require('./utils/randomEvent');
+const { randomEvent, getOfflineEvents, randomValue } = require('./utils/randomEvent');
 const { createServer } = require('http');
 const app = require('./app');
 
@@ -53,12 +53,10 @@ wss.on('connection', (ws) => {
         }),
       );
     }
-  }, 6000);
+  }, randomValue(3, 6) * 1000);
 
   ws.on('close', async () => {
     clearInterval(interval);
-    const { userId } = clients.get(ws);
-    setLastSession(userId);
     clients.delete(ws);
     console.log('Client disconnected');
   });

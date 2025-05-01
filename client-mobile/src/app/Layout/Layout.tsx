@@ -2,42 +2,43 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { GameScreen } from '@/pages/Game/GameScreen';
 import { ShopScreen } from '@/pages/Shop/ShopScreen';
 import AchievementsScreen from '@/pages/Achievments/AchievmentScreen';
-import { StyleSheet, View, TouchableOpacity, Text, SafeAreaView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { useAppDispatch } from '../store';
-import { logout } from '@/features/auth/model/thunks';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../types/navigation';
-import { setOffline } from '@/entities/cat/model/slice';
-
-type MainTabsNavigationProp = NativeStackNavigationProp<RootStackParamList>;
+import { StyleSheet, SafeAreaView } from 'react-native';
+import { useAppDispatch, useAppSelector } from '../store';
+import { useEffect } from 'react';
+import { exitGame } from '@/entities/user/model/userThunks';
+import { fetchActions, fetchCat } from '@/entities/cat/model/thunks';
+import { setOnline } from '@/entities/cat/model/slice';
 
 const Tab = createMaterialTopTabNavigator();
 
 export default function MainTabs() {
   const dispatch = useAppDispatch();
-  const navigation = useNavigation<MainTabsNavigationProp>();
+  const isCatOnline = useAppSelector((store) => store.cat.isCatOnline);
+  const user = useAppSelector((store) => store.auth.user!.user);
 
-  const handleLogout = async () => {
-    await dispatch(logout());
-    navigation.navigate('Login');
-    dispatch(setOffline());
-  };
+  useEffect(() => {
+    return () => {
+      if (user) dispatch(exitGame(user.id));
+    };
+  }, [isCatOnline]);
+
+  useEffect(() => {
+    async function main() {
+      await dispatch(fetchCat());
+      await dispatch(fetchActions());
+      void dispatch(setOnline());
+    }
+    main();
+  }, [dispatch]);
 
   return (
     <SafeAreaView style={styles.wrapper}>
-      <View style={styles.topBar}>
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Text style={styles.logoutText}>Выйти</Text>
-        </TouchableOpacity>
-      </View>
-
       <Tab.Navigator
         initialRouteName='Game'
         screenOptions={{
           tabBarStyle: styles.tabBar,
           tabBarLabelStyle: styles.tabLabel,
-          lazy: true, // Ленивая загрузка
+
           swipeEnabled: true, // Разрешить свайп
         }}
       >
@@ -46,7 +47,7 @@ export default function MainTabs() {
         <Tab.Screen
           name='Achievements'
           component={AchievementsScreen}
-          options={{ tabBarLabel: 'Достижения' }}
+          options={{ tabBarLabel: 'Профиль' }}
         />
       </Tab.Navigator>
     </SafeAreaView>

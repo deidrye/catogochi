@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { fetchUserPoints } from './userThunks';
+import { exitGame, fetchUserPoints } from './userThunks';
 import { UserSliceT } from './userTypes';
 
 const initialState: UserSliceT = {
@@ -27,6 +27,13 @@ const userSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(fetchUserPoints.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message ?? null;
+      })
+      .addCase(exitGame.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(exitGame.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message ?? null;
       });

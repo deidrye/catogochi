@@ -29,6 +29,10 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ navigation }) => {
     pointsRef.current = points;
   }, [points]);
 
+  useEffect(() => {
+    console.log(error);
+  }, [error]);
+
   const handleSubmit = async () => {
     try {
       const data = registerSchema.parse({ email, password, name });
@@ -80,7 +84,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ navigation }) => {
         onChangeText={setPassword}
         secureTextEntry
       />
-      {error ? <Text style={styles.error}>{error}</Text> : null}
+      {error ? <Text style={styles.error}>Ошибка регистрации</Text> : null}
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
         <Text style={styles.buttonText}>Зарегистрироваться</Text>
       </TouchableOpacity>

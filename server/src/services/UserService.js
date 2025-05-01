@@ -51,6 +51,11 @@ class UserService {
     if (!user) throw new Error('User not found');
     return user.get('points'); // Извлекаем только значение 'points'
   }
+
+  static async setLastSession(userId) {
+    const now = new Date();
+    await UserService.updateUser(userId, { lastSession: now });
+  }
 }
 
 module.exports = UserService;

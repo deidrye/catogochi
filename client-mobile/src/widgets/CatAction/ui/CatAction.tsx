@@ -1,7 +1,39 @@
-import React from 'react';
+import React, { memo, useMemo, useEffect } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { CatT } from '@/entities/cat/model/types';
+import { useAppSelector } from '@/app/store';
+
+// Static utility functions
+const getIconForAction = (actionName: string) => {
+  switch (actionName) {
+    case 'Покормить':
+      return 'restaurant';
+    case 'Поиграть':
+      return 'toys';
+    case 'Приласкать':
+      return 'favorite';
+    case 'Уложить спать':
+      return 'bed';
+    default:
+      return 'pets';
+  }
+};
+
+const getColorForAction = (actionName: string) => {
+  switch (actionName) {
+    case 'Покормить':
+      return '#28a745';
+    case 'Поиграть':
+      return '#007bff';
+    case 'Приласкать':
+      return '#dc3545';
+    case 'Уложить спать':
+      return '#6f42c1';
+    default:
+      return '#6c757d';
+  }
+};
 
 type ActionButtonProps = {
   title: string;
@@ -13,73 +45,88 @@ type ActionButtonProps = {
 
 interface CatActionsWidgetProps {
   cat: CatT | null;
-  onAction: (actionType: 'Покормить' | 'Поиграть' | 'Приласкать' | 'Уложить спать') => void;
+  onAction: (actionType: string) => void;
   disabled?: boolean;
 }
 
-const ActionButton: React.FC<ActionButtonProps> = ({
-  title,
-  iconName,
-  color,
-  onPress,
-  disabled,
-}) => (
-  <Pressable
-    onPress={onPress}
-    disabled={disabled}
-    style={({ pressed }) => [
-      styles.button,
-      { backgroundColor: disabled ? '#ccc' : color },
-      pressed && !disabled ? styles.buttonPressed : null,
-    ]}
-    accessibilityLabel={`Кнопка ${title}`}
-  >
-    <View style={styles.buttonContent}>
-      <Icon name={iconName} size={18} color='#fff' />
-      <Text style={styles.buttonText}>{title}</Text>
-    </View>
-  </Pressable>
+const ActionButton: React.FC<ActionButtonProps> = memo(
+  ({ title, iconName, color, onPress, disabled }) => {
+    // Optional: Log to diagnose re-renders
+    useEffect(() => {
+      console.log(`ActionButton (${title}) rendered`);
+    });
+
+    return (
+      <Pressable
+        onPress={onPress}
+        disabled={disabled}
+        style={({ pressed }) => [
+          styles.button,
+          { backgroundColor: disabled ? '#ccc' : color },
+          pressed && !disabled ? styles.buttonPressed : null,
+        ]}
+        accessibilityLabel={`Кнопка ${title}`}
+      >
+        <View style={styles.buttonContent}>
+          <Icon name={iconName} size={18} color='#fff' />
+          <Text style={styles.buttonText}>{title}</Text>
+        </View>
+      </Pressable>
+    );
+  },
+  // Custom equality check for props
+  (prevProps, nextProps) => {
+    return (
+      prevProps.title === nextProps.title &&
+      prevProps.iconName === nextProps.iconName &&
+      prevProps.color === nextProps.color &&
+      prevProps.disabled === nextProps.disabled &&
+      prevProps.onPress === nextProps.onPress
+    );
+  },
 );
 
-const CatActionsWidget: React.FC<CatActionsWidgetProps> = ({ cat, onAction, disabled }) => {
-  if (!cat) return null;
+const CatActionsWidget: React.FC<CatActionsWidgetProps> = memo(
+  ({ cat, onAction, disabled }) => {
+    const actions = useAppSelector((state) => state.cat.actions);
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Действия с котом</Text>
-      <View style={styles.buttonGrid}>
-        <ActionButton
-          title='Еда'
-          iconName='restaurant'
-          color='#28a745'
-          onPress={() => onAction('Покормить')}
-          disabled={disabled}
-        />
-        <ActionButton
-          title='Играть'
-          iconName='toys'
-          color='#007bff'
-          onPress={() => onAction('Поиграть')}
-          disabled={disabled}
-        />
-        <ActionButton
-          title='Гладить'
-          iconName='favorite'
-          color='#dc3545'
-          onPress={() => onAction('Приласкать')}
-          disabled={disabled}
-        />
-        <ActionButton
-          title='Спать'
-          iconName='bed'
-          color='#6f42c1'
-          onPress={() => onAction('Уложить спать')}
-          disabled={disabled}
-        />
+    useEffect(() => {
+      console.log('CatActionsWidget rendered');
+    });
+
+    if (!cat || !actions) return null;
+
+    const renderedButtons = useMemo(
+      () =>
+        actions.map((action) => (
+          <ActionButton
+            key={action.name}
+            title={action.name}
+            iconName={getIconForAction(action.name)}
+            color={getColorForAction(action.name)}
+            onPress={() => onAction(action.name)}
+            disabled={disabled}
+          />
+        )),
+      [actions, onAction, disabled],
+    );
+
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Действия с котом</Text>
+        <View style={styles.buttonGrid}>{renderedButtons}</View>
       </View>
-    </View>
-  );
-};
+    );
+  },
+  // Custom equality check for props
+  (prevProps, nextProps) => {
+    return (
+      prevProps.cat === nextProps.cat &&
+      prevProps.disabled === nextProps.disabled &&
+      prevProps.onAction === nextProps.onAction
+    );
+  },
+);
 
 const styles = StyleSheet.create({
   container: {
@@ -134,4 +181,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CatActionsWidget;
+export default React.memo(CatActionsWidget);

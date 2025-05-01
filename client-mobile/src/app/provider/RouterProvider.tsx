@@ -9,21 +9,35 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import Layout from '@/app/Layout/Layout';
 import CreateCatScreen from '@/pages/Create/CreateCatScreen';
 import Toast from 'react-native-toast-message';
+import { fetchCat } from '@/entities/cat/model/thunks';
+import { setCat } from '@/entities/cat/model/slice';
+import BuyFishScreen from '@/pages/BuyFish/BuyFishScreen';
 
 const Stack = createNativeStackNavigator();
 
 export default function RouterProvider() {
   const dispatch = useAppDispatch();
   const { user, isInitialized } = useAppSelector((state) => state.auth);
+  const cat = useAppSelector((store) => store.cat.cat);
   const userAchieves = useAppSelector((store) => store.achievements.userAchieves);
+  const showAchieveToggle = useAppSelector((store) => store.achievements.showAchieveToggle);
   const prevAchievesLength = useRef(userAchieves.length);
+  const catRef = useRef(cat);
 
   useEffect(() => {
-    dispatch(checkAuth());
+    async function main() {
+      await dispatch(checkAuth());
+      await dispatch(fetchCat());
+    }
+    main();
   }, [dispatch]);
 
   useEffect(() => {
-    if (userAchieves.length > 0 && userAchieves.length > prevAchievesLength.current) {
+    catRef.current = cat;
+  }, [cat]);
+
+  useEffect(() => {
+    if (prevAchievesLength.current > 0 && userAchieves.length > prevAchievesLength.current) {
       const lastAchievement = userAchieves[userAchieves.length - 1];
 
       Toast.show({
@@ -34,9 +48,10 @@ export default function RouterProvider() {
       });
     }
     prevAchievesLength.current = userAchieves.length;
-  }, [userAchieves]);
+  }, [userAchieves.length]);
 
   if (!isInitialized) {
+    console.log('RouterProvider - user:', user, 'cat:', cat);
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size='large' />
@@ -48,20 +63,23 @@ export default function RouterProvider() {
     <>
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName={user ? 'Main' : 'Login'}
           screenOptions={{
             headerShown: false,
           }}
         >
-          {user ? (
-            <>
-              <Stack.Screen name='CreateCat' component={CreateCatScreen} />
-              <Stack.Screen name='Main' component={Layout} />
-            </>
-          ) : (
+          {!user ? (
             <>
               <Stack.Screen name='Login' component={LoginScreen} />
               <Stack.Screen name='Register' component={RegisterScreen} />
+            </>
+          ) : !cat ? (
+            <>
+              <Stack.Screen name='CreateCat' component={CreateCatScreen} />
+            </>
+          ) : (
+            <>
+              <Stack.Screen name='Main' component={Layout} />
+              <Stack.Screen name='BuyFish' component={BuyFishScreen} />
             </>
           )}
         </Stack.Navigator>

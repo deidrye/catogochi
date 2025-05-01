@@ -106,18 +106,22 @@ module.exports = {
     await CatAction.bulkCreate([
       {
         name: 'Покормить',
+        description: 'Вы накормили кота! Он теперь сыт и доволен',
         effect: { hp: +10, energy: +20, affection: +5, angry: -5 },
       },
       {
         name: 'Поиграть',
+        description: 'Вы поиграли с котом! Он стал немного счастливее',
         effect: { energy: -15, boldness: +10, affection: +5, angry: -5 },
       },
       {
         name: 'Приласкать',
+        description: 'Вы приласкали кота! Он замурлыкал от удовольствия',
         effect: { affection: +20, angry: -10, boldness: -5 },
       },
       {
         name: 'Уложить спать',
+        description: 'Кот уютно устроился и заснул...',
         effect: { energy: +30, angry: -10 },
       },
     ]);
@@ -163,7 +167,7 @@ module.exports = {
         name: 'Мурзик',
         userId: 1,
         angry: 3,
-        hp: 100,
+        hp: 75,
         energy: 80,
         affection: 70,
         boldness: 50,
@@ -174,9 +178,9 @@ module.exports = {
         name: 'Барсик',
         userId: 2,
         angry: 2,
-        hp: 90,
-        energy: 60,
-        affection: 85,
+        hp: 85,
+        energy: 65,
+        affection: 55,
         boldness: 40,
         level: 1,
         catPresetId: 2,
@@ -185,16 +189,16 @@ module.exports = {
 
     await Event.bulkCreate([
       {
-        title: 'Играл с хвостом',
-        description: 'Кот поиграл со своим хвостом и стал счастливее',
-        effect: { hp: 5 },
+        title: 'Упал в лужу',
+        description: 'Кот упал в лужу и в него стреляли',
+        effect: { hp: -5 },
         catId: null,
         toyId: null,
       },
       {
         title: 'Включился пылесос',
         description: 'Кот слишком активно убегал',
-        effect: { energy: -5 },
+        effect: { energy: -15 },
         catId: null,
         toyId: null,
       },
@@ -261,6 +265,62 @@ module.exports = {
         reward: 25,
         type: 'BuyToy',
         countCondition: 10,
+      },
+      {
+        name: 'Заботливый хозяин',
+        description: 'Покормил кота 5 раз',
+        reward: 15,
+        type: 'Feed',
+        countCondition: 5,
+      },
+      {
+        name: 'Шеф-повар для кота',
+        description: 'Покормил кота 20 раз',
+        reward: 30,
+        type: 'Feed',
+        countCondition: 20,
+      },
+      {
+        name: 'Лучший друг кота',
+        description: 'Поиграл с котом 5 раз',
+        reward: 15,
+        type: 'CatPlay',
+        countCondition: 5,
+      },
+      {
+        name: 'Профессиональный игрок',
+        description: 'Поиграл с котом 25 раз',
+        reward: 35,
+        type: 'CatPlay',
+        countCondition: 25,
+      },
+      {
+        name: 'Лапочка',
+        description: 'Приласкал кота 10 раз',
+        reward: 20,
+        type: 'Meow',
+        countCondition: 10,
+      },
+      {
+        name: 'Гуру ласк',
+        description: 'Приласкал кота 50 раз',
+        reward: 50,
+        type: 'Meow',
+        countCondition: 50,
+      },
+      {
+        name: 'Сонный мастер',
+        description: 'Уложил кота спать 10 раз',
+        reward: 20,
+        type: 'Sleep',
+        countCondition: 10,
+      },
+      {
+        name: 'Сомнамбула',
+        description: 'Уложил кота спать 30 раз',
+        reward: 40,
+        type: 'Sleep',
+        countCondition: 30,
       },
     ]);
 

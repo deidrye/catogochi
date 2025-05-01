@@ -39,8 +39,13 @@ class AchievementService {
   }
 
   static async assignAchievementToUser(userId, achievementId) {
-    const created = UserAchievement.findOrCreate({ where: { userId, achievementId } });
-    return created;
+    const [, created] = await UserAchievement.findOrCreate({
+      where: { userId, achievementId },
+    });
+    const achieve = await Achievement.findByPk(achievementId);
+    console.log('HEHE', achieve);
+
+    return [achieve, created];
   }
 
   static async removeAchievementFromUser(userId, achievementId) {

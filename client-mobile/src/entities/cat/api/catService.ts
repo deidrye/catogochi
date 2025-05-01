@@ -47,7 +47,8 @@ export class CatService {
   static async getActions() {
     try {
       const response = await axiosInstance.get('/cat-actions');
-      return catActionSchema.array().parse(response.data);
+      // return catActionSchema.array().parse(response.data);
+      return response.data;
     } catch (error) {
       console.error(error);
       throw new Error('getActions error');

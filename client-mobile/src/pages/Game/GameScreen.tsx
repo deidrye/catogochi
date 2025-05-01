@@ -12,6 +12,11 @@ import { fetchCat, updateCat, fetchActions } from '@/entities/cat/model/thunks';
 import { Video, ResizeMode } from 'expo-av';
 import { setOffline, setOnline } from '@/entities/cat/model/slice';
 import * as Notifications from 'expo-notifications';
+import { fetchAchievesOfUser } from '@/entities/achievements/model/thunks';
+import { setLogsAndGetAchieves } from '@/features/logs-feature/model/checkLog';
+import { AchieveT } from '@/entities/achievements/model/types';
+import { pushUserAchieve } from '@/entities/achievements/model/slice';
+import { setPoints } from '@/entities/user/model/userSlice';
 
 type GameScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Game'>;
 
@@ -21,7 +26,7 @@ interface GameScreenProps {
 
 const { width, height } = Dimensions.get('window');
 
-type CatAction = 'Покормить' | 'Поиграть' | 'Приласкать' | 'Уложить спать' | null;
+type CatAction = string | null;
 
 export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
   const dispatch = useAppDispatch();
@@ -30,6 +35,8 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
   const [currentAction, setCurrentAction] = useState<CatAction>(null);
   const [toastText, setToastText] = useState<string | null>(null);
   const [isActionDisabled, setIsActionDisabled] = useState(false);
+  const user = useAppSelector((store) => store.auth.user?.user);
+  const points = useAppSelector((store) => store.user.points);
 
   //--------------------------------------------------------------------------------
   // Настройка уведомлений
@@ -70,9 +77,13 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
   // --------------------------------------------------------------------------------
 
   useEffect(() => {
-    dispatch(fetchCat());
-    dispatch(setOnline());
-    dispatch(fetchActions());
+    async function main() {
+      await dispatch(fetchCat());
+      await dispatch(fetchActions());
+      await dispatch(fetchAchievesOfUser(user?.id!));
+      void dispatch(setOnline());
+    }
+    main();
   }, [dispatch]);
 
   useEffect(() => {
@@ -92,9 +103,9 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
     }, 3000);
   };
 
-  const handleCatAction = async (actionType: CatAction) => {
-    if (isActionDisabled) return; // блокируем повторное нажатие
-    setIsActionDisabled(true); // отключаем кнопки на 3 секунды
+  const handleCatAction = async (actionType: string) => {
+    if (isActionDisabled) return;
+    setIsActionDisabled(true);
 
     if (!actionType || !cat || !actions) return;
 
@@ -103,7 +114,22 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
 
     try {
       setCurrentAction(actionType);
+      const type =
+        actionType === 'Покормить'
+          ? 'Feed'
+          : actionType === 'Поиграть'
+          ? 'CatPlay'
+          : actionType === 'Приласкать'
+          ? 'Meow'
+          : 'Sleep';
 
+      const setAchieveCallback = (achieve: AchieveT) => void dispatch(pushUserAchieve(achieve));
+      const setPointsCallback = (points: number) => void dispatch(setPoints(points));
+      await setLogsAndGetAchieves(
+        { userId: user!.id, type, nowPoints: points },
+        setAchieveCallback,
+        setPointsCallback,
+      );
       const updatedStats = Object.entries(action.effect).reduce((acc, [key, value]) => {
         if (typeof cat[key as keyof typeof cat] === 'number') {
           return {
@@ -119,13 +145,13 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
       const updatedCat = { ...cat, ...updatedStats };
       await dispatch(updateCat(updatedCat)).unwrap();
 
-      setToastText(`${actionType}`);
+      setToastText(action.description);
     } catch (error) {
       setToastText('Произошла ошибка при выполнении действия');
     } finally {
       setTimeout(() => {
         setCurrentAction(null);
-        setIsActionDisabled(false); // возвращаем доступ к кнопкам
+        setIsActionDisabled(false);
       }, 3000);
     }
   };
@@ -135,7 +161,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
       return '';
     }
 
-    const actionMap: Record<Exclude<CatAction, null>, keyof typeof cat.CatPreset> = {
+    const actionMap: Record<string, keyof typeof cat.CatPreset> = {
       Покормить: 'imgEat',
       Поиграть: 'imgPlay',
       Приласкать: 'imgWeasel',

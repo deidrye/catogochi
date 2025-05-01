@@ -8,4 +8,5 @@ export type NewAchieveT = z.infer<typeof newAchieveSchema>;
 export type AchieveSliceT = {
   list: AchieveT[];
   userAchieves: AchieveT[];
+  showAchieveToggle: boolean;
 };
