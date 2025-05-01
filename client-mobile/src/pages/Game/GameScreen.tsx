@@ -11,6 +11,7 @@ import { useAppDispatch, useAppSelector } from '@/app/store';
 import { fetchCat, updateCat, fetchActions } from '@/entities/cat/model/thunks';
 import { Video, ResizeMode } from 'expo-av';
 import { setOffline, setOnline } from '@/entities/cat/model/slice';
+import * as Notifications from 'expo-notifications';
 
 type GameScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Game'>;
 
@@ -29,6 +30,44 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
   const [currentAction, setCurrentAction] = useState<CatAction>(null);
   const [toastText, setToastText] = useState<string | null>(null);
   const [isActionDisabled, setIsActionDisabled] = useState(false);
+
+  //--------------------------------------------------------------------------------
+  // Настройка уведомлений
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: false,
+    }),
+  });
+
+  const sendCatNotification = async (title: string, body: string) => {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title,
+        body,
+        sound: 'default',
+        data: { catId: cat?.id },
+      },
+      trigger: null, // Сработает немедленно
+    });
+  };
+
+  // Отслеживание состояний кота
+  useEffect(() => {
+    if (!cat) return;
+  
+    // Уведомление, если кот голоден (hp < 20)
+    if (cat.hp < 20) {
+      sendCatNotification('Мяу! 🐱', `${cat.name} голоден! Покормите кота!`);
+    }
+  
+    // Уведомление, если кот устал (energy < 15)
+    if (cat.energy < 15) {
+      sendCatNotification('Кот устал!', `${cat.name} хочет спать. Уложите его!`);
+    }
+  }, [cat]);
+  // --------------------------------------------------------------------------------
 
   useEffect(() => {
     dispatch(fetchCat());

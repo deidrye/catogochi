@@ -6,6 +6,8 @@ import { useAppDispatch, useAppSelector } from '@/app/store';
 import { setCat } from '@/entities/cat/model/slice';
 import { updateCat } from '@/entities/cat/model/thunks';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import connectedSound from '@/assets/sounds/cat-meow.mp3';
+import { Audio } from 'expo-av';
 
 export const wsActionSchema = z.object({
   type: z.string(),
@@ -72,7 +74,7 @@ export function EventProvider({ children }: Props) {
       });
     };
 
-    connection.onopen = () => {
+    connection.onopen = async () => {
       console.log('WebSocket connected');
       setIsConnected(true);
 
@@ -84,6 +86,14 @@ export function EventProvider({ children }: Props) {
             payload: { catId: catRef.current?.id, userId: userRef.current?.id },
           }),
         );
+      }
+
+      // Звук подключения
+      try {
+        const { sound } = await Audio.Sound.createAsync(connectedSound);
+        await sound.playAsync();
+      } catch (error) {
+        console.error('Ошибка воспроизведения звука:', error);
       }
 
       Toast.show({

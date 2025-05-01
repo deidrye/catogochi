@@ -13,6 +13,7 @@ const authRouter = require('./routes/authRouter');
 const achievementRouter = require('./routes/achievementRouter');
 const userLogRouter = require('./routes/userLogRouter');
 const catActionRouter = require('./routes/catActionRouter');
+  
 
 // Middleware setup
 app.use(morgan('dev')); // Первым (для логов)
@@ -32,5 +33,6 @@ app.use('/api/users', userRouter);
 app.use('/api/achievements', achievementRouter);
 app.use('/api/logs', userLogRouter);
 app.use('/api/cat-actions', catActionRouter);
+
 
 module.exports = app;

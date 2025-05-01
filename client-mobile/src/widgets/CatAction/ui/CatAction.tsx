@@ -56,21 +56,21 @@ const CatActionsWidget: React.FC<CatActionsWidgetProps> = ({ cat, onAction, disa
           disabled={disabled}
         />
         <ActionButton
-          title='Поиграть'
+          title='Играть'
           iconName='toys'
           color='#007bff'
           onPress={() => onAction('Поиграть')}
           disabled={disabled}
         />
         <ActionButton
-          title='Приласкать'
+          title='Гладить'
           iconName='favorite'
           color='#dc3545'
           onPress={() => onAction('Приласкать')}
           disabled={disabled}
         />
         <ActionButton
-          title='Уложить спать'
+          title='Спать'
           iconName='bed'
           color='#6f42c1'
           onPress={() => onAction('Уложить спать')}
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.07)',
     padding: 12,
     borderRadius: 10,
-    width: '95%',
+    width: '97%',
     marginTop: 15,
     alignItems: 'center',
     shadowColor: '#000',
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   button: {
-    width: '21%',
+    width: '23%',
     aspectRatio: 1, // сохраняет квадратную форму
     borderRadius: 12,
     marginHorizontal: 2,
