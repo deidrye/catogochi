@@ -11,6 +11,7 @@ import CreateCatScreen from '@/pages/Create/CreateCatScreen';
 import Toast from 'react-native-toast-message';
 import { fetchCat } from '@/entities/cat/model/thunks';
 import { setCat } from '@/entities/cat/model/slice';
+import BuyFishScreen from '@/pages/BuyFish/BuyFishScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -76,7 +77,10 @@ export default function RouterProvider() {
               <Stack.Screen name='CreateCat' component={CreateCatScreen} />
             </>
           ) : (
-            <Stack.Screen name='Main' component={Layout} />
+            <>
+              <Stack.Screen name='Main' component={Layout} />
+              <Stack.Screen name='BuyFish' component={BuyFishScreen} />
+            </>
           )}
         </Stack.Navigator>
       </NavigationContainer>
