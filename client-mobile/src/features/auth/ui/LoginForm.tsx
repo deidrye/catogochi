@@ -40,7 +40,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ navigation }) => {
       }
       navigation.navigate('Main');
     } catch (err: any) {
-      console.error('Ошибка при входе:', {
+      console.log('Ошибка при входе:', {
         message: err.message,
         response: err.response?.data,
         status: err.response?.status,

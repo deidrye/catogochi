@@ -14,7 +14,7 @@ class LogService {
 
       return resLogSchema.array().parse(response.data);
     } catch (error) {
-      console.error(error);
+      console.log(error);
       throw error;
     }
   }
