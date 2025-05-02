@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { LoginScreen } from '@/pages/Login/LoginScreen';
@@ -10,34 +10,49 @@ import Layout from '@/app/Layout/Layout';
 import CreateCatScreen from '@/pages/Create/CreateCatScreen';
 import Toast from 'react-native-toast-message';
 import { fetchCat } from '@/entities/cat/model/thunks';
-import { setCat } from '@/entities/cat/model/slice';
 import BuyFishScreen from '@/pages/BuyFish/BuyFishScreen';
+import { LoadingScreen } from '@/widgets/LoadingScreen/LoadingScreen';
+import { setLoader } from '@/entities/loader/model/loaderSlice';
+import { setOnline } from '@/entities/cat/model/slice';
+import { fetchUserPoints } from '@/entities/user/model/userThunks';
 
 const Stack = createNativeStackNavigator();
 
 export default function RouterProvider() {
   const dispatch = useAppDispatch();
+  const isLoading = useAppSelector((store) => store.loader.isLoading);
+  const [response, setResponse] = useState();
   const { user, isInitialized } = useAppSelector((state) => state.auth);
-  const cat = useAppSelector((store) => store.cat.cat);
+  const { cat } = useAppSelector((store) => store.cat);
   const userAchieves = useAppSelector((store) => store.achievements.userAchieves);
   const showAchieveToggle = useAppSelector((store) => store.achievements.showAchieveToggle);
   const prevAchievesLength = useRef(userAchieves.length);
   const catRef = useRef(cat);
 
   useEffect(() => {
-    async function main() {
+    const main = async () => {
       await dispatch(checkAuth());
-      await dispatch(fetchCat());
-    }
+      const catResponse = await dispatch(fetchCat());
+      if (catResponse.payload) dispatch(setOnline());
+      // else dispatch(setLoader(false));
+    };
+
     main();
   }, [dispatch]);
 
   useEffect(() => {
     catRef.current = cat;
+    if (cat) dispatch(setLoader(true));
   }, [cat]);
 
   useEffect(() => {
-    if (userAchieves.length > 0 && userAchieves.length > prevAchievesLength.current) {
+    if (user) {
+      dispatch(fetchUserPoints(user.user.id));
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (prevAchievesLength.current > 0 && userAchieves.length > prevAchievesLength.current) {
       const lastAchievement = userAchieves[userAchieves.length - 1];
 
       Toast.show({
@@ -60,6 +75,7 @@ export default function RouterProvider() {
     );
   }
 
+  // if (isLoading) return <LoadingScreen />;
   return (
     <>
       <NavigationContainer>
@@ -68,21 +84,22 @@ export default function RouterProvider() {
             headerShown: false,
           }}
         >
-          {!user ? (
+          {!user && (
             <>
               <Stack.Screen name='Login' component={LoginScreen} />
               <Stack.Screen name='Register' component={RegisterScreen} />
             </>
-          ) : !cat ? (
-            <>
-              <Stack.Screen name='CreateCat' component={CreateCatScreen} />
-            </>
-          ) : (
+          )}
+          {user && cat && (
             <>
               <Stack.Screen name='Main' component={Layout} />
               <Stack.Screen name='BuyFish' component={BuyFishScreen} />
             </>
           )}
+          {user && !cat && !isLoading && (
+            <Stack.Screen name='CreateCat' component={CreateCatScreen} />
+          )}
+          {user && !cat && isLoading && <Stack.Screen name='Loading' component={LoadingScreen} />}
         </Stack.Navigator>
       </NavigationContainer>
       {/* <Toast /> */}

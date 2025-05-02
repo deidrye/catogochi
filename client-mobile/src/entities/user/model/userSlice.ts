@@ -15,6 +15,9 @@ const userSlice = createSlice({
     setPoints(state, action: PayloadAction<number>) {
       if (state.points + action.payload >= 0) state.points += action.payload;
     },
+    clearPoints(state) {
+      state.points = 0;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -40,6 +43,6 @@ const userSlice = createSlice({
   },
 });
 
-export const { setPoints } = userSlice.actions;
+export const { setPoints, clearPoints } = userSlice.actions;
 
 export default userSlice.reducer;
