@@ -61,19 +61,19 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
   // };
 
   // Отслеживание состояний кота
-  useEffect(() => {
-    if (!cat) return;
+  // useEffect(() => {
+  //   if (!cat) return;
 
-    // Уведомление, если кот голоден (hp < 20)
-    if (cat.hp < 20) {
-      sendCatNotification('Мяу! 🐱', `${cat.name} голоден! Покормите кота!`);
-    }
+  //   // Уведомление, если кот голоден (hp < 20)
+  //   if (cat.hp < 20) {
+  //     sendCatNotification('Мяу! 🐱', `${cat.name} голоден! Покормите кота!`);
+  //   }
 
-    // Уведомление, если кот устал (energy < 15)
-    if (cat.energy < 15) {
-      sendCatNotification('Кот устал!', `${cat.name} хочет спать. Уложите его!`);
-    }
-  }, [cat]);
+  //   // Уведомление, если кот устал (energy < 15)
+  //   if (cat.energy < 15) {
+  //     sendCatNotification('Кот устал!', `${cat.name} хочет спать. Уложите его!`);
+  //   }
+  // }, [cat]);
   // --------------------------------------------------------------------------------
 
   useEffect(() => {
@@ -81,7 +81,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
       await dispatch(fetchCat());
       await dispatch(fetchActions());
       await dispatch(fetchAchievesOfUser(user?.id!));
-      void dispatch(setOnline());
+      // void dispatch(setOnline());
     }
     main();
   }, [dispatch]);
