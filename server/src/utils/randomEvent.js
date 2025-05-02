@@ -12,40 +12,47 @@ async function randomEvent(catId) {
 }
 
 async function getOfflineEvents(userId, catId) {
-  const user = await UserService.getById(userId);
-
-  const lastTime = user.lastSession;
-  if (!lastTime) {
-    return {};
-  }
-  const now = new Date();
-  console.log(now - lastTime);
-
-  const rangeOfTimeOut = Math.floor(
-    (now - lastTime) / (1000 * 60 * 20) > 10 ? 10 : (now - lastTime) / (1000 * 60 * 20),
-  );
-  console.log(rangeOfTimeOut);
-
-  if (rangeOfTimeOut < 1) {
-    return {};
-  }
   const totalEvents = { angry: 0, hp: 0, energy: 0, affection: 0, boldness: 0 };
-  if (rangeOfTimeOut >= 1) {
-    for (let i = 1; i < rangeOfTimeOut; i++) {
-      // eslint-disable-next-line no-await-in-loop
-      const event = await randomEvent(catId);
-      for (const key in event.effect) {
-        totalEvents[key] += event.effect[key];
-      }
+  try {
+    const user = await UserService.getById(userId);
+
+    if (!user) {
+      return {};
     }
+    const lastTime = user.lastSession;
+    const now = new Date();
+    let rangeOfTimeOut = 0;
+    if (lastTime) {
+      rangeOfTimeOut = Math.floor(
+        (now - lastTime) / (1000 * 60 * 20) > 10
+          ? 10
+          : (now - lastTime) / (1000 * 60 * 20),
+      );
+    }
+
+    if (rangeOfTimeOut < 1) {
+      return {};
+    }
+    if (rangeOfTimeOut >= 1) {
+      for (let i = 1; i < rangeOfTimeOut; i++) {
+        // eslint-disable-next-line no-await-in-loop
+        const event = await randomEvent(catId);
+        for (const key in event.effect) {
+          totalEvents[key] += event.effect[key];
+        }
+      }
+      return {
+        title: 'Ваш кот поймал белку',
+        description: 'Пока Вас не было, кот не тратил время зря и развлекался как мог!',
+        effect: totalEvents,
+        catId,
+        toyId: null,
+      };
+    }
+  } catch (error) {
+    console.error(error);
   }
-  return {
-    title: 'Ваш кот поймал белку',
-    description: 'Пока Вас не было, кот не тратил время зря и развлекался как мог!',
-    effect: totalEvents,
-    catId,
-    toyId: null,
-  };
+  return {};
 }
 
 module.exports = { randomValue, randomEvent, getOfflineEvents };

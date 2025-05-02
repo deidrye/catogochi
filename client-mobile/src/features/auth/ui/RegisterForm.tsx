@@ -40,11 +40,11 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ navigation }) => {
       const data = registerSchema.parse({ email, password, name });
       const regRes = await dispatch(register(data)).unwrap();
       const user = userSchema.parse(regRes);
-      await dispatch(fetchUserPoints(user.user.id)).unwrap();
+      // await dispatch(fetchUserPoints(user.user.id)).unwrap();
 
       const setAchieveCallback = (achieve: AchieveT) => void dispatch(pushUserAchieve(achieve));
       const setPointsCallback = (actualPoints: number) => void dispatch(setPoints(actualPoints));
-      const actualPoints = pointsRef.current;
+      const actualPoints = user.user.points;
 
       await setLogsAndGetAchieves(
         {
