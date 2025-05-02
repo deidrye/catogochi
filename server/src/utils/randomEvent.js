@@ -21,12 +21,14 @@ async function getOfflineEvents(userId, catId) {
     }
     const lastTime = user.lastSession;
     const now = new Date();
-    console.log(now - lastTime);
-
-    const rangeOfTimeOut = Math.floor(
-      (now - lastTime) / (1000 * 60 * 20) > 10 ? 10 : (now - lastTime) / (1000 * 60 * 20),
-    );
-    console.log(rangeOfTimeOut);
+    let rangeOfTimeOut = 0;
+    if (lastTime) {
+      rangeOfTimeOut = Math.floor(
+        (now - lastTime) / (1000 * 60 * 20) > 10
+          ? 10
+          : (now - lastTime) / (1000 * 60 * 20),
+      );
+    }
 
     if (rangeOfTimeOut < 1) {
       return {};
@@ -39,14 +41,14 @@ async function getOfflineEvents(userId, catId) {
           totalEvents[key] += event.effect[key];
         }
       }
+      return {
+        title: 'Ваш кот поймал белку',
+        description: 'Пока Вас не было, кот не тратил время зря и развлекался как мог!',
+        effect: totalEvents,
+        catId,
+        toyId: null,
+      };
     }
-    return {
-      title: 'Ваш кот поймал белку',
-      description: 'Пока Вас не было, кот не тратил время зря и развлекался как мог!',
-      effect: totalEvents,
-      catId,
-      toyId: null,
-    };
   } catch (error) {
     console.error(error);
   }
