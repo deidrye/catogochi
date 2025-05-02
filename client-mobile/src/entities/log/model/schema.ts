@@ -45,5 +45,5 @@ export const resLogSchema = z.object({
     catId: z.number().nullable(),
     toyId: z.number().nullable(),
     catActionId: z.number().nullable(),
-  }),
+  }).nullable().optional(),
 });

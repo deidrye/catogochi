@@ -64,11 +64,11 @@ export const authApi = {
         await AsyncStorage.setItem('accessToken', userData.accessToken);
         return userData;
       } catch (validationError) {
-        console.error('Ошибка валидации ответа:', validationError);
+        console.log('Ошибка валидации ответа:', validationError);
         throw new Error('Неверный формат данных от сервера');
       }
     } catch (error) {
-      console.error('Login error:', error);
+      console.log('Login error:', error);
       throw error;
     }
   },
@@ -89,11 +89,11 @@ export const authApi = {
         await AsyncStorage.setItem('accessToken', userData.accessToken);
         return userData;
       } catch (validationError) {
-        console.error('Ошибка валидации ответа:', validationError);
+        console.log('Ошибка валидации ответа:', validationError);
         throw new Error('Неверный формат данных от сервера');
       }
     } catch (error) {
-      console.error('Register error:', error);
+      console.log('Register error:', error);
       throw error;
     }
   },
@@ -107,7 +107,7 @@ export const authApi = {
       // Удаляем токен
       await AsyncStorage.removeItem('accessToken');
     } catch (error) {
-      console.error('Logout error:', error);
+      console.log('Logout error:', error);
       throw error;
     }
   },
@@ -133,11 +133,11 @@ export const authApi = {
         }
         return userData;
       } catch (validationError) {
-        console.error('Ошибка валидации ответа:', validationError);
+        console.log('Ошибка валидации ответа:', validationError);
         throw new Error('Неверный формат данных от сервера');
       }
     } catch (error) {
-      console.error('Check auth error:', error);
+      console.log('Check auth error:', error);
       throw error;
     }
   },

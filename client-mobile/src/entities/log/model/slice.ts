@@ -14,6 +14,9 @@ export const logSlice = createSlice({
     setShowModal(state, action: PayloadAction<boolean>) {
       state.showModal = action.payload;
     },
+    clearLogs(state) {
+      state.list = [];
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchLogs.fulfilled, (state, action) => {
@@ -22,6 +25,6 @@ export const logSlice = createSlice({
   },
 });
 
-export const { setShowModal } = logSlice.actions;
+export const { setShowModal, clearLogs } = logSlice.actions;
 
 export default logSlice.reducer;

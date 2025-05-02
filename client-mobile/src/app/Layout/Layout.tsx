@@ -10,6 +10,7 @@ import { fetchActions, fetchCat } from '@/entities/cat/model/thunks';
 import { setOffline, setOnline } from '@/entities/cat/model/slice';
 import { clearPoints } from '@/entities/user/model/userSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { clearLogs } from '@/entities/log/model/slice';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -34,6 +35,7 @@ export default function MainTabs() {
     main();
     return () => {
       dispatch(setOffline());
+      dispatch(clearLogs())
     };
   }, [dispatch]);
 

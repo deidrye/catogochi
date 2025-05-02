@@ -2,7 +2,7 @@ import { useAppDispatch, useAppSelector } from '@/app/store';
 import { RootStackParamList } from '@/app/types/navigation';
 import { fetchAchieves, fetchAchievesOfUser } from '@/entities/achievements/model/thunks';
 import { clearCat, setOffline } from '@/entities/cat/model/slice';
-import { setShowModal } from '@/entities/log/model/slice';
+import { clearLogs, setShowModal } from '@/entities/log/model/slice';
 import { logout } from '@/features/auth/model/thunks';
 import HistoryModal from '@/widgets/HistoryModal/HistoryModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -26,6 +26,7 @@ export default function AchievementsScreen() {
     AsyncStorage.clear();
     void dispatch(clearCat());
     void dispatch(setOffline());
+    void dispatch(clearLogs());
   };
 
   useEffect(() => {

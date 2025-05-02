@@ -38,7 +38,7 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
-    console.error('[Axios Error]', error.message, error.config?.url || '');
+    console.log('[Axios Error]', error.message, error.config?.url || '');
     return Promise.reject(error);
   },
 );
