@@ -33,7 +33,7 @@ const catSlice = createSlice({
       state.cat = action.payload;
     },
     setOnline: (state) => {
-      state.isCatOnline = true;
+      if (!state.isCatOnline) state.isCatOnline = true;
     },
     setOffline: (state) => {
       state.isCatOnline = false;

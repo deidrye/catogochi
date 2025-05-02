@@ -7,8 +7,9 @@ import { useAppDispatch, useAppSelector } from '../store';
 import { useEffect } from 'react';
 import { exitGame } from '@/entities/user/model/userThunks';
 import { fetchActions, fetchCat } from '@/entities/cat/model/thunks';
-import { setOnline } from '@/entities/cat/model/slice';
+import { setOffline, setOnline } from '@/entities/cat/model/slice';
 import { clearPoints } from '@/entities/user/model/userSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -20,6 +21,7 @@ export default function MainTabs() {
   useEffect(() => {
     return () => {
       dispatch(exitGame(user.id));
+      dispatch(clearPoints());
     };
   }, [isCatOnline]);
 
@@ -30,6 +32,9 @@ export default function MainTabs() {
       void dispatch(setOnline());
     }
     main();
+    return () => {
+      dispatch(setOffline());
+    };
   }, [dispatch]);
 
   return (

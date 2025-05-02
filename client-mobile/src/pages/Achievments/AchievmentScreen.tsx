@@ -23,6 +23,7 @@ export default function AchievementsScreen() {
 
   const logoutFunc = async () => {
     await dispatch(logout()).unwrap();
+    AsyncStorage.clear();
     void dispatch(clearCat());
     void dispatch(setOffline());
   };

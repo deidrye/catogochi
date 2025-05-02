@@ -13,8 +13,8 @@ type Props = {
 
 const borderColors: Record<ToastType, string> = {
   success: '#10b981', // зелёный
-  error: '#ef4444',   // красный
-  info: '#3b82f6',    // синий
+  error: '#ef4444', // красный
+  info: '#3b82f6', // синий
 };
 
 const textColors: Record<ToastType, string> = {
