@@ -71,28 +71,6 @@ class CatService {
         ],
       },
     });
-    try {
-      if (updatedCat.hp !== undefined && updatedCat.hp < 20) {
-        await sendNotificationToCat(updatedCat.id, '⚠️ Кот страдает! Срочно лечите его!');
-      }
-      if (updatedCat.energy !== undefined && updatedCat.energy < 15) {
-        await sendNotificationToCat(updatedCat.id, '😴 Кот устал! Дайте ему поспать!');
-      }
-      if (updatedCat.angry !== undefined && updatedCat.angry > 70) {
-        await sendNotificationToCat(
-          updatedCat.id,
-          '😾 Кот очень злой! Будьте осторожны.',
-        );
-      }
-      if (updatedCat.affection !== undefined && updatedCat.affection > 80) {
-        await sendNotificationToCat(updatedCat.id, '😻 Кот вас очень любит!');
-      }
-      if (updatedCat.boldness !== undefined && updatedCat.boldness > 80) {
-        await sendNotificationToCat(updatedCat.id, '😼 Кот готов к приключениям!');
-      }
-    } catch (notifyErr) {
-      console.error('Push notify error:', notifyErr);
-    }
     return updatedCat;
   }
 

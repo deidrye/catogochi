@@ -133,7 +133,7 @@ export function EventProvider({ children }: Props) {
 
         const oldCat = catRef.current;
         const newCat = { ...catRef.current!, ...updatedStats };
-        await dispatch(setCat(newCat));
+        dispatch(setCat(newCat));
         const res = await dispatch(updateCat(newCat));
         if (res.meta.requestStatus === 'rejected') void dispatch(setCat(oldCat));
 
@@ -143,7 +143,6 @@ export function EventProvider({ children }: Props) {
           text2: wsEvent.description,
           visibilityTime: 3000,
         });
-
         try {
           const { sound } = await Audio.Sound.createAsync(connectedSound);
           await sound.playAsync();

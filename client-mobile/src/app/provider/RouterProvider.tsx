@@ -60,10 +60,11 @@ export default function RouterProvider() {
         text1: 'Новое достижение!',
         text2: `Вы получили: ${lastAchievement.name}`,
         position: 'bottom',
+        topOffset: 200, // поднимет тост на 50 пикселей выше стандартной позиции
       });
     }
     prevAchievesLength.current = userAchieves.length;
-  }, [userAchieves.length]);
+  }, [showAchieveToggle]);
 
   if (!isInitialized) {
     console.log('RouterProvider - user:', user, 'cat:', cat);
@@ -101,7 +102,7 @@ export default function RouterProvider() {
           {user && !cat && isLoading && <Stack.Screen name='Loading' component={LoadingScreen} />}
         </Stack.Navigator>
       </NavigationContainer>
-      <Toast />
+      {/* <Toast /> */}
     </>
   );
 }
