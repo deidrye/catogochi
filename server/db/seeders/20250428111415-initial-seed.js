@@ -105,22 +105,22 @@ module.exports = {
     ]);
     await CatAction.bulkCreate([
       {
-        name: 'Покормить',
+        name: 'Еда',
         description: 'Вы накормили кота! Он теперь сыт и доволен',
         effect: { hp: +10, energy: +20, affection: +5, angry: -5 },
       },
       {
-        name: 'Поиграть',
+        name: 'Игра',
         description: 'Вы поиграли с котом! Он стал немного счастливее',
         effect: { energy: -15, boldness: +10, affection: +5, angry: -5 },
       },
       {
-        name: 'Приласкать',
+        name: 'Гладить',
         description: 'Вы приласкали кота! Он замурлыкал от удовольствия',
         effect: { affection: +20, angry: -10, boldness: -5 },
       },
       {
-        name: 'Уложить спать',
+        name: 'Спать',
         description: 'Кот уютно устроился и заснул...',
         effect: { energy: +30, angry: -10 },
       },

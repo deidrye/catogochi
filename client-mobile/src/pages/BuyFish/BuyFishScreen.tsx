@@ -13,9 +13,9 @@ export default function BuyFishScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>Купить рыбов</Text>
       <Text style={styles.text}>
-        Для покупки рыбов, вы можете перевести деньги на номер телефона:
+        Для покупки рыбов, вы можете перевести деньги на номер телефона(Сбербанк):
       </Text>
-      <Text style={styles.phone}>+7 (916) 543-33-17(Сбербанк)</Text>
+      <Text style={styles.phone}>+7 (916) 543-33-17</Text>
       <Text style={styles.info}>
         После перевода свяжитесь с администратором для начисления рыбов на ваш счёт
       </Text>
