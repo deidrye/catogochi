@@ -7,13 +7,13 @@ import { useAppSelector } from '@/app/store';
 // Static utility functions
 const getIconForAction = (actionName: string) => {
   switch (actionName) {
-    case 'Покормить':
+    case 'Еда':
       return 'restaurant';
-    case 'Поиграть':
+    case 'Игра':
       return 'toys';
-    case 'Приласкать':
+    case 'Гладить':
       return 'favorite';
-    case 'Уложить спать':
+    case 'Спать':
       return 'bed';
     default:
       return 'pets';
@@ -22,13 +22,13 @@ const getIconForAction = (actionName: string) => {
 
 const getColorForAction = (actionName: string) => {
   switch (actionName) {
-    case 'Покормить':
+    case 'Еда':
       return '#28a745';
-    case 'Поиграть':
+    case 'Игра':
       return '#007bff';
-    case 'Приласкать':
+    case 'Гладить':
       return '#dc3545';
-    case 'Уложить спать':
+    case 'Спать':
       return '#6f42c1';
     default:
       return '#6c757d';

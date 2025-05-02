@@ -96,7 +96,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
   const handlePlay = () => {
     if (isActionDisabled) return;
     setIsActionDisabled(true);
-    setCurrentAction('Поиграть');
+    setCurrentAction('Игра');
     setTimeout(() => {
       setCurrentAction(null);
       setIsActionDisabled(false);
@@ -115,11 +115,11 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
     try {
       setCurrentAction(actionType);
       const type =
-        actionType === 'Покормить'
+        actionType === 'Еда'
           ? 'Feed'
-          : actionType === 'Поиграть'
+          : actionType === 'Игра'
           ? 'CatPlay'
-          : actionType === 'Приласкать'
+          : actionType === 'Гладить'
           ? 'Meow'
           : 'Sleep';
 
@@ -162,10 +162,10 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
     }
 
     const actionMap: Record<string, keyof typeof cat.CatPreset> = {
-      Покормить: 'imgEat',
-      Поиграть: 'imgPlay',
-      Приласкать: 'imgWeasel',
-      'Уложить спать': 'imgSleep',
+      Еда: 'imgEat',
+      Игра: 'imgPlay',
+      Гладить: 'imgWeasel',
+      Спать: 'imgSleep',
     };
 
     const imageKey = currentAction ? actionMap[currentAction] : 'imgMain';
