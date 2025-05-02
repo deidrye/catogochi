@@ -38,43 +38,43 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation }) => {
   const user = useAppSelector((store) => store.auth.user?.user);
   const points = useAppSelector((store) => store.user.points);
 
-  //--------------------------------------------------------------------------------
-  // Настройка уведомлений
-  Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldShowAlert: true,
-      shouldPlaySound: true,
-      shouldSetBadge: false,
-    }),
-  });
+  // //--------------------------------------------------------------------------------
+  // // Настройка уведомлений
+  // Notifications.setNotificationHandler({
+  //   handleNotification: async () => ({
+  //     shouldShowAlert: true,
+  //     shouldPlaySound: true,
+  //     shouldSetBadge: false,
+  //   }),
+  // });
 
-  const sendCatNotification = async (title: string, body: string) => {
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title,
-        body,
-        sound: 'default',
-        data: { catId: cat?.id },
-      },
-      trigger: null, // Сработает немедленно
-    });
-  };
+  // const sendCatNotification = async (title: string, body: string) => {
+  //   await Notifications.scheduleNotificationAsync({
+  //     content: {
+  //       title,
+  //       body,
+  //       sound: 'default',
+  //       data: { catId: cat?.id },
+  //     },
+  //     trigger: null, // Сработает немедленно
+  //   });
+  // };
 
-  // Отслеживание состояний кота
-  useEffect(() => {
-    if (!cat) return;
+  // // Отслеживание состояний кота
+  // useEffect(() => {
+  //   if (!cat) return;
   
-    // Уведомление, если кот голоден (hp < 20)
-    if (cat.hp < 20) {
-      sendCatNotification('Мяу! 🐱', `${cat.name} голоден! Покормите кота!`);
-    }
+  //   // Уведомление, если кот голоден (hp < 20)
+  //   if (cat.hp < 20) {
+  //     sendCatNotification('Мяу! 🐱', `${cat.name} голоден! Покормите кота!`);
+  //   }
   
-    // Уведомление, если кот устал (energy < 15)
-    if (cat.energy < 15) {
-      sendCatNotification('Кот устал!', `${cat.name} хочет спать. Уложите его!`);
-    }
-  }, [cat]);
-  // --------------------------------------------------------------------------------
+  //   // Уведомление, если кот устал (energy < 15)
+  //   if (cat.energy < 15) {
+  //     sendCatNotification('Кот устал!', `${cat.name} хочет спать. Уложите его!`);
+  //   }
+  // }, [cat]);
+  // // --------------------------------------------------------------------------------
 
   useEffect(() => {
     async function main() {

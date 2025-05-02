@@ -45,6 +45,7 @@ export default function RouterProvider() {
         text1: 'Новое достижение!',
         text2: `Вы получили: ${lastAchievement.name}`,
         position: 'bottom',
+        topOffset: 200, // поднимет тост на 50 пикселей выше стандартной позиции
       });
     }
     prevAchievesLength.current = userAchieves.length;
@@ -84,7 +85,7 @@ export default function RouterProvider() {
           )}
         </Stack.Navigator>
       </NavigationContainer>
-      <Toast />
+      {/* <Toast /> */}
     </>
   );
 }
