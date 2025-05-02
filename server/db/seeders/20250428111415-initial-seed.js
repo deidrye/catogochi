@@ -25,8 +25,24 @@ module.exports = {
      * }], {});
      */
     await User.bulkCreate([
-      { name: 'Иван Иванов', email: '1@1', hashedPass: await bcrypt.hash('123', 10) },
-      { name: 'Петр Петров', email: '2@2', hashedPass: await bcrypt.hash('123', 10) },
+      {
+        name: 'Иван Иванов',
+        email: '1@1',
+        hashedPass: await bcrypt.hash('123', 10),
+        lastSession: new Date(Date.now() - 3 * 60 * 60 * 1000),
+      },
+      {
+        name: 'Петр Петров',
+        email: '2@2',
+        hashedPass: await bcrypt.hash('123', 10),
+        lastSession: new Date(Date.now() - 3 * 60 * 60 * 1000),
+      },
+      {
+        name: 'Боб Сидоров',
+        email: 'Denis@mail.com',
+        hashedPass: await bcrypt.hash('123', 10),
+        lastSession: new Date(Date.now() - 3 * 60 * 60 * 1000),
+      },
     ]);
 
     await Toy.bulkCreate([
@@ -184,6 +200,17 @@ module.exports = {
         boldness: 40,
         level: 1,
         catPresetId: 2,
+      },
+      {
+        name: 'Бобик',
+        userId: 3,
+        angry: 2,
+        hp: 85,
+        energy: 65,
+        affection: 55,
+        boldness: 40,
+        level: 1,
+        catPresetId: 1,
       },
     ]);
 
