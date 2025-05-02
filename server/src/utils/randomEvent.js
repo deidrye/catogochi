@@ -1,14 +1,23 @@
 const EventService = require('../services/EventService');
+const UserLogService = require('../services/UserLogService');
 const UserService = require('../services/UserService');
 
 function randomValue(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-async function randomEvent(catId) {
+async function randomEvent(catId, userId) {
   const data = await EventService.getAllByCatId(catId);
   const events = JSON.parse(JSON.stringify(data));
-  return events[randomValue(0, events.length - 1)];
+  const randEvent = events[randomValue(0, events.length - 1)];
+  await UserLogService.createLog({
+    userId,
+    type: 'randomEvent',
+    eventId: randEvent.id,
+    toyId: randEvent.toyId,
+    catActionId: randEvent.catActionId,
+  });
+  return randEvent;
 }
 
 async function getOfflineEvents(userId, catId) {
@@ -36,7 +45,8 @@ async function getOfflineEvents(userId, catId) {
     if (rangeOfTimeOut >= 1) {
       for (let i = 1; i < rangeOfTimeOut; i++) {
         // eslint-disable-next-line no-await-in-loop
-        const event = await randomEvent(catId);
+        const event = await randomEvent(catId, userId);
+
         for (const key in event.effect) {
           totalEvents[key] += event.effect[key];
         }
