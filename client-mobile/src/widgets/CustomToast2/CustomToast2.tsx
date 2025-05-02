@@ -1,12 +1,14 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { ToastConfigParams } from 'react-native-toast-message';
 
 type ToastType = 'success' | 'error' | 'info';
 
 type Props = {
   text1?: string;
   text2?: string;
-  type?: ToastType;
+  type?: 'success' | 'error' | 'info';
+  [key: string]: any; // <- это уберёт жалобы TypeScript
 };
 
 const borderColors: Record<ToastType, string> = {
@@ -21,9 +23,10 @@ const textColors: Record<ToastType, string> = {
   info: '#1e3a8a',
 };
 
-const CustomToast2 = ({ text1, text2, type = 'info' }: Props) => {
-  const borderColor = borderColors[type];
-  const textColor = textColors[type];
+const CustomToast2 = ({ text1, text2, type = 'info' }: ToastConfigParams<any>) => {
+  const toastType = (type || 'info') as 'success' | 'error' | 'info';
+  const borderColor = borderColors[toastType];
+  const textColor = textColors[toastType];
 
   return (
     <View style={[styles.container, { borderColor: borderColor }]}>
