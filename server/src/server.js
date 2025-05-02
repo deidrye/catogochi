@@ -43,8 +43,8 @@ wss.on('connection', (ws) => {
   // Интервал для отправки событий
   const interval = setInterval(async () => {
     if (clients.has(ws)) {
-      const { catId } = clients.get(ws);
-      const event = await randomEvent(catId); // Передаем catId в randomEvent
+      const { catId, userId } = clients.get(ws);
+      const event = await randomEvent(catId, userId); // Передаем catId в randomEvent
 
       ws.send(
         JSON.stringify({
@@ -53,7 +53,7 @@ wss.on('connection', (ws) => {
         }),
       );
     }
-  }, randomValue(6, 12) * 1000);
+  }, 1000 * 60);
 
   ws.on('close', async () => {
     clearInterval(interval);

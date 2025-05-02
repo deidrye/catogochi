@@ -56,6 +56,10 @@ const HistoryModal = () => {
         result.name = `Вы поиграли с котом игрушкой: ${log.Toy?.name}`;
         break;
 
+      case 'randomEvent':
+        result.name = `${log.Event.title}`;
+        break;
+
       default:
         result.name = 'Отдых кота';
       // result.description = 'Вы уложили кота спать!';
