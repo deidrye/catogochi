@@ -21,11 +21,9 @@ const Stack = createNativeStackNavigator();
 export default function RouterProvider() {
   const dispatch = useAppDispatch();
   const isLoading = useAppSelector((store) => store.loader.isLoading);
-  const [response, setResponse] = useState();
   const { user, isInitialized } = useAppSelector((state) => state.auth);
   const { cat } = useAppSelector((store) => store.cat);
   const userAchieves = useAppSelector((store) => store.achievements.userAchieves);
-  const showAchieveToggle = useAppSelector((store) => store.achievements.showAchieveToggle);
   const prevAchievesLength = useRef(userAchieves.length);
   const catRef = useRef(cat);
 
@@ -34,7 +32,6 @@ export default function RouterProvider() {
       await dispatch(checkAuth());
       const catResponse = await dispatch(fetchCat());
       if (catResponse.payload) dispatch(setOnline());
-      // else dispatch(setLoader(false));
     };
 
     main();
@@ -64,7 +61,7 @@ export default function RouterProvider() {
       });
     }
     prevAchievesLength.current = userAchieves.length;
-  }, [showAchieveToggle]);
+  }, [userAchieves.length]);
 
   if (!isInitialized) {
     console.log('RouterProvider - user:', user, 'cat:', cat);

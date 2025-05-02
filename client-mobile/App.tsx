@@ -8,6 +8,8 @@ import { EventProvider } from '@/features/event-connection/model/EventContext';
 import Toast from 'react-native-toast-message';
 import CustomToast2 from '@/widgets/CustomToast2/CustomToast2';
 
+
+
 export default function App() {
   return (
     <Provider store={store}>
