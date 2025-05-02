@@ -6,6 +6,7 @@ import userReducer from '../entities/user/model/userSlice';
 import achieveReducer from '../entities/achievements/model/slice';
 import catReducer from '../entities/cat/model/slice';
 import logReducer from '../entities/log/model/slice';
+import loaderReducer from '../entities/loader/model/loaderSlice';
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -14,6 +15,7 @@ export const store = configureStore({
     cat: catReducer,
     user: userReducer,
     log: logReducer,
+    loader: loaderReducer,
   },
 });
 

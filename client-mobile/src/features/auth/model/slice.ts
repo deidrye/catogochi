@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { User } from '../../../shared/lib/zod/schemas';
 import { login, register, logout, checkAuth } from './thunks';
 
@@ -7,6 +7,7 @@ interface AuthState {
   isLoading: boolean;
   error: string | null;
   isInitialized: boolean;
+  isCatLoading: boolean;
 }
 
 const initialState: AuthState = {
@@ -14,6 +15,7 @@ const initialState: AuthState = {
   isLoading: false,
   error: null,
   isInitialized: false,
+  isCatLoading: true,
 };
 
 const authSlice = createSlice({
@@ -22,6 +24,9 @@ const authSlice = createSlice({
   reducers: {
     clearError: (state) => {
       state.error = null;
+    },
+    setCatLoading: (state, action: PayloadAction<boolean>) => {
+      state.isCatLoading = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -64,5 +69,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { clearError } = authSlice.actions;
+export const { clearError, setCatLoading } = authSlice.actions;
 export default authSlice.reducer;

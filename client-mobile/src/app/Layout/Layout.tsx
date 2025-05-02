@@ -18,13 +18,13 @@ export default function MainTabs() {
 
   useEffect(() => {
     return () => {
-      if (user) dispatch(exitGame(user.id));
+      dispatch(exitGame(user.id));
     };
   }, [isCatOnline]);
 
   useEffect(() => {
     async function main() {
-      await dispatch(fetchCat());
+      // if (!isCatOnline) await dispatch(fetchCat());
       await dispatch(fetchActions());
       void dispatch(setOnline());
     }

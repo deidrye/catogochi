@@ -7,7 +7,7 @@ const initialState: LogSliceT = {
   showModal: false,
 };
 
-export const toySlice = createSlice({
+export const logSlice = createSlice({
   name: 'log',
   initialState,
   reducers: {
@@ -22,6 +22,6 @@ export const toySlice = createSlice({
   },
 });
 
-export const { setShowModal } = toySlice.actions;
+export const { setShowModal } = logSlice.actions;
 
-export default toySlice.reducer;
+export default logSlice.reducer;
