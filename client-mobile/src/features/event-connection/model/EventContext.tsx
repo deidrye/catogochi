@@ -143,6 +143,13 @@ export function EventProvider({ children }: Props) {
           text2: wsEvent.description,
           visibilityTime: 3000,
         });
+
+        try {
+          const { sound } = await Audio.Sound.createAsync(connectedSound);
+          await sound.playAsync();
+        } catch (error) {
+          console.error('Ошибка воспроизведения звука:', error);
+        }
       } catch (error) {
         console.error('Error parsing WebSocket message:', error);
       }

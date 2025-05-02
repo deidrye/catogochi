@@ -10,7 +10,7 @@ import { pushUserAchieve } from '@/entities/achievements/model/slice';
 import { setPoints } from '@/entities/user/model/userSlice';
 import { setLogsAndGetAchieves } from '@/features/logs-feature/model/checkLog';
 import { fetchUserPoints } from '@/entities/user/model/userThunks';
-import { setLoading } from '@/entities/cat/model/slice';
+// import { setLoading } from '@/entities/cat/model/slice';
 import { setLoader } from '@/entities/loader/model/loaderSlice';
 
 type RegisterFormNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Register'>;
@@ -57,7 +57,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ navigation }) => {
         setPointsCallback,
       );
       dispatch(setLoader(false));
-      navigation.navigate('CreateCat');
+      // navigation.navigate('CreateCat');
     } catch (err: any) {
       setError(err.message || 'Ошибка регистрации');
     }

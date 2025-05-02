@@ -14,6 +14,7 @@ import BuyFishScreen from '@/pages/BuyFish/BuyFishScreen';
 import { LoadingScreen } from '@/widgets/LoadingScreen/LoadingScreen';
 import { setLoader } from '@/entities/loader/model/loaderSlice';
 import { setOnline } from '@/entities/cat/model/slice';
+import { fetchUserPoints } from '@/entities/user/model/userThunks';
 
 const Stack = createNativeStackNavigator();
 
@@ -43,6 +44,12 @@ export default function RouterProvider() {
     catRef.current = cat;
     if (cat) dispatch(setLoader(true));
   }, [cat]);
+
+  useEffect(() => {
+    if (user) {
+      dispatch(fetchUserPoints(user.user.id));
+    }
+  }, [user]);
 
   useEffect(() => {
     if (prevAchievesLength.current > 0 && userAchieves.length > prevAchievesLength.current) {

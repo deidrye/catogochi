@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 import { exitGame } from '@/entities/user/model/userThunks';
 import { fetchActions, fetchCat } from '@/entities/cat/model/thunks';
 import { setOnline } from '@/entities/cat/model/slice';
+import { clearPoints } from '@/entities/user/model/userSlice';
 
 const Tab = createMaterialTopTabNavigator();
 
