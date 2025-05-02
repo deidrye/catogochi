@@ -3,6 +3,7 @@ import { CatService } from '../api/catService';
 import { CatT, CreateCatT } from './types';
 import { setError, setLoading, setPresets, setCat, setActions } from './slice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { setLoader } from '@/entities/loader/model/loaderSlice';
 
 export const fetchPresets = createAsyncThunk('cat/fetchPresets', async (_, { dispatch }) => {
   try {
@@ -39,9 +40,11 @@ export const fetchCat = createAsyncThunk('cat/fetchCat', async (_, { dispatch })
     dispatch(setLoading(true));
     const cat = await CatService.getCat();
     if (!cat) {
+      dispatch(setLoader(false));
       throw new Error('Ошибка: Кот не найден');
     }
     dispatch(setCat(cat));
+    dispatch(setLoading(true));
     return cat;
   } catch (error) {
     dispatch(setError(error instanceof Error ? error.message : 'Ошибка загрузки кота'));

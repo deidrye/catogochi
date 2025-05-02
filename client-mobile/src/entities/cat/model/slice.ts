@@ -68,6 +68,8 @@ const catSlice = createSlice({
         state.error = action.payload as string;
       })
       .addCase(fetchCat.pending, (state) => {
+        console.log('wowwwwwww');
+
         state.isLoading = true;
         state.error = null;
       })

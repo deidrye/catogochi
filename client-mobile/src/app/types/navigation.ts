@@ -6,4 +6,5 @@ export type RootStackParamList = {
   Shop: undefined;
   CreateCat: undefined;
   BuyFish: undefined;
-}; 
+  Loading: undefined;
+};

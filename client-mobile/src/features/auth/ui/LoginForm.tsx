@@ -6,8 +6,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../app/types/navigation';
 import { loginSchema } from '../../../shared/lib/zod/schemas';
 import { fetchCat } from '@/entities/cat/model/thunks';
-import { catSchema } from '@/entities/cat/model/schema';
-import { setOnline } from '@/entities/cat/model/slice';
+import { setLoading, setOnline } from '@/entities/cat/model/slice';
+import { setLoader } from '@/entities/loader/model/loaderSlice';
 
 type LoginFormNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Login'>;
 
@@ -27,17 +27,18 @@ export const LoginForm: React.FC<LoginFormProps> = ({ navigation }) => {
       const data = loginSchema.parse({ email, password });
       // console.log('Данные для входа валидны:', data);
       const result = await dispatch(login(data)).unwrap();
-      // console.log('Успешный вход, результат:', result);
+      console.log('Успешный вход, результат:', result);
       const response = await dispatch(fetchCat());
+      console.log('AAAAAAAAAAAAAAA', response.payload);
+      dispatch(setLoader(true));
+
       if (!response.payload) {
         navigation.navigate('CreateCat');
       } else {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'Main' }],
-        });
+        navigation.navigate('Main');
         dispatch(setOnline());
       }
+      navigation.navigate('Main');
     } catch (err: any) {
       console.error('Ошибка при входе:', {
         message: err.message,

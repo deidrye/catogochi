@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 import { exitGame } from '@/entities/user/model/userThunks';
 import { fetchActions, fetchCat } from '@/entities/cat/model/thunks';
 import { setOnline } from '@/entities/cat/model/slice';
+import { clearPoints } from '@/entities/user/model/userSlice';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -18,13 +19,13 @@ export default function MainTabs() {
 
   useEffect(() => {
     return () => {
-      if (user) dispatch(exitGame(user.id));
+      dispatch(exitGame(user.id));
     };
   }, [isCatOnline]);
 
   useEffect(() => {
     async function main() {
-      await dispatch(fetchCat());
+      // if (!isCatOnline) await dispatch(fetchCat());
       await dispatch(fetchActions());
       void dispatch(setOnline());
     }
